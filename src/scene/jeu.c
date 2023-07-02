@@ -35,12 +35,19 @@ void scene_jeu_unload(argument arg)
 void scene_jeu_update(argument arg) 
 { 
     obtenir_scene_state;
+
+    if(c->nb_update % 60 == 0)
+    {
+        game_update(c, s->g);
+    }
 }
 
 void scene_jeu_draw(argument arg)
 {
     obtenir_scene_state;
     pen_text_at_center(c, "le jeu", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
+
+    game_draw(c, s->g);
 }
 
 bool scene_jeu_event (argument arg) 

@@ -30,8 +30,10 @@ struct game_mutable
     rectf draw_dest;
 
     entity* current_ordi;
-    field(tab*, current_ordi_output, ordi_input);
-    int nb_turn;
+
+    // currrent player or cpu input
+    tab*    input;
+    int     _nb_update;
 };
 
 struct game
@@ -135,7 +137,10 @@ void  game_draw(context* c, game* g);
 void  game_draw_rule(context* c, game* g, rule* r);
 game* game_clone(context* c, game* g);
 
+void game_get_input(context* c, game* g, entity* e);
 void game_get_player_input(context* c, game* g, entity* e);
 bool game_rule_match(context* c, game* g, entity* e, rule* r);
+
+entity* game_optimize(context* c, game* g);
 
 #endif

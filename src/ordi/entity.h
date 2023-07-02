@@ -11,7 +11,7 @@ struct rule
 rule* rule_create(int size);
 void  rule_free(rule* r);
 rule* rule_clone(rule* r);
-void rule_printf(rule* r);
+void  rule_printf(rule* r);
 
 struct behavior
 {

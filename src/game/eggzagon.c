@@ -8,6 +8,11 @@ void eggzagon_load(game_arg arg)
     repeat(i, state_imut->nb_colonne)
     {
         mstate->is_walls[i] = create_array(bool, cstate->nb_ligne);
+        repeat(j, state_imut->nb_colonne)
+        {
+            mstate->is_walls[i][j] = false;
+        }
+
     }
     mstate->nb_tour = 0;
     mstate->player_posX = 0;
@@ -53,6 +58,8 @@ void eggzagon_update(game_arg arg)
 {
     get_game_state(eggzagon);
 
+    if(gstate != GAME_STATE_RUNNING) return;
+    
     mstate->nb_tour++;
 
     // les murs tombent
@@ -70,14 +77,16 @@ void eggzagon_update(game_arg arg)
     // remplis la dernière ligne de 0
     repeat(x, state_imut->nb_colonne)
     {
-        mstate->is_walls[x][y_max] = 0;
+        mstate->is_walls[x][y_max] = false;
     }
 
     int nb_wall = 1;
     repeat(i, nb_wall)
     {
-        mstate->is_walls[mstate->nb_tour%istate->nb_colonne][y_max] = 0;
+        mstate->is_walls[mstate->nb_tour%istate->nb_colonne][y_max] = true;
     }
+
+    todo;
 }
 
 void eggzagon_draw(game_arg arg)
@@ -105,14 +114,34 @@ void eggzagon_draw_rule(game_arg arg, rule* r)
 
 void eggzagon_player_input(game_arg arg, entity* e)
 {
-    
     get_game_state(eggzagon);
     unused(e);
+
+    output_single_value(EGGZAGON_OUTPUT_DO_NOTHINGS);
+
+    if(input_right(c))
+    {
+        output_single_value(EGGZAGON_OUTPUT_MOVE_RIGHT);
+        return;
+    }
+    if(input_left(c))
+    {
+        output_single_value(EGGZAGON_OUTPUT_MOVE_LEFT);
+        return;
+    }
+}
+
+void eggzagon_set_default_input(game_arg arg)
+{
+    get_game_state(eggzagon);
+    output_single_value(EGGZAGON_OUTPUT_DO_NOTHINGS);
 }
 
 bool eggzagon_rule_match(game_arg arg, entity* e, rule* r)
 {
     get_game_state(eggzagon);
+    eggzagon_set_default_input(arg);
+
     unused(e);
     unused(r);
     return false;

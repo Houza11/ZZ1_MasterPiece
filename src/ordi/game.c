@@ -42,10 +42,10 @@ game* game_create_arg(
 
     {
         m->draw_dest = window_rectf(c);
-        m->nb_turn = 0;
         m->state = GAME_STATE_RUNNING;
         m->current_ordi = null;
-        m->current_ordi_output = tab_create(condition_output_size, 0);
+        m->input = tab_create(condition_output_size, 0);
+        m->_nb_update = 0;
     }
 
     {
@@ -90,6 +90,7 @@ game_arg game_arg_create(context* c, game* g)
 void game_update(context* c, game* g)
 {
     check(gtype->is_loaded == true);
+    g->internal_mutable_state->_nb_update++;
     gtype->update(arg);
 }
 
@@ -103,7 +104,7 @@ void game_load(context* c, game* g)
 void game_internal_mutable_free(game_mutable* mut)
 {
     entity_free(mut->current_ordi);
-    tab_free(mut->current_ordi_output);
+    tab_free(mut->input);
     free(mut);
 }
 
@@ -117,6 +118,13 @@ void game_type_unload(context* c, game* g)
     }
     free(gtype);
     g->type = null;
+}
+
+entity* game_optimize(context* c, game* g)
+{
+    todo;
+    unused(c);
+    unused(g);
 }
 
 
@@ -133,7 +141,6 @@ void game_unload(context* c, game* g)
     free(g->immutable_state);
 
     game_type_unload(c, g);
-    
     game_internal_mutable_free(g->internal_mutable_state);
     
     free(g);
@@ -155,11 +162,10 @@ void game_draw_rule(context* c, game* g, rule* r)
 game_mutable* game_internal_mutable_clone(game_mutable* mut)
 {
     game_mutable* copy = create(game_mutable);
-    copy->nb_turn = mut->nb_turn;
+    copy->_nb_update = mut->_nb_update;
     copy->draw_dest = mut->draw_dest;
-    copy->current_ordi_output = tab_clone(copy->current_ordi_output);
+    copy->input = tab_clone(copy->input);
     copy->current_ordi = entity_clone(mut->current_ordi);
-    copy->nb_turn = mut->nb_turn;
     copy->state = mut->state;
     return copy;
 }
