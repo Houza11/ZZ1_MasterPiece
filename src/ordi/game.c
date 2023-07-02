@@ -104,6 +104,7 @@ void game_internal_mutable_free(game_mutable* mut)
 {
     entity_free(mut->current_ordi);
     tab_free(mut->current_ordi_output);
+    free(mut);
 }
 
 
@@ -123,8 +124,13 @@ void game_unload(context* c, game* g)
 {
     check(gtype->is_loaded == true);
     gtype->is_loaded = false;
+
     gtype->unload_mutable(arg);
+    free(g->mutable_state);
+
     gtype->unload(arg);
+    free(g->draw_state);
+    free(g->immutable_state);
 
     game_type_unload(c, g);
     

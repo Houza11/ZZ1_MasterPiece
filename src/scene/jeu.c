@@ -22,7 +22,6 @@ void scene_jeu_load(argument arg)
 
         game_immutable_state->nb_ligne = nb_ligne;
         game_immutable_state->nb_colonne = nb_colonne;
-
         game_load(c, the_game);
     }
 }
@@ -41,6 +40,7 @@ void scene_jeu_update(argument arg)
 void scene_jeu_draw(argument arg)
 {
     obtenir_scene_state;
+    pen_text_at_center(c, "le jeu", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
 }
 
 bool scene_jeu_event (argument arg) 

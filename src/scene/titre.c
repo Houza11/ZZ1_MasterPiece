@@ -23,6 +23,7 @@ void scene_titre_update(argument arg)
 void scene_titre_draw(argument arg)
 {
     obtenir_scene_state;
+    pen_text_at_center(c, "title", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
 }
 
 bool scene_titre_event (argument arg) 

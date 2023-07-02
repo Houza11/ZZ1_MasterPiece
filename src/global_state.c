@@ -31,7 +31,6 @@ void global_state_draw(context* c)
 {
     pen_color(c, rgb(93,39,137));
     pen_clear(c);
-    pen_text_at_center(c, "title", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
 }
 
 void global_state_printf(context* c)
