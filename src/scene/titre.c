@@ -7,32 +7,32 @@ typedef struct
 
 void scene_titre_load(argument arg)
 {
-    obtenir_state;
+    obtenir_scene_state;
 }
 
 void scene_titre_unload(argument arg) 
 { 
-    obtenir_state;
+    obtenir_scene_state;
 }
 
 void scene_titre_update(argument arg) 
 { 
-    obtenir_state;
+    obtenir_scene_state;
 }
 
 void scene_titre_draw(argument arg)
 {
-    obtenir_state;
+    obtenir_scene_state;
 }
 
 bool scene_titre_event (argument arg) 
 { 
-    obtenir_state;
+    obtenir_scene_state;
     return false;
 }
 
 void scene_titre_printf(argument arg)
 {
-    obtenir_state;
+    obtenir_scene_state;
     printf("Titre \n");
 }

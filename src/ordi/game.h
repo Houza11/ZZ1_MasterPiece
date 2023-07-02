@@ -1,12 +1,13 @@
 #ifndef GAME_H
 #define GAME_H
-#include "../base.h"
+#include "base.h"
 
 struct game_arg
 {
     context* c;
     game* g;
 };
+
 
 // bool is over
 typedef void* (*game_clone_fn)  (game_arg arg);
@@ -16,7 +17,7 @@ typedef void  (*game_draw_rule_fn)(game_arg arg, rule* r);
 typedef void  (*game_get_input_fn)(game_arg arg, entity* e);
 
 // write the output in the g->mutable_state
-typedef bool  (*game_rule_match_fn)(game_state* g, entity* e, rule* r);
+typedef bool  (*game_rule_match_fn)(game_arg arg, entity* e, rule* r);
 
 #define GAME_STATE_RUNNING             0
 #define GAME_STATE_END_OF_GAME         1
@@ -29,11 +30,8 @@ struct game_mutable
     rectf draw_dest;
 
     entity* current_ordi;
-    field(tab*, current_ordi_output, current_input);
+    field(tab*, current_ordi_output, ordi_input);
     int nb_turn;
-
-    vec* /* of behavior */ behaviors;
-    behavior best_behavior;
 };
 
 struct game
@@ -75,13 +73,18 @@ struct game_type
 
     // >= 1
     int nb_behavior;
+    entity* best_entity;
+
+    // of entity
+    //vec*  generation;
 
     // false: minimize, true: maximize
     bool maximize_score;
+    bool is_loaded;
 };
 
 
-#define game_create(name, condition_input_size, condition_input_max_range, condition_output_size, condition_output_max_range)\
+#define game_create(name, condition_input_size, condition_input_max_range, condition_output_size, condition_output_max_range, nb_behavior)\
     game_create_arg(\
         c,\
         sizeof( name ## _immutable_state),\
@@ -100,7 +103,7 @@ struct game_type
         condition_input_max_range,\
         condition_output_size,\
         condition_output_max_range,\
-        30, /* nb behavior*/\
+        nb_behavior /* nb behavior*/\
     )
 
 game* game_create_arg(
@@ -122,5 +125,17 @@ game* game_create_arg(
     int condition_output_size,
     int condition_output_max_range,
     int nb_behavior);
+
+game_arg game_arg_create(context* c, game* g);
+
+void  game_update(context* c, game* g);
+void  game_load(context* c, game* g);
+void  game_unload(context* c, game* g);
+void  game_draw(context* c, game* g);
+void  game_draw_rule(context* c, game* g, rule* r);
+game* game_clone(context* c, game* g);
+
+void game_get_player_input(context* c, game* g, entity* e);
+bool game_rule_match(context* c, game* g, entity* e, rule* r);
 
 #endif

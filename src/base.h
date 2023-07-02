@@ -22,10 +22,6 @@
 #include "context/input.h"
 #include "context/scene.h"
 
-#include "./ordi/entity.h"
-#include "./ordi/game.h"
-
-
 #include "util/texture.h"
 #include "util/sprite_sheet.h"
 #include "util/anim.h"
@@ -33,6 +29,11 @@
 #include "context/window.h"
 #include "context/camera.h"
 #include "context/pen.h"
+
+#include "./ordi/entity.h"
+#include "./ordi/game.h"
+
+#include "./game/all_game.h"
 
 #include "scene/all_scene.h"
 

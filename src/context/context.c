@@ -42,12 +42,15 @@ void contexte_free(context* c)
     // TTF_CloseFont(c->font_medium);
     // TTF_CloseFont(c->font_big);
     // TTF_CloseFont(c->font_fullscreen);
-    global_state_unload(c);
     scene_context_unload(c);
+    global_state_unload(c);
+
     pen_unload(c);
     camera_unload(c);
     window_unload(c);
     input_unload(c);
+
+    free(c);
 }
 
 void context_update(context* c)

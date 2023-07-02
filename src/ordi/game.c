@@ -1,4 +1,4 @@
-#include "../base.h"
+#include "base.h"
 
 game* game_create_arg(
     context* c,
@@ -68,6 +68,118 @@ game* game_create_arg(
         t->condition_output_max_range = condition_output_max_range;
 
         t->maximize_score = true;
+        t->best_entity = null;
+        t->nb_behavior = nb_behavior;
+        t->is_loaded = false;
     }
     return g;
+}
+
+game_arg game_arg_create(context* c, game* g)
+{
+    game_arg arg;
+    arg.c = c;
+    arg.g = g;
+    return arg;
+}
+
+//#define g (arg.g)
+#define gtype (g->type)
+#define arg game_arg_create(c, g)
+
+void game_update(context* c, game* g)
+{
+    check(gtype->is_loaded == true);
+    gtype->update(arg);
+}
+
+void game_load(context* c, game* g)
+{
+    check(gtype->is_loaded == false);
+    gtype->is_loaded = true;
+    gtype->load(arg);
+}
+
+void game_internal_mutable_free(game_mutable* mut)
+{
+    entity_free(mut->current_ordi);
+    tab_free(mut->current_ordi_output);
+}
+
+
+void game_type_unload(context* c, game* g)
+{
+    unused(c);
+    if(gtype->best_entity != null)
+    {
+        entity_free(gtype->best_entity);
+    }
+    free(gtype);
+    g->type = null;
+}
+
+
+void game_unload(context* c, game* g)
+{
+    check(gtype->is_loaded == true);
+    gtype->is_loaded = false;
+    gtype->unload_mutable(arg);
+    gtype->unload(arg);
+
+    game_type_unload(c, g);
+    
+    game_internal_mutable_free(g->internal_mutable_state);
+    
+    free(g);
+    //todo;
+}
+
+void game_draw(context* c, game* g)
+{
+    check(gtype->is_loaded == true);
+    gtype->draw(arg);
+}
+
+void game_draw_rule(context* c, game* g, rule* r)
+{
+    check(gtype->is_loaded == true);
+    gtype->draw_rule(arg, r);
+}
+
+game_mutable* game_internal_mutable_clone(game_mutable* mut)
+{
+    game_mutable* copy = create(game_mutable);
+    copy->nb_turn = mut->nb_turn;
+    copy->draw_dest = mut->draw_dest;
+    copy->current_ordi_output = tab_clone(copy->current_ordi_output);
+    copy->current_ordi = entity_clone(mut->current_ordi);
+    copy->nb_turn = mut->nb_turn;
+    copy->state = mut->state;
+    return copy;
+}
+
+
+
+game* game_clone(context* c, game* g)
+{
+    check(gtype->is_loaded == true);
+    game* copy = create(game);
+    copy->type = gtype;
+    copy->immutable_state = g->immutable_state;
+    copy->draw_state = null; // don't care
+    copy->internal_mutable_state = game_internal_mutable_clone(g->internal_mutable_state);
+    copy->mutable_state = gtype->clone_mutable(arg);
+    return copy;
+}
+
+void game_get_player_input(context* c, game* g, entity* e)
+{
+    check(gtype->is_loaded == true);
+    gtype->player_input(arg, e);
+}
+
+bool game_rule_match(context* c, game* g, entity* e, rule* r)
+{
+    check(gtype->is_loaded == true);
+    return gtype->rule_match(arg, e, r);
 }

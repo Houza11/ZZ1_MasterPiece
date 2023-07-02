@@ -36,4 +36,13 @@ void input_unload(context* c);
 void input_update(context* c);
 bool input_event(context* c, event* ev);
 
+bool input_right(context* c);
+bool input_left (context* c);
+bool input_up   (context* c);
+bool input_down (context* c);
+
+bool input_old_right(context* c);
+bool input_old_left (context* c);
+bool input_old_up   (context* c);
+bool input_old_down (context* c);
 #endif
