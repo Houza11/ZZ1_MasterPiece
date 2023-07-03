@@ -68,7 +68,7 @@ game* game_create_arg(
         m->draw_dest = window_rectf(c);
         m->state = GAME_STATE_RUNNING;
         
-        m->current_entity = null;//entity_create_ordi_random(g);
+        m->current_entity = entity_create_ordi_random(g);
 
         m->input = tab_create(condition_output_size, 0);
         m->_nb_update = 0;
@@ -88,7 +88,17 @@ game_arg game_arg_create(context* c, game* g)
 #define gtype (g->type)
 #define arg game_arg_create(c, g)
 
-void game_update(context* c, game* g)
+void game_update(context* c, game* g, int ups)
+{
+    g->internal_mutable_state->draw_coef += 1.0f/ups;
+    if(g->internal_mutable_state->draw_coef >= 1)
+    {
+        g->internal_mutable_state->draw_coef = 0;
+        game_update_fixed(c, g);
+    }
+}
+
+void game_update_fixed(context* c, game* g)
 {
     check(gtype->is_loaded == true);
     g->internal_mutable_state->_nb_update++;
@@ -104,6 +114,7 @@ void game_load(context* c, game* g)
 {
     //check(gtype->is_loaded == false);
     gtype->load(arg);
+    g->internal_mutable_state->draw_coef = 0;
     gtype->is_loaded = true;
 }
 
@@ -202,6 +213,7 @@ bool game_rule_match(context* c, game* g, entity* e, rule* r)
     return gtype->rule_match(arg, e, r);
 }
 
+
 void game_get_input(context* c, game* g, entity* e)
 {
     if(e->type == ENTITY_TYPE_PLAYER)
@@ -209,5 +221,23 @@ void game_get_input(context* c, game* g, entity* e)
         game_get_player_input(c,g,e);
         return;
     }
-    todo;
+    // ordi
+    behavior* b = entity_behavior(e);
+    
+    tab_clear(g->internal_mutable_state->input, 0);
+
+    repeat(i, behavior_nb_rule(b))
+    {
+        rule* r = behavior_get_rule(b, i);
+
+        if(gtype->rule_match(arg, e, r)) 
+        {
+            return;
+        }
+    }
+}
+
+void game_set_entity_type(game* g, entity_type type)
+{
+    g->internal_mutable_state->current_entity->type = type;
 }

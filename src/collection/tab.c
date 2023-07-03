@@ -4,6 +4,8 @@ int  tab_get(tab* t, int idx) { return vec_get(t, tab_type, idx);}
 void tab_set(tab* t, int idx, int val) { vec_set(t, tab_type, idx, val); }
 int  tab_length(tab* t) { return t->length; }
 void tab_clear(tab* t, int val) { repeat(i, tab_length(t)) { tab_set(t, i, val); } }
+int  tab_first_value(tab* t) { return tab_get(t, 0);}
+
 
 tab* tab_create_one_value(int val)
 {
@@ -29,7 +31,7 @@ tab* tab_clone(tab* t)
     tab* copy = vec_empty(tab_type);
     repeat(i, tab_length(t))
     {
-        tab_set(copy, i, tab_get(t, i));
+        vec_add(copy, tab_type, tab_get(t, i));
     }
     return copy;
 }

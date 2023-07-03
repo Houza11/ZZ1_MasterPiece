@@ -91,8 +91,18 @@ void eggzagon_update(game_arg arg)
         mstate->is_walls[mstate->nb_tour%istate->nb_colonne][y_max] = true;
     }
 
-    //game_get_input(c,the_game,current_entity);
-    //entity_input
+    game_get_input(c,the_game, current_entity);
+
+    EGGZAGON_OUTPUT player_input = tab_first_value(entity_input);
+    
+    switch (player_input)
+    {
+        case EGGZAGON_OUTPUT_MOVE_RIGHT: mstate->player_posX++; break;
+        case EGGZAGON_OUTPUT_MOVE_LEFT : mstate->player_posX--; break;
+        default: break;
+    }
+    mstate->player_posX = (mstate->player_posX+istate->nb_colonne)%istate->nb_colonne;
+    //printf("%i\n", (, 0));
     //mstate->player_posX
 
     //todo;
@@ -102,16 +112,24 @@ void eggzagon_draw(game_arg arg)
 {
     get_game_state(eggzagon);
 
+    //float coef = draw_coef;
+
+    rectf area = rectanglef(0,0, istate->nb_colonne, istate->nb_ligne+1);
+    camera_push_focus_fullscreen(c, area);
+    
     repeat(x, istate->nb_colonne)
     {
         repeat(y, istate->nb_ligne)
         {
             pen_color(c, mstate->is_walls[x][y] ? color_red : color_white);
-            pen_rect(c, rectanglef(64*x, 64*y, 48, 48));
+            //pen_rect(c, rectanglef(64*x, -64*(y-coef), 48, 48));
+            pen_rect(c, rectanglef(x+0.05, y+0.05, 0.9, 0.9));
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(64* mstate->player_posX, 64*istate->nb_ligne, 48, 48));
+    pen_rect(c, rectanglef(mstate->player_posX, istate->nb_ligne, 1, 1));
+
+    camera_pop(c);
 }
 
 void eggzagon_draw_rule(game_arg arg, rule* r)

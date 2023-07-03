@@ -12,6 +12,7 @@ int  tab_get(tab* t, int idx);
 void tab_set(tab* t, int idx, int val);
 int  tab_length(tab* t);
 void tab_clear(tab* t, int val);
+int  tab_first_value(tab* t);
 
 tab* tab_create_one_value(int val);
 tab* tab_create(int size, int default_val);

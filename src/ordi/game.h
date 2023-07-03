@@ -35,6 +35,7 @@ struct game_mutable
     // currrent player or cpu input
     tab*    input;
     int     _nb_update;
+    float   draw_coef;
 };
 
 struct game
@@ -131,7 +132,8 @@ game* game_create_arg(
 
 game_arg game_arg_create(context* c, game* g);
 
-void  game_update(context* c, game* g);
+void  game_update(context* c, game* g, int ups);
+void  game_update_fixed(context* c, game* g);
 void  game_load(context* c, game* g);
 void  game_reset(context* c, game* g);
 void  game_unload(context* c, game* g);
@@ -144,5 +146,5 @@ void game_get_player_input(context* c, game* g, entity* e);
 bool game_rule_match(context* c, game* g, entity* e, rule* r);
 
 entity* game_optimize(context* c, game* g);
-
+void    game_set_entity_type(game* g, entity_type type);
 #endif

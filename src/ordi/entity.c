@@ -46,7 +46,7 @@ behavior* behavior_clone(behavior* b)
     behavior* copy = behavior_empty();
     repeat(i, behavior_nb_rule(b))
     {
-        behavior_add_rule(b, behavior_get_rule(b, i));
+        behavior_add_rule(copy, behavior_get_rule(b, i));
     }
     return copy;
 }
