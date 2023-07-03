@@ -20,8 +20,8 @@ bool camera_load(context* c)
 {
     camera_set_x(c, 0);
     camera_set_y(c, 0);
-    camera_set_scale_x(c, 1);
-    camera_set_scale_y(c, 1);
+    camera_set_scale_x(c, 32);
+    camera_set_scale_y(c, 32);
 
     bool allow = true;
     camera_allow_scrolling(c, allow);
