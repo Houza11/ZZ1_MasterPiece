@@ -6,19 +6,23 @@ typedef struct
    game* g;
 }state;
 
+#define current_game (s->g)
+
 void scene_jeu_load(argument arg)
 {
     obtenir_scene_state;
 
-    int nb_colonne = 4;
-    int nb_ligne   = 3;
+    int nb_colonne = 6;
+    int nb_ligne   = 4;
     int nb_entity = 10;
 
     // pour avoir 2 variables arg
     {
-        s->g = game_create(eggzagon, nb_colonne, nb_ligne, 1, EGGZAGON_OUTPUT_MOVE_RANGE, nb_entity);
-        
-        game_arg arg = game_arg_create(c, s->g);
+
+        current_game = game_create(eggzagon, nb_colonne, nb_ligne, 1, EGGZAGON_OUTPUT_MOVE_RANGE, nb_entity);
+
+        game_arg arg = game_arg_create(c, current_game);
+        game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
         get_game_state(eggzagon);
 
         game_immutable_state->nb_ligne = nb_ligne;
@@ -30,17 +34,13 @@ void scene_jeu_load(argument arg)
 void scene_jeu_unload(argument arg) 
 {
     obtenir_scene_state;
-    game_unload(c, s->g);
+    game_unload(c, current_game);
 }
 
 void scene_jeu_update(argument arg) 
 { 
     obtenir_scene_state;
-
-    if(c->nb_update % 60 == 0)
-    {
-        game_update(c, s->g);
-    }
+    game_update(c, current_game, 60);
 }
 
 void scene_jeu_draw(argument arg)
@@ -48,7 +48,7 @@ void scene_jeu_draw(argument arg)
     obtenir_scene_state;
     pen_text_at_center(c, "le jeu", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
 
-    game_draw(c, s->g);
+    game_draw(c, current_game);
 }
 
 bool scene_jeu_event (argument arg) 

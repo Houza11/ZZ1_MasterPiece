@@ -29,6 +29,7 @@ name ## _mutable_state * game_mutable_state = (name ## _mutable_state *)(the_gam
 name ## _draw_state * game_draw_state = (name ## _draw_state *)(the_game->draw_state);\
 bool need_reset = (gtype->is_loaded);\
 entity* current_entity = (imstate->current_entity);\
+float draw_coef = (imstate->draw_coef);\
 unused(arg);\
 unused(the_game);\
 unused(game_mutable_state);\
@@ -38,6 +39,7 @@ unused(game_intern_mutable);\
 unused(gtype);\
 unused(need_reset);\
 unused(current_entity);\
+unused(draw_coef);\
 unused(c);\
 
 /*

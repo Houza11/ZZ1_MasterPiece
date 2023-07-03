@@ -2,20 +2,23 @@
 #define CONTEXT_CAMERA_H
 #include "base.h"
 
-camera_state camera_state_create(float x, float y, float scale_x, float scale_y);
+camera_state camera_state_create(float x, float y, float scale_x, float scale_y, bool allow_scrolling, bool allow_zooming);
 camera_state camera_default();
 camera_state camera_get(context* c);
 void camera_set(context* c, camera_state s);
 void camera_push(context* c, camera_state state);
-void camera_push_absolute(context* c, camera_state state);
-void camera_pop();
+void camera_push_set(context* c, camera_state state);
+void camera_push_focus_fullscreen(context* c, rectf source);
+void camera_push_focus(context* c, rectf source, rectf dest);
+void camera_push_focus_centered(context* c, rectf source, rectf dest, float center_x_coef, float center_y_coef);
+void camera_pop(context* c);
 
 bool camera_load(context* c);
 void camera_unload(context* c);
 
 void camera_update(context* c);
 
-void camera_allow_zoom(context* c, bool b);
+void camera_allow_zooming(context* c, bool b);
 void camera_allow_scrolling(context* c, bool b);
 bool camera_event(context* c, event* ev);
 

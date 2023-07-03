@@ -1,23 +1,28 @@
 #include "base.h"
 
-float camera_x(context* c) { return c->camera_x; }
-float camera_y(context* c) { return c->camera_y;}
-float camera_scale_x(context* c) { return c->camera_scale_x;}
-float camera_scale_y(context* c) { return c->camera_scale_y;}
+#define current_state (vec_peek(c->cams, camera_state))
+#define first_state   (vec_get(c->cams, camera_state, 0))
 
-void camera_set_x(context* c, float v) { c->camera_x = v; }
-void camera_set_y(context* c, float v) { c->camera_y = v; }
+float camera_x(context* c) { return current_state.x; }
+float camera_y(context* c) { return current_state.y; }
+float camera_scale_x(context* c) { return current_state.scale_x; }
+float camera_scale_y(context* c) { return current_state.scale_y; }
+
+void camera_set_x(context* c, float v) { current_state.x = v; }
+void camera_set_y(context* c, float v) { current_state.y = v; }
 
 float camera_scale_range(float v)
 {
     float max_precision = 100.0f;
     return maxif(1/max_precision, minif(max_precision, v));
 }
-float camera_set_scale_x(context* c, float v) { c->camera_scale_x = camera_scale_range(v); return c->camera_scale_x; }
-float camera_set_scale_y(context* c, float v) { c->camera_scale_y = camera_scale_range(v); return c->camera_scale_y; }
+float camera_set_scale_x(context* c, float v) { current_state.scale_x = camera_scale_range(v); return current_state.scale_x; }
+float camera_set_scale_y(context* c, float v) { current_state.scale_y = camera_scale_range(v); return current_state.scale_y; }
 
 bool camera_load(context* c)
 {
+    c->cams = vec_empty(camera_state);
+    vec_push(c->cams, camera_state, camera_default());
     camera_set_x(c, 0);
     camera_set_y(c, 0);
     camera_set_scale_x(c, 1);
@@ -25,18 +30,26 @@ bool camera_load(context* c)
 
     bool allow = true;
     camera_allow_scrolling(c, allow);
-    camera_allow_zoom(c, allow);
+    camera_allow_zooming(c, allow);
     return true;
 }
 
-void camera_unload(context* c){ unused(c); }
+void camera_unload(context* c)
+{ 
+    vec_free_lazy(c->cams);
+    c->cams = null;
+}
 
 void camera_update(context* c)
 {
     if(camera_can_scroll(c) && c->mouse_left_button_down)
     {
-        c->camera_x -= c->mouse_delta_x/c->camera_scale_x;
-        c->camera_y -= c->mouse_delta_y/c->camera_scale_y;
+        //first_state
+        //first_state.x -= c->mouse_delta_x/first_state.scale_x;
+        //first_state.y -= c->mouse_delta_y/first_state.scale_y;
+
+        current_state.x -= c->mouse_delta_x/current_state.scale_x;
+        current_state.y -= c->mouse_delta_y/current_state.scale_y;
     }
 }
 
@@ -46,10 +59,10 @@ void camera_zoom(context* c, float center_pixel_x, float center_pixel_y, float c
     float center_coef_x = center_pixel_x /(float)window_width(c);
     float center_coef_y = center_pixel_y /(float)window_height(c);
 
-    float old_scale_x = c->camera_scale_x;
+    float old_scale_x = camera_scale_x(c);
 
-    float new_scale_x = camera_scale_range(c->camera_scale_x*coef);
-    float new_scale_y = camera_scale_range(c->camera_scale_y*coef);
+    float new_scale_x = camera_scale_range(camera_scale_x(c)*coef);
+    float new_scale_y = camera_scale_range(camera_scale_y(c)*coef);
 
     coef =  new_scale_x / old_scale_x;
 
@@ -104,35 +117,32 @@ bool camera_event(context* c, event* ev)
     return false;
 }
 
-void camera_allow_zoom(context* c, bool b)
+void camera_allow_zooming(context* c, bool b)
 {
-    c->camera_can_zoom = b;
+    current_state.can_zoom = b;
 }
 void camera_allow_scrolling(context* c, bool b)
 {
-    c->camera_can_scroll = b;
+    current_state.can_scroll = b;
 }
 
-bool camera_can_zoom(context* c) { return c->camera_can_zoom; }
-bool camera_can_scroll(context* c) { return c->camera_can_scroll; }
+bool camera_can_zoom(context* c) { return current_state.can_zoom; }
+bool camera_can_scroll(context* c) { return current_state.can_scroll; }
 
 camera_state camera_get(context* c)
 {   
-    camera_state s;
-    s.x = c->camera_x;
-    s.y = c->camera_y;
-    s.scale_x = c->camera_scale_x;
-    s.scale_y = c->camera_scale_y;
-    return s;
+    return current_state;
 }
 
-camera_state camera_state_create(float x, float y, float scale_x, float scale_y)
+camera_state camera_state_create(float x, float y, float scale_x, float scale_y, bool allow_scrolling, bool allow_zooming)
 {
     camera_state s;
     s.x = x;
     s.y = y;
     s.scale_x = scale_x;
     s.scale_y = scale_y;
+    s.can_scroll = allow_scrolling;
+    s.can_zoom   = allow_zooming;
     return s;
 }
 
@@ -146,31 +156,71 @@ void camera_set(context* c, camera_state s)
 
 camera_state camera_default()
 {
-    return camera_state_create(0,0,1,1);
+    return camera_state_create(0,0,1,1, false, false);
 }
 
-// relative
-void camera_push(context* c, camera_state state)
-{
-    unused(c);
-    unused(state);
-    todo;
-}
-
-void camera_push_absolute(context* c, camera_state state)
-{
-    unused(c);
-    unused(state);
-    todo;
-}
-
-void camera_pop()
-{
-    todo;
-}
 
 float camera_cam_pos_2_pixel_pos_x(context* c, float x) { return (x - camera_x(c))*camera_scale_x(c); }
 float camera_cam_pos_2_pixel_pos_y(context* c, float y) { return (y - camera_y(c))*camera_scale_y(c); }
 
 float camera_pixel_pos_2_cam_pos_x(context* c, float pos) { return pos/camera_scale_x(c)+camera_x(c); }
 float camera_pixel_pos_2_cam_pos_y(context* c, float pos) { return pos/camera_scale_y(c)+camera_y(c); }
+
+// relative
+void camera_push(context* c, camera_state state)
+{
+    unused(c);
+    vec_push(c->cams, camera_state, state);
+}
+
+void camera_push_set(context* c, camera_state state)
+{
+    unused(c);
+    vec_push(c->cams, camera_state, state);
+}
+
+void camera_pop(context* c)
+{
+    check(c->cams->length >= 1);
+    vec_remove_end(c->cams);
+}
+
+void camera_push_focus_fullscreen(context* c, rectf source)
+{
+    camera_push_focus(c, source, window_rectf(c));
+}
+
+void camera_push_focus(context* c, rectf source, rectf dest)
+{
+    camera_push_focus_centered(c, source, dest, 0.5, 0.5);
+}
+
+void camera_push_focus_centered(context* c, rectf source, rectf dest, float center_x_coef, float center_y_coef)
+{
+    float d_ratio_xy = window_ratio_width_div_height(c);
+    float s_ratio_xy = source.w/source.h;
+    unused(d_ratio_xy);
+    unused(s_ratio_xy);
+    unused(center_x_coef);
+    unused(center_y_coef);
+
+
+    float scale_x = (dest.w / source.w)*camera_scale_x(c);
+    float scale_y = (dest.h / source.h)*camera_scale_y(c);
+
+
+    float x = source.x + camera_x(c)*(camera_scale_x(c)/scale_x);
+    float y = source.y + camera_y(c)*(camera_scale_y(c)/scale_y);
+
+    /*
+    if(d_ratio_xy > s_ratio_xy)
+    {
+        //limited by Y
+    }else
+    {
+        //limited by X
+    }*/
+
+    camera_state cs = camera_state_create(x, y,scale_x,scale_y, camera_can_scroll(c), camera_can_zoom(c));
+    camera_push_set(c,cs);
+}

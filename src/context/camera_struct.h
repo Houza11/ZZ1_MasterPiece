@@ -8,5 +8,7 @@ struct camera_state
     float y;
     float scale_x;
     float scale_y;
+    bool can_scroll;
+    bool can_zoom;
 };
 #endif
