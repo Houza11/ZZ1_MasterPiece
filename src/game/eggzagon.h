@@ -4,8 +4,8 @@
 
 typedef int EGGZAGON_OUTPUT;
 #define EGGZAGON_OUTPUT_DO_NOTHINGS 0
-#define EGGZAGON_OUTPUT_MOVE_RIGHT  1
-#define EGGZAGON_OUTPUT_MOVE_LEFT   2
+#define EGGZAGON_OUTPUT_MOVE_UP  1
+#define EGGZAGON_OUTPUT_MOVE_DOWN   2
 
 #define EGGZAGON_OUTPUT_MOVE_RANGE  3
 
@@ -24,6 +24,9 @@ typedef struct
 } eggzagon_immutable_state;
 
 typedef int8 obstacle;
+#define EGG_OBSTACLE_NONE  0
+#define EGG_OBSTACLE_ARROW 1
+
 typedef struct
 {
     // is_wall[nb_colonne][nb_ligne] aka [x][y]
@@ -36,6 +39,10 @@ typedef struct
 typedef struct
 {
     int dummy;
+    texture* fond;
+    texture* fleche;
+
+    
 } eggzagon_draw_state;
 
 void eggzagon_load(game_arg arg);
