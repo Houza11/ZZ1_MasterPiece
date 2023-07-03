@@ -13,7 +13,7 @@ void scene_jeu_load(argument arg)
     obtenir_scene_state;
 
     int nb_colonne = 6;
-    int nb_ligne   = 4;
+    int nb_ligne   = EGG_NB_LIGNE;
     int nb_entity = 10;
 
     // pour avoir 2 variables arg
@@ -25,7 +25,6 @@ void scene_jeu_load(argument arg)
         game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
         get_game_state(eggzagon);
 
-        game_immutable_state->nb_ligne = nb_ligne;
         game_immutable_state->nb_colonne = nb_colonne;
         game_load(c, the_game);
     }

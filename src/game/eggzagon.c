@@ -1,15 +1,28 @@
 #include "base.h"
 
 
+bool inside_grid(game_arg arg, int ligne, int colonne)
+{
+    get_game_state(eggzagon);
+    return ligne >= 0 && ligne < EGG_NB_LIGNE && colonne >= 0 && colonne < egg_grid->length;
+}
+
 obstacle grid_get(game_arg arg, int ligne, int colonne)
 {
     get_game_state(eggzagon);
-    return (obstacle)vec_get(vec_get(egg_grid, vec*, colonne), obstacle, ligne);
+    if(inside_grid(arg, ligne, colonne))
+    {
+        return (obstacle)vec_get(vec_get(egg_grid, vec*, colonne), obstacle, ligne);
+    }else
+    {
+        return 0;
+    }
 }
 
 void grid_set(game_arg arg, int ligne, int colonne, obstacle val)
 {
     get_game_state(eggzagon);
+    check(inside_grid(arg, ligne, colonne));
     vec_set(vec_get(egg_grid, vec*, colonne), obstacle, ligne, val);
 }
 
@@ -23,13 +36,13 @@ void init_grid(game_arg arg)
 {
     get_game_state(eggzagon);
     egg_grid = vec_empty(vec*);
-    repeat(i, state_imut->nb_colonne)
+    //repeat(i, state_imut->nb_colonne)
+    while(egg_grid->length < 1000)
     {
-        vec* colonne = vec_empty(obstacle);
-        vec_push(egg_grid, vec*, colonne);
-        repeat(j, state_imut->nb_ligne)
+        int j = 0;
+        while(j < EGG_NB_LIGNE)
         {
-            vec_push(colonne, obstacle, 0);
+            j += pattern_add(arg, 0);
         }
     }
 }
@@ -112,7 +125,7 @@ void eggzagon_update(game_arg arg)
     if(egg_grid->length < istate->nb_colonne)
     {
         vec* colonne2add = vec_empty(obstacle);
-        repeat(i, istate->nb_ligne)
+        repeat(i, EGG_NB_LIGNE)
         {
             vec_push(colonne2add, obstacle, rand()%2);
         }
@@ -144,7 +157,7 @@ void eggzagon_draw(game_arg arg)
 
     //float coef = draw_coef;
 
-    rectf area = rectanglef(0,0, istate->nb_colonne+1, istate->nb_ligne+1);
+    rectf area = rectanglef(0,0, istate->nb_colonne+1, EGG_NB_LIGNE+1);
     camera_push_focus_fullscreen(c, area);
 
  repeat(x, istate->nb_colonne)
@@ -161,8 +174,7 @@ void eggzagon_draw(game_arg arg)
 
     repeat(x, istate->nb_colonne)
     {
-        
-        repeat(y, istate->nb_ligne)
+        repeat(y, EGG_NB_LIGNE)
         {
             
             //pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
@@ -176,7 +188,7 @@ void eggzagon_draw(game_arg arg)
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(0, mstate->player_pos_y, 1, 1));
+    pen_rect(c, rectanglef(mstate->player_pos_y, EGG_NB_LIGNE, 1, 1));
 
     camera_pop(c);
 
