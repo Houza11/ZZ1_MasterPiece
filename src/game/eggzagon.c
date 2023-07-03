@@ -111,7 +111,7 @@ void eggzagon_draw(game_arg arg)
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(64* mstate->player_posX, 64*(-1), 48, 48));
+    pen_rect(c, rectanglef(64* mstate->player_posX, 64*istate->nb_ligne, 48, 48));
 }
 
 void eggzagon_draw_rule(game_arg arg, rule* r)
