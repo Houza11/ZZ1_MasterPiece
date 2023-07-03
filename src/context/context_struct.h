@@ -53,12 +53,7 @@ typedef struct
     vec* /* of scene */ scenes;
     void* scene;
 
-    float  camera_x;
-    float  camera_y;
-    float  camera_scale_x;
-    float  camera_scale_y;
-    bool   camera_can_zoom;
-    bool   camera_can_scroll;
+    vec* /* of camera state */ cams;
 
     uint32 pen_mode;
     int    pen_nb_rectangle;

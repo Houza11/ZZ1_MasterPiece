@@ -91,7 +91,7 @@ void context_update(context* c)
         if(scene_event(c, (scene*)(c->scene), &ev)) { continue; }
         if(camera_event(c, &ev)) { continue; }
     }
-
+    
     input_update(c);
     camera_update(c);
     scene_update(c, (scene*)(c->scene));

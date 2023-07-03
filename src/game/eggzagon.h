@@ -2,12 +2,14 @@
 #define GAME_EGGZAGON
 #include "base.h"
 
+typedef int EGGZAGON_OUTPUT;
 #define EGGZAGON_OUTPUT_DO_NOTHINGS 0
 #define EGGZAGON_OUTPUT_MOVE_RIGHT  1
 #define EGGZAGON_OUTPUT_MOVE_LEFT   2
 
 #define EGGZAGON_OUTPUT_MOVE_RANGE  3
 
+typedef int EGGZAGON_INPUT;
 #define EGGZAGON_INPUT_OSEF 0
 
 typedef struct
