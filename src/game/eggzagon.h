@@ -14,6 +14,7 @@ typedef struct
 {
     int nb_ligne;
     int nb_colonne;
+    
 } eggzagon_immutable_state;
 
 typedef struct
