@@ -47,6 +47,10 @@ void eggzagon_load(game_arg arg)
     init_grid(arg);
 
     mstate->nb_tour = 0;
+    
+    dstate->fond = texture_create(c,"asset/fond.png");
+    dstate->fleche = texture_create(c,"asset/fleche.png");
+
     mstate->player_pos_y = 0;
     mstate->grille_x = 0;
 }
@@ -55,6 +59,8 @@ void eggzagon_load(game_arg arg)
 void eggzagon_unload(game_arg arg)
 {
     get_game_state(eggzagon);
+    texture_free(dstate->fleche);
+    texture_free(dstate->fond);
 
     repeat(i, egg_grid->length)
     {
@@ -121,8 +127,8 @@ void eggzagon_update(game_arg arg)
     
     switch (player_input)
     {
-        case EGGZAGON_OUTPUT_MOVE_RIGHT: mstate->player_pos_y++; break;
-        case EGGZAGON_OUTPUT_MOVE_LEFT : mstate->player_pos_y--; break;
+        case EGGZAGON_OUTPUT_MOVE_DOWN: mstate->player_pos_y++; break;
+        case EGGZAGON_OUTPUT_MOVE_UP : mstate->player_pos_y--; break;
         default: break;
     }
     mstate->player_pos_y = (mstate->player_pos_y+istate->nb_colonne)%istate->nb_colonne;
@@ -138,22 +144,43 @@ void eggzagon_draw(game_arg arg)
 
     //float coef = draw_coef;
 
-    rectf area = rectanglef(0,0, istate->nb_colonne, istate->nb_ligne+1);
+    rectf area = rectanglef(0,0, istate->nb_colonne+1, istate->nb_ligne+1);
     camera_push_focus_fullscreen(c, area);
+
+ repeat(x, istate->nb_colonne)
+    {
+        
+        repeat(y, istate->nb_ligne)
+        {
+            rect fond_rect = texture_rect(dstate->fond);
+            fond_rect.w /= 2;
+            if()
+            pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
+        }
+    }
 
     repeat(x, istate->nb_colonne)
     {
+        
         repeat(y, istate->nb_ligne)
         {
-            pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
+            
+            //pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
             //pen_rect(c, rectanglef(64*x, -64*(y-coef), 48, 48));
-            pen_rect(c, rectanglef(x+0.05, y+0.05, 0.9, 0.9));
+            //pen_rect(c, rectanglef(x+0.05, -y+0.05, 0.9, 0.9));
+            
+            if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
+            {
+                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x, y+istate->nb_ligne-1, 0.9, 0.9));
+            }
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(mstate->player_pos_y, istate->nb_ligne, 1, 1));
+    pen_rect(c, rectanglef(0, mstate->player_pos_y, 1, 1));
 
     camera_pop(c);
+
+    
 }
 
 void eggzagon_draw_rule(game_arg arg, rule* r)
@@ -170,14 +197,14 @@ void eggzagon_player_input(game_arg arg, entity* e)
 
     output_single_value(EGGZAGON_OUTPUT_DO_NOTHINGS);
 
-    if(input_right(c))
+    if(input_up(c))
     {
-        output_single_value(EGGZAGON_OUTPUT_MOVE_RIGHT);
+        output_single_value(EGGZAGON_OUTPUT_MOVE_UP);
         return;
     }
-    if(input_left(c))
+    if(input_down(c))
     {
-        output_single_value(EGGZAGON_OUTPUT_MOVE_LEFT);
+        output_single_value(EGGZAGON_OUTPUT_MOVE_DOWN);
         return;
     }
 }
