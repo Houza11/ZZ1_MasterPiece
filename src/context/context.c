@@ -18,6 +18,7 @@ context* context_create(char* window_name, int width, int height, Uint32 flags)
     if(pen_load(c) == false ) { return null; }
     if(scene_context_load(c) == false ) { return null; }
     if(input_load(c) == false ) { return null; }
+    if(timer_load(c) == false ) { return null; }
     
     global_state_load(c);
 
@@ -49,6 +50,7 @@ void contexte_free(context* c)
     camera_unload(c);
     window_unload(c);
     input_unload(c);
+    timer_unload(c);
 
     free(c);
 }
@@ -61,9 +63,8 @@ void context_update(context* c)
     // todo faire/dépalcer le fichier input dans context ?
 
     c->timer = from_ms(SDL_GetTicks());
+    timer_update(c);
     c->nb_update++;
-
-    
 
     SDL_Event ev;
     while(SDL_PollEvent(&ev))
@@ -80,10 +81,11 @@ void context_update(context* c)
         switch (ev.type)
         {
             case SDL_KEYDOWN:
-            case SDL_KEYUP:
             {
                 switch (ev.key.keysym.sym)
                 {
+                    // paused
+                    case SDLK_p: c->paused = !(c->paused);   continue;
                     case SDLK_ESCAPE: c->should_exit = true; continue;
                     default: break;
                 }
@@ -96,14 +98,20 @@ void context_update(context* c)
 
     input_update(c);
     camera_update(c);
-    scene_update(c, (scene*)(c->scene));
-    global_state_update(c);
+
+    if(c->paused == false)
+    {
+        scene_update(c, (scene*)(c->scene));
+        global_state_update(c);
+    }
 }
 
 void context_draw(context* c)
 {
     c->pen_nb_rectangle = 0;
+    global_state_draw(c);
     scene_draw(c, (scene*)(c->scene));
+    global_state_draw_foreground(c);
     SDL_RenderPresent(c->renderer);
 }
 

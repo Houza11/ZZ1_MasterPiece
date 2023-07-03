@@ -1,5 +1,9 @@
 #include "base.h"
 
+bool can_damage(int id)
+{
+    return id == EGG_OBSTACLE_ARROW;
+}
 
 bool inside_grid(game_arg arg, int ligne, int colonne)
 {
@@ -7,7 +11,8 @@ bool inside_grid(game_arg arg, int ligne, int colonne)
     return ligne >= 0 && ligne < egg_nb_ligne && colonne >= 0 && colonne < egg_grid->length;
 }
 
-obstacle grid_get(game_arg arg, int ligne, int colonne)
+// regular ge, the the origin of the grid
+obstacle grid_get_fixed(game_arg arg, int ligne, int colonne)
 {
     get_game_state(egg);
     if(inside_grid(arg, ligne, colonne))
@@ -17,6 +22,13 @@ obstacle grid_get(game_arg arg, int ligne, int colonne)
     {
         return 0;
     }
+}
+
+//relative to the player
+obstacle grid_get(game_arg arg, int ligne, int colonne)
+{
+    get_game_state(egg);
+    return grid_get_fixed(arg, ligne, colonne+mstate->player_x);
 }
 
 void grid_set(game_arg arg, int ligne, int colonne, obstacle val)
@@ -36,6 +48,11 @@ void init_grid(game_arg arg)
 {
     get_game_state(egg);
     egg_grid = vec_empty(vec*);
+
+    repeat(i, 10)
+    {
+        pattern_add_empty_line(arg);
+    }
     
     while(egg_grid->length < istate->nb_colonne)
     {
@@ -54,6 +71,9 @@ void egg_load(game_arg arg)
     if(need_reset)
     {
         todo;
+    }else
+    {
+        game_ordi_configure(the_game, egg_nb_ligne, EGG_INPUT_MAX_RANGE, 1, EGG_OUTPUT_MOVE_RANGE, 10);
     }
     //game_type->is_loaded
     istate->nb_colonne = 100;
@@ -108,40 +128,32 @@ void* egg_clone_mutable(game_arg arg)
     return (void*)copy;
 }
 
+void egg_set_default_input(game_arg arg)
+{
+    get_game_state(egg);
+    output_single_value(EGG_OUTPUT_DO_NOTHINGS);
+}
+
+bool check_receive_damage(game_arg arg, int offset_y, int offset_x)
+{
+    get_game_state(egg);
+    if(can_damage(grid_get(arg, ((mstate->player_y+offset_y)+egg_nb_ligne)%egg_nb_ligne, offset_x)))
+    {
+        gstate = GAME_STATE_GAME_OVER;
+        // game over
+        return true;
+    }
+    return false;
+}
+
+
 void egg_update(game_arg arg)
 {
     get_game_state(egg);
 
     if(gstate != GAME_STATE_RUNNING) return;
     
-    if(grid_get(arg, mstate->player_y, mstate->player_x) == EGG_OBSTACLE_ARROW)
-    {
-        gstate = GAME_STATE_GAME_OVER;
-        // game over
-    }
-
-    mstate->nb_tour++;
-
-    // les murs tombent
-
-    mstate->player_x++;
-
-    /*
-    vec_free_lazy(vec_get(egg_grid, vec*,  0));
-    vec_remove_at(egg_grid, 0);
-
-    if(egg_grid->length < istate->nb_colonne)
-    {
-        vec* colonne2add = vec_empty(obstacle);
-        repeat(i, egg_nb_ligne)
-        {
-            vec_push(colonne2add, obstacle, rand()%2);
-        }
-        vec_push(egg_grid, vec*, colonne2add);
-        // generer la grille
-        //todo;
-    }*/
-
+    egg_set_default_input(arg);
     game_get_input(c,the_game, current_entity);
 
     egg_output player_input = tab_first_value(entity_input);
@@ -149,14 +161,19 @@ void egg_update(game_arg arg)
     switch (player_input)
     {
         case EGG_OUTPUT_MOVE_DOWN: mstate->player_y++; break;
-        case EGG_OUTPUT_MOVE_UP : mstate->player_y--; break;
+        case EGG_OUTPUT_MOVE_UP  : mstate->player_y--; break;
         default: break;
     }
     mstate->player_y = (mstate->player_y+egg_nb_ligne)%egg_nb_ligne;
-    //printf("%i\n", (, 0));
-    //mstate->player_posX
+    if(check_receive_damage(arg, 0, 0)) return;
 
-    //todo;
+    mstate->player_x++;
+    mstate->nb_tour++;
+
+    if(check_receive_damage(arg, 0, 0)) return;
+
+    current_entity->score += 1;
+    
 }
 
 void egg_draw(game_arg arg)
@@ -177,7 +194,8 @@ void egg_draw(game_arg arg)
         {
             rect fond_rect = texture_rect(dstate->fond);
             fond_rect.w /= 2;
-            //if()
+            int parite = (x+y+mstate->nb_tour) % 2;
+            fond_rect.x = fond_rect.w *parite;
             pen_texture(c,dstate->fond,fond_rect,rectanglef(x-coef,y,1,1));
         }
     }
@@ -186,11 +204,7 @@ void egg_draw(game_arg arg)
     {
         repeat(y, nb_ligne)
         {
-            //pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
-            //pen_rect(c, rectanglef(64*x, -64*(y-coef), 48, 48));
-            //pen_rect(c, rectanglef(x+0.05, -y+0.05, 0.9, 0.9));
-            
-            if(grid_get(arg, y,x+mstate->player_x) == EGG_OBSTACLE_ARROW)
+            if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
             {
                 pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x-coef, y, 0.9, 0.9));
             }
@@ -199,15 +213,25 @@ void egg_draw(game_arg arg)
     pen_color(c, color_green);
     pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
 
-    camera_pop(c);
+    pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "%f", current_entity->score);
 
-    
+    camera_pop(c);
 }
 
-void egg_draw_rule(game_arg arg, rule* r)
+char egg_rule_output_to_char(int output)
 {
-    rule_printf(r);
+    return ">^v"[output];
+}
+char egg_rule_input_to_char(int input)
+{
+    return "X0123456789"[input];
+}
+
+void egg_draw_rule(game_arg arg, entity* e, rule* r, int idx)
+{
     get_game_state(egg);
+    unused(idx);
+    unused(e);
     unused(r);
 }
 
@@ -230,18 +254,47 @@ void egg_player_input(game_arg arg, entity* e)
     }
 }
 
-void egg_set_default_input(game_arg arg)
-{
-    get_game_state(egg);
-    output_single_value(EGG_OUTPUT_DO_NOTHINGS);
-}
+
 
 bool egg_rule_match(game_arg arg, entity* e, rule* r)
 {
     get_game_state(egg);
-    egg_set_default_input(arg);
+
+    tab_as_array(r->input, rule_in);
+    unused(rule_in_size);
+
+    repeat(y, egg_nb_ligne)
+    {
+        if(rule_in[y] == EGG_INPUT_OSEF) continue;
+
+        // distance pour le prochain osbtacle
+        int dx = EGG_INPUT_MAX_RANGE;
+        repeat(x, EGG_INPUT_MAX_RANGE) // -1 because of the Osef symbol
+        {
+            if(can_damage(grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x)))
+            {
+                dx = x;
+                break;;
+            }
+        }
+        //dx += 2; //d in [1, EGG_INPUT_MAX_RANGE]
+
+        if(dx >= rule_in[y])
+        {
+            return false;
+        }
+    }
+
+    // match
+    output_single_value(tab_first_value(r->output));
 
     unused(e);
     unused(r);
-    return false;
+    return true;
+}
+
+void egg_printf(game_arg arg)
+{
+    unused(arg);
+    printf("eggzagon game\n");
 }

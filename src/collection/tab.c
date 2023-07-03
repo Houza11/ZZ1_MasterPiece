@@ -13,6 +13,7 @@ tab* tab_create_one_value(int val)
 }
 tab* tab_create(int size, int default_val)
 {
+    check(size >= 0);
     tab* t = vec_empty(tab_type);
     repeat(i, size)
     {
@@ -28,26 +29,33 @@ void tab_free(tab* t)
 
 tab* tab_clone(tab* t)
 {
-    tab* copy = vec_empty(tab_type);
-    repeat(i, tab_length(t))
-    {
-        vec_add(copy, tab_type, tab_get(t, i));
-    }
-    return copy;
+    return vec_clone(t);
 }
 
 void tab_printf(tab* t)
 {
     printf("[");
-    if(tab_length(t) == 0) { printf("]\n"); return;}
+    if(tab_length(t) == 0) { printf("]"); return;}
     int i = 0;
     goto debut;
     while(i < tab_length(t))
     {
         printf(", ");
-        i++;
         debut:
         printf("%i", tab_get(t, i));
+        i++;
     }
-    printf("]\n");
+    printf("]");
+}
+
+void tab_printf_custom(tab* t, things_to_char_fn get_char)
+{
+    printf("[");
+    if(tab_length(t) == 0) { printf("]"); return;}
+    repeat(i, tab_length(t))
+    {
+        printf("%c", get_char(tab_get(t, i)));
+
+    }
+    printf("]");
 }

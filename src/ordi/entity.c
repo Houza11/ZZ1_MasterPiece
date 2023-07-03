@@ -1,29 +1,48 @@
 #include "base.h"
 
-rule* rule_create(int size)
+
+rule* rule_create(game* g)
+{
+    return rule_create_with_size(g->type->condition_input_size, g->type->condition_output_size);
+}
+
+rule* rule_create_with_size(int size_input, int size_ouput)
 {
     rule* r = create(rule);
-    r->input = tab_create(size, 0);
+    r->input  = tab_create(size_input, 0);
+    r->output = tab_create(size_ouput, 0);
     return r;
 }
 
 void rule_free(rule* r)
 {
     tab_free(r->input);
+    tab_free(r->output);
     free(r);
 }
 
 rule* rule_clone(rule* r)
 {
     rule* copy = create(rule);
-    copy->input = tab_clone(r->input);
+    copy->input  = tab_clone(r->input);
+    copy->output = tab_clone(r->output);
     copy->draw_dest = r->draw_dest;
     return copy;
 }
 
 void rule_printf(rule* r)
 {
-    tab_printf(r->input);
+    printf("input : "); tab_printf(r->input);
+    printf("ouput : "); tab_printf(r->output);
+    printf("\n");
+}
+
+void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn output)
+{
+    tab_printf_custom(r->input,  input);
+    printf(" => ");
+    tab_printf_custom(r->output, output);
+    printf("\n");
 }
 
 
@@ -112,18 +131,23 @@ void entity_init_random(game* g, entity* e)
     repeat(i, behavior_nb_rule(entity_behavior(e)))
     {
         rule* r = behavior_get_rule(entity_behavior(e), i);
-        repeat(j, tab_length( r->input))
+        repeat(j, tab_length(r->input))
         {
             tab_set(r->input, j, rand()% g->type->condition_input_max_range);
         }
+        repeat(j, tab_length(r->output))
+        {
+            tab_set(r->output, j, rand()% g->type->condition_output_max_range);
+        }
     }
+    
     e->score = 0;
 }
 
 entity* entity_create_ordi_random(game* g)
 {
     behavior* b = behavior_empty();
-    rule* r_default = rule_create(g->type->condition_input_size);
+    rule* r_default = rule_create(g);
 
     repeat(i, 1)
     {
@@ -140,6 +164,7 @@ entity* entity_create_ordi_random(game* g)
 entity* entity_create(entity_type type, behavior* b_will_be_cloned)
 {
     entity* e = create(entity);
+    e->id = 0;
     e->type = type;
     e->score = 0;
     e->_behavior = behavior_clone(b_will_be_cloned);

@@ -9,7 +9,11 @@ typedef int egg_output;
 #define EGG_OUTPUT_MOVE_RANGE  3
 
 typedef int egg_input;
-#define EGG_INPUT_OSEF 0
+// 0 : Don't Care
+// 1-3 : Range
+// 
+#define EGG_INPUT_OSEF      0
+#define EGG_INPUT_MAX_RANGE 4
 
 typedef struct
 {
@@ -52,7 +56,7 @@ void* egg_clone_mutable(game_arg arg);
 
 void egg_update(game_arg arg);
 void egg_draw(game_arg arg);
-void egg_draw_rule(game_arg arg, rule* r);
+void egg_draw_rule(game_arg arg, entity* e, rule* r, int idx);
 
 void egg_player_input(game_arg arg, entity* e);
 bool egg_rule_match(game_arg arg, entity* e, rule* r);
@@ -61,5 +65,9 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r);
 void grid_set(game_arg arg, int ligne, int colonne, obstacle val);
 obstacle grid_get(game_arg arg, int ligne, int colonne);
 void grid_push_colonne(game_arg arg, vec* v);
+
+char egg_rule_output_to_char(int output);
+char egg_rule_input_to_char(int input);
+void egg_printf(game_arg arg);
 
 #endif

@@ -5,7 +5,7 @@
 // en ms
 
 #define from_ms(ms) (ms)
-#define from_s(s)   (s/1000)
+#define from_s(s)   (s*1000)
 
 #define frequence_s(fps)   (1000/(fps))
 
@@ -17,5 +17,9 @@
 
 time timer_since_launch(context* c);
 time timer_scene(context* c);
+
+bool timer_load(context* c);
+void timer_unload(context* c);
+void timer_update(context* c);
 
 #endif

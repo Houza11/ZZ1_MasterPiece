@@ -1,5 +1,39 @@
 #include "base.h"
 
+void game_ordi_configure(game* g,
+    int condition_input_size,
+    int condition_input_max_range,
+    int condition_output_size,
+    int condition_output_max_range,
+    int nb_behavior)
+{
+    game_type* t = g->type;
+    game_mutable* m = g->internal_mutable_state;
+
+    if(t->condition_input_max_range != -1)
+    {
+        debug;
+        printf("Jeu déjà configurer\n");
+        return;
+    }
+
+    check(nb_behavior >= 1);
+    check(condition_input_size >= 1);
+    check(condition_input_max_range >= 1);
+    check(condition_output_size >= 1);
+    check(condition_output_max_range >= 1);
+
+
+    t->condition_input_size = condition_input_size;
+    t->condition_input_max_range = condition_input_max_range;
+    t->condition_output_size = condition_output_size;
+    t->condition_output_max_range = condition_output_max_range;
+    t->nb_behavior = nb_behavior;
+
+    m->input = tab_create(condition_output_size, 0);
+    m->current_entity = entity_create_ordi_random(g);
+}
+
 game* game_create_arg(
     context* c,
     size_t sizeof_immutable_state,
@@ -14,20 +48,12 @@ game* game_create_arg(
     game_fn unload,
     game_get_input_fn player_input,
     game_rule_match_fn rule_match,
-    int condition_input_size,
-    int condition_input_max_range,
-    int condition_output_size,
-    int condition_output_max_range,
-    int nb_behavior)
+    things_to_char_fn input_to_char,
+    things_to_char_fn output_to_char,
+    game_fn printf
+    )
 {
-    check(nb_behavior >= 1);
-    check(condition_input_size >= 1);
-    check(condition_input_max_range >= 1);
-    check(condition_output_size >= 1);
-    check(condition_output_max_range >= 1);
-
     game* g = create(game);
-
     {
         g->type = create(game_type);
         g->internal_mutable_state = create(game_mutable);
@@ -53,24 +79,24 @@ game* game_create_arg(
         t->player_input = player_input;
         t->rule_match = rule_match;
 
-        t->condition_input_size = condition_input_size;
-        t->condition_input_max_range = condition_input_max_range;
-        t->condition_output_size = condition_output_size;
-        t->condition_output_max_range = condition_output_max_range;
+        t->input_to_char  = input_to_char;
+        t->output_to_char = output_to_char;
+        t->printf = printf;
 
         t->maximize_score = true;
         t->best_entity = null;
-        t->nb_behavior = nb_behavior;
         t->is_loaded = false;
+
+        t->condition_input_size = -1;
+        t->condition_input_max_range = -1;
+        t->condition_output_size = -1;
+        t->condition_output_max_range = -1;
+        t->nb_behavior = -1;
     }
 
     {
         m->draw_dest = window_rectf(c);
-        m->state = GAME_STATE_RUNNING;
-        
-        m->current_entity = entity_create_ordi_random(g);
-
-        m->input = tab_create(condition_output_size, 0);
+        m->state = GAME_STATE_RUNNING;        
         m->_nb_update = 0;
     }
     return g;
@@ -117,7 +143,9 @@ void game_load(context* c, game* g)
     //check(gtype->is_loaded == false);
     gtype->load(arg);
     g->internal_mutable_state->draw_coef = 0;
+    g->internal_mutable_state->state = GAME_STATE_RUNNING;
     gtype->is_loaded = true;
+    
 }
 
 void game_internal_mutable_free(game_mutable* mut)
@@ -166,18 +194,6 @@ void game_unload(context* c, game* g)
     //todo;
 }
 
-void game_draw(context* c, game* g)
-{
-    check(gtype->is_loaded == true);
-    gtype->draw(arg);
-}
-
-void game_draw_rule(context* c, game* g, rule* r)
-{
-    check(gtype->is_loaded == true);
-    gtype->draw_rule(arg, r);
-}
-
 game_mutable* game_internal_mutable_clone(game_mutable* mut)
 {
     game_mutable* copy = create(game_mutable);
@@ -187,6 +203,36 @@ game_mutable* game_internal_mutable_clone(game_mutable* mut)
     copy->current_entity = entity_clone(mut->current_entity);
     copy->state = mut->state;
     return copy;
+}
+
+#define current_entity (g->internal_mutable_state->current_entity)
+
+void game_printf(context* c, game* g)
+{
+    printf("\n\n");
+    gtype->printf(arg);
+    printf("entity %i : score %.1f, is ordi %i\n", current_entity->id, current_entity->score, current_entity->type == ENTITY_TYPE_ORDI);
+    behavior* b = entity_behavior(current_entity);
+    repeat(i, behavior_nb_rule(b))
+    {
+        rule* r = behavior_get_rule(b, i);
+        rule_printf_custom(r, gtype->input_to_char, gtype->output_to_char);
+    }
+}
+
+void game_draw(context* c, game* g)
+{
+    check(gtype->is_loaded == true);
+    gtype->draw(arg);
+
+    if(current_entity->type == ENTITY_TYPE_ORDI)
+    {
+        behavior* b = entity_behavior(current_entity);
+        repeat(i, behavior_nb_rule(b))
+        {
+            gtype->draw_rule(arg, current_entity, behavior_get_rule(b, i), i);
+        }
+    }
 }
 
 game* game_clone(context* c, game* g)
@@ -239,5 +285,5 @@ void game_get_input(context* c, game* g, entity* e)
 
 void game_set_entity_type(game* g, entity_type type)
 {
-    g->internal_mutable_state->current_entity->type = type;
+    current_entity->type = type;
 }
