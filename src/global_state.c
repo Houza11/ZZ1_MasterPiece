@@ -52,12 +52,7 @@ bool global_state_event(context* c, event* ev)
             {
                 case SDLK_ESCAPE: c->should_exit = true; break;
                 case SDLK_r: scene_set(c, jeu); return true;
-                case SDLK_d: 
-                    scene_printf(c, (scene*)(c->scene));
-                    global_state_new_get_graph(c);
-                return true;
-                // menu Principal
-                case SDLK_p: scene_set(c, titre); return true;
+                case SDLK_d: scene_printf(c, (scene*)(c->scene)); return true;
                 default: break;
             }
         } break;
