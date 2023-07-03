@@ -147,19 +147,31 @@ void eggzagon_draw(game_arg arg)
     rectf area = rectanglef(0,0, istate->nb_colonne+1, istate->nb_ligne+1);
     camera_push_focus_fullscreen(c, area);
 
-    repeat(x, istate->nb_colonne)
+ repeat(x, istate->nb_colonne)
     {
+        
         repeat(y, istate->nb_ligne)
         {
-            pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
+            rect fond_rect = texture_rect(dstate->fond);
+            fond_rect.w /= 2;
+            if()
+            pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
+        }
+    }
+
+    repeat(x, istate->nb_colonne)
+    {
+        
+        repeat(y, istate->nb_ligne)
+        {
+            
+            //pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
             //pen_rect(c, rectanglef(64*x, -64*(y-coef), 48, 48));
             //pen_rect(c, rectanglef(x+0.05, -y+0.05, 0.9, 0.9));
-            texture_rectf(dstate->fleche);
-            texture_rectf(dstate->fond);
-            pen_texture(c,dstate->fond,texture_rect(dstate->fond),rectanglef(0,0,100,100));
+            
             if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
             {
-                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x+0.05+1, -y+0.05, 0.9, 0.9));
+                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x, y+istate->nb_ligne-1, 0.9, 0.9));
             }
         }
     }
