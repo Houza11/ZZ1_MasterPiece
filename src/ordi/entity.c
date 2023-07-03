@@ -92,7 +92,8 @@ void behavior_remove_rule(behavior* b, int idx)
 
 void behavior_add_rule(behavior* b, rule* r_will_be_copied)
 {
-    behavior_set_rule(b, behavior_nb_rule(b)-1, r_will_be_copied);
+    vec_add(b->rules, rule*, rule_clone(r_will_be_copied));
+    //behavior_set_rule(b, behavior_nb_rule(b)-1, r_will_be_copied);
 }
 void behavior_printf(behavior* b)
 {
@@ -106,7 +107,35 @@ void behavior_printf(behavior* b)
 }
 
 
+void entity_init_random(game* g, entity* e)
+{
+    repeat(i, behavior_nb_rule(entity_behavior(e)))
+    {
+        rule* r = behavior_get_rule(entity_behavior(e), i);
+        repeat(j, tab_length( r->input))
+        {
+            tab_set(r->input, j, rand()% g->type->condition_input_max_range);
+        }
+    }
+    e->score = 0;
+}
 
+entity* entity_create_ordi_random(game* g)
+{
+    behavior* b = behavior_empty();
+    rule* r_default = rule_create(g->type->condition_input_size);
+
+    repeat(i, 1)
+    {
+        behavior_add_rule(b, r_default);
+    }
+
+    entity* result = entity_create(ENTITY_TYPE_ORDI, b);
+    behavior_free(b);
+    rule_free(r_default);
+    entity_init_random(g, result);
+    return result;
+}
 
 entity* entity_create(entity_type type, behavior* b_will_be_cloned)
 {

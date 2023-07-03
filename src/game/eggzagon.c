@@ -4,6 +4,12 @@ void eggzagon_load(game_arg arg)
 {
     get_game_state(eggzagon);
 
+    if(need_reset)
+    {
+        todo;
+    }
+    //game_type->is_loaded
+
     mstate->is_walls = create_array(bool*, istate->nb_colonne);
     repeat(i, state_imut->nb_colonne)
     {
@@ -12,7 +18,6 @@ void eggzagon_load(game_arg arg)
         {
             mstate->is_walls[i][j] = false;
         }
-
     }
     mstate->nb_tour = 0;
     mstate->player_posX = 0;
@@ -85,6 +90,10 @@ void eggzagon_update(game_arg arg)
     {
         mstate->is_walls[mstate->nb_tour%istate->nb_colonne][y_max] = true;
     }
+
+    //game_get_input(c,the_game,current_entity);
+    //entity_input
+    //mstate->player_posX
 
     //todo;
 }

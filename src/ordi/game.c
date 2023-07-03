@@ -28,25 +28,16 @@ game* game_create_arg(
 
     game* g = create(game);
 
-    
     {
         g->type = create(game_type);
         g->internal_mutable_state = create(game_mutable);
-        g->mutable_state   = create_array(byte, sizeof_mutable_state);
-        g->immutable_state = create_array(byte, sizeof_immutable_state);
-        g->draw_state      = create_array(byte, sizeof_draw_state);
+        g->mutable_state   = calloc(sizeof_mutable_state,1);
+        g->immutable_state = calloc(sizeof_immutable_state,1);
+        g->draw_state      = calloc(sizeof_draw_state,1);
     }
 
     game_type* t = g->type;
     game_mutable* m = g->internal_mutable_state;
-
-    {
-        m->draw_dest = window_rectf(c);
-        m->state = GAME_STATE_RUNNING;
-        m->current_ordi = null;
-        m->input = tab_create(condition_output_size, 0);
-        m->_nb_update = 0;
-    }
 
     {
         t->load = load;
@@ -72,6 +63,16 @@ game* game_create_arg(
         t->nb_behavior = nb_behavior;
         t->is_loaded = false;
     }
+
+    {
+        m->draw_dest = window_rectf(c);
+        m->state = GAME_STATE_RUNNING;
+        
+        m->current_entity = null;//entity_create_ordi_random(g);
+
+        m->input = tab_create(condition_output_size, 0);
+        m->_nb_update = 0;
+    }
     return g;
 }
 
@@ -94,16 +95,21 @@ void game_update(context* c, game* g)
     gtype->update(arg);
 }
 
+void game_reset(context* c, game* g)
+{
+    game_load(c, g);
+}
+
 void game_load(context* c, game* g)
 {
-    check(gtype->is_loaded == false);
-    gtype->is_loaded = true;
+    //check(gtype->is_loaded == false);
     gtype->load(arg);
+    gtype->is_loaded = true;
 }
 
 void game_internal_mutable_free(game_mutable* mut)
 {
-    entity_free(mut->current_ordi);
+    entity_free(mut->current_entity);
     tab_free(mut->input);
     free(mut);
 }
@@ -165,7 +171,7 @@ game_mutable* game_internal_mutable_clone(game_mutable* mut)
     copy->_nb_update = mut->_nb_update;
     copy->draw_dest = mut->draw_dest;
     copy->input = tab_clone(copy->input);
-    copy->current_ordi = entity_clone(mut->current_ordi);
+    copy->current_entity = entity_clone(mut->current_entity);
     copy->state = mut->state;
     return copy;
 }
@@ -186,7 +192,7 @@ game* game_clone(context* c, game* g)
 
 void game_get_player_input(context* c, game* g, entity* e)
 {
-    check(gtype->is_loaded == true);
+    check(gtype->is_loaded == true && e->type == ENTITY_TYPE_PLAYER);
     gtype->player_input(arg, e);
 }
 
@@ -194,4 +200,14 @@ bool game_rule_match(context* c, game* g, entity* e, rule* r)
 {
     check(gtype->is_loaded == true);
     return gtype->rule_match(arg, e, r);
+}
+
+void game_get_input(context* c, game* g, entity* e)
+{
+    if(e->type == ENTITY_TYPE_PLAYER)
+    {
+        game_get_player_input(c,g,e);
+        return;
+    }
+    todo;
 }

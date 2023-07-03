@@ -14,7 +14,6 @@
 // internal mutable state
 #define imstate  game_intern_mutable
 
-
 #define gstate imstate->state
 
 #define entity_input (game_intern_mutable->input)
@@ -24,19 +23,27 @@
 context* c = (arg.c);\
 game* the_game = (arg.g);\
 game_mutable* game_intern_mutable = the_game->internal_mutable_state;\
-game_type* game_type = the_game->type;\
+game_type* gtype = the_game->type;\
 name ## _immutable_state * game_immutable_state = (name ## _immutable_state *)(the_game->immutable_state);\
 name ## _mutable_state * game_mutable_state = (name ## _mutable_state *)(the_game->mutable_state);\
 name ## _draw_state * game_draw_state = (name ## _draw_state *)(the_game->draw_state);\
+bool need_reset = (gtype->is_loaded);\
+entity* current_entity = (imstate->current_entity);\
 unused(arg);\
 unused(the_game);\
 unused(game_mutable_state);\
 unused(game_draw_state);\
 unused(game_immutable_state);\
 unused(game_intern_mutable);\
-unused(game_type);\
+unused(gtype);\
+unused(need_reset);\
+unused(current_entity);\
 unused(c);\
 
+/*
+tab* entity_input = (imstate->input);\
+
+unused(entity_input);\*/
 
 // recupère : scene* sce, state* s, scene_info* info, event* ev , (+ malloc également automatiquement la structure nommé "state" et l'associe à la scene)
 #define obtenir_game_state get_game_state
