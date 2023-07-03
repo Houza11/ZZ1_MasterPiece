@@ -12,6 +12,7 @@ typedef int EGGZAGON_OUTPUT;
 typedef int EGGZAGON_INPUT;
 #define EGGZAGON_INPUT_OSEF 0
 
+#define EGG_NB_COLONNE (istate->nb_colonne)
 #define EGG_NB_LIGNE 5
 
 
@@ -32,8 +33,8 @@ typedef struct
     // is_wall[nb_colonne][nb_ligne] aka [x][y]
     //bool** is_walls;
     int nb_tour;
-    int player_pos_y;
-    int grille_x;
+    int player_y;
+    int player_x;
 } eggzagon_mutable_state;
 
 typedef struct
@@ -61,6 +62,6 @@ bool eggzagon_rule_match(game_arg arg, entity* e, rule* r);
 
 void grid_set(game_arg arg, int ligne, int colonne, obstacle val);
 obstacle grid_get(game_arg arg, int ligne, int colonne);
-void grid_push_colonne(game_arg arg, vec* colonne_will_be_copied);
+void grid_push_colonne(game_arg arg, vec* v);
 
 #endif
