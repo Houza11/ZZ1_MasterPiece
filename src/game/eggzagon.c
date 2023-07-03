@@ -29,7 +29,7 @@ void grid_set(game_arg arg, int ligne, int colonne, obstacle val)
 void grid_push_colonne(game_arg arg, vec* v)
 {
     get_game_state(eggzagon);
-    vec_push(egg_grid, vec*, vec_clone(v));
+    vec_push(egg_grid, vec*, v);
 }
 
 void init_grid(game_arg arg)
