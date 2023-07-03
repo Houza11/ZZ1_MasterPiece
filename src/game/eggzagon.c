@@ -98,11 +98,11 @@ void eggzagon_draw(game_arg arg)
         repeat(y, istate->nb_ligne)
         {
             pen_color(c, mstate->is_walls[x][y] ? color_red : color_white);
-            pen_rect(c, rectanglef(64*x, 64*y, 48, 48));
+            pen_rect(c, rectanglef(64*x, -64*y, 48, 48));
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(64* mstate->player_posX, 64*istate->nb_ligne, 48, 48));
+    pen_rect(c, rectanglef(64* mstate->player_posX, 64, 48, 48));
 }
 
 void eggzagon_draw_rule(game_arg arg, rule* r)
