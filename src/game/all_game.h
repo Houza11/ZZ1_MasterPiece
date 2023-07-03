@@ -51,3 +51,5 @@ unused(entity_input);\*/
 #define obtenir_game_state get_game_state
 
 #include "eggzagon.h"
+
+#include "obstacle.h"

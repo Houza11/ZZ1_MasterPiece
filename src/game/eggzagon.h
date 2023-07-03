@@ -12,11 +12,13 @@ typedef int EGGZAGON_OUTPUT;
 typedef int EGGZAGON_INPUT;
 #define EGGZAGON_INPUT_OSEF 0
 
+#define EGG_NB_LIGNE 5
+
+
 #define egg_grid (istate->grid)
 
 typedef struct
 {
-    int nb_ligne;
     int nb_colonne;
     vec* /* of vec* of eggzagon_obstacle */ grid;
 } eggzagon_immutable_state;

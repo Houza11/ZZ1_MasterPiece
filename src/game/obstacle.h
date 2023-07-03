@@ -1,5 +1,5 @@
-#ifndef GAME_WALL
-#define GAME_WALL
+#ifndef GAME_OBSTACLE
+#define GAME_OBSTACLE
 #include "base.h"
 
 typedef struct pattern
@@ -8,6 +8,6 @@ typedef struct pattern
     obstacle** data;
 } pattern;
 
-//pattern* pattern_shift(pattern* p);
+int pattern_add(game_arg arg, int id_pattern);
 
 #endif
