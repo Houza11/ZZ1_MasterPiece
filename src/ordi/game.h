@@ -20,7 +20,7 @@ typedef void  (*game_get_input_fn)(game_arg arg, entity* e);
 typedef bool  (*game_rule_match_fn)(game_arg arg, entity* e, rule* r);
 
 #define GAME_STATE_RUNNING             0
-#define GAME_STATE_END_OF_GAME         1
+#define GAME_STATE_GAME_OVER           1
 #define GAME_STATE_REACH_MAX_RECURSION 2
 
 // internal mutable state

@@ -36,7 +36,7 @@ void init_grid(game_arg arg)
 {
     get_game_state(eggzagon);
     egg_grid = vec_empty(vec*);
-   
+    
     while(egg_grid->length < 1000)
     {
         int j = 0;
@@ -115,6 +115,12 @@ void eggzagon_update(game_arg arg)
 
     if(gstate != GAME_STATE_RUNNING) return;
     
+    if(grid_get(arg, mstate->player_y, mstate->player_x) == EGG_OBSTACLE_ARROW)
+    {
+        gstate = GAME_STATE_GAME_OVER;
+        // game over
+    }
+
     mstate->nb_tour++;
 
     // les murs tombent
