@@ -63,6 +63,8 @@ void context_update(context* c)
     c->timer = from_ms(SDL_GetTicks());
     c->nb_update++;
 
+    
+
     SDL_Event ev;
     while(SDL_PollEvent(&ev))
     {
@@ -91,7 +93,7 @@ void context_update(context* c)
         if(scene_event(c, (scene*)(c->scene), &ev)) { continue; }
         if(camera_event(c, &ev)) { continue; }
     }
-    
+
     input_update(c);
     camera_update(c);
     scene_update(c, (scene*)(c->scene));
