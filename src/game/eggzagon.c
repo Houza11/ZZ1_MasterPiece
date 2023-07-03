@@ -26,23 +26,23 @@ void grid_set(game_arg arg, int ligne, int colonne, obstacle val)
     vec_set(vec_get(egg_grid, vec*, colonne), obstacle, ligne, val);
 }
 
-void grid_push_colonne(game_arg arg, vec* colonne_will_be_copied)
+void grid_push_colonne(game_arg arg, vec* v)
 {
     get_game_state(eggzagon);
-    vec_push(egg_grid, vec*, vec_clone(colonne_will_be_copied));
+    vec_push(egg_grid, vec*, vec_clone(v));
 }
 
 void init_grid(game_arg arg)
 {
     get_game_state(eggzagon);
     egg_grid = vec_empty(vec*);
-    //repeat(i, state_imut->nb_colonne)
+   
     while(egg_grid->length < 1000)
     {
         int j = 0;
         while(j < EGG_NB_LIGNE)
         {
-            j += pattern_add(arg, 0);
+            j += pattern_add(arg, -1);
         }
     }
 }
@@ -64,8 +64,8 @@ void eggzagon_load(game_arg arg)
     dstate->fond = texture_create(c,"asset/fond.png");
     dstate->fleche = texture_create(c,"asset/fleche.png");
 
-    mstate->player_pos_y = 0;
-    mstate->grille_x = 0;
+    mstate->player_y = 0;
+    mstate->player_x = 0;
 }
 
 // décharge tout sauf le mutable state
@@ -103,8 +103,8 @@ void* eggzagon_clone_mutable(game_arg arg)
     }*/
 
     copy->nb_tour = mstate->nb_tour;
-    copy->player_pos_y = mstate->player_pos_y;
-    copy->grille_x = mstate->grille_x;
+    copy->player_y = mstate->player_y;
+    copy->player_x = mstate->player_x;
 
     return (void*)copy;
 }
@@ -119,6 +119,9 @@ void eggzagon_update(game_arg arg)
 
     // les murs tombent
 
+    mstate->player_x++;
+
+    /*
     vec_free_lazy(vec_get(egg_grid, vec*,  0));
     vec_remove_at(egg_grid, 0);
 
@@ -132,7 +135,7 @@ void eggzagon_update(game_arg arg)
         vec_push(egg_grid, vec*, colonne2add);
         // generer la grille
         //todo;
-    }
+    }*/
 
     game_get_input(c,the_game, current_entity);
 
@@ -140,11 +143,11 @@ void eggzagon_update(game_arg arg)
     
     switch (player_input)
     {
-        case EGGZAGON_OUTPUT_MOVE_DOWN: mstate->player_pos_y++; break;
-        case EGGZAGON_OUTPUT_MOVE_UP : mstate->player_pos_y--; break;
+        case EGGZAGON_OUTPUT_MOVE_DOWN: mstate->player_y++; break;
+        case EGGZAGON_OUTPUT_MOVE_UP : mstate->player_y--; break;
         default: break;
     }
-    mstate->player_pos_y = (mstate->player_pos_y+istate->nb_colonne)%istate->nb_colonne;
+    mstate->player_y = (mstate->player_y+EGG_NB_LIGNE)%EGG_NB_LIGNE;
     //printf("%i\n", (, 0));
     //mstate->player_posX
 
@@ -155,40 +158,41 @@ void eggzagon_draw(game_arg arg)
 {
     get_game_state(eggzagon);
 
-    //float coef = draw_coef;
+    float coef = draw_coef;
 
-    rectf area = rectanglef(0,0, istate->nb_colonne+1, EGG_NB_LIGNE+1);
+    int nb_ligne = EGG_NB_LIGNE;
+    int nb_colonne = 3*EGG_NB_LIGNE;
+
+    rectf area = rectanglef(0,0, nb_colonne, nb_ligne);
     camera_push_focus_fullscreen(c, area);
 
- repeat(x, istate->nb_colonne)
+    repeat(x, nb_colonne)
     {
-        
-        repeat(y, istate->nb_ligne)
+        repeat(y, nb_ligne)
         {
             rect fond_rect = texture_rect(dstate->fond);
             fond_rect.w /= 2;
-            if()
-            pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
+            //if()
+            pen_texture(c,dstate->fond,fond_rect,rectanglef(x-coef,y,1,1));
         }
     }
 
-    repeat(x, istate->nb_colonne)
+    repeat(x, nb_colonne)
     {
-        repeat(y, EGG_NB_LIGNE)
+        repeat(y, nb_ligne)
         {
-            
             //pen_color(c, grid_get(arg, y, x) ? color_red : color_white);
             //pen_rect(c, rectanglef(64*x, -64*(y-coef), 48, 48));
             //pen_rect(c, rectanglef(x+0.05, -y+0.05, 0.9, 0.9));
             
-            if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
+            if(grid_get(arg, y,x+mstate->player_x) == EGG_OBSTACLE_ARROW)
             {
-                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x, y+istate->nb_ligne-1, 0.9, 0.9));
+                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x-coef, y, 0.9, 0.9));
             }
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(mstate->player_pos_y, EGG_NB_LIGNE, 1, 1));
+    pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
 
     camera_pop(c);
 

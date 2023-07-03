@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
     scene_set(c, jeu);
     //scene_set(c, titre);
 
-
+    
     while (!c->should_exit)
     {
         context_update(c);
