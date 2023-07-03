@@ -9,7 +9,9 @@ void copy_pattern(game_arg arg, obstacle p[][EGG_NB_LIGNE], int size)
         vec* line = vec_empty(obstacle);
         for (int j = 0; j < EGG_NB_LIGNE; j++)
         {
-            vec_push(line, obstacle, p[i][j]);
+            int a = p[i][j];
+            if (a < 0) { a = 0;}
+            vec_push(line, obstacle, a);
         }
         grid_push_colonne(arg, line);
     }
