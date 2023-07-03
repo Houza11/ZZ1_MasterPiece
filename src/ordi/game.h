@@ -23,13 +23,14 @@ typedef bool  (*game_rule_match_fn)(game_arg arg, entity* e, rule* r);
 #define GAME_STATE_END_OF_GAME         1
 #define GAME_STATE_REACH_MAX_RECURSION 2
 
+// internal mutable state
 struct game_mutable
 {
     // mutable data
     game_state state;
     rectf draw_dest;
 
-    entity* current_ordi;
+    entity* current_entity;
 
     // currrent player or cpu input
     tab*    input;
@@ -132,6 +133,7 @@ game_arg game_arg_create(context* c, game* g);
 
 void  game_update(context* c, game* g);
 void  game_load(context* c, game* g);
+void  game_reset(context* c, game* g);
 void  game_unload(context* c, game* g);
 void  game_draw(context* c, game* g);
 void  game_draw_rule(context* c, game* g, rule* r);

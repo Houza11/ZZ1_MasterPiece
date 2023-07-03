@@ -16,7 +16,8 @@ void scene_jeu_load(argument arg)
 
     // pour avoir 2 variables arg
     {
-        s->g = game_create(eggzagon, nb_colonne, nb_ligne, 1, nb_ligne, nb_entity);
+        s->g = game_create(eggzagon, nb_colonne, nb_ligne, 1, EGGZAGON_OUTPUT_MOVE_RANGE, nb_entity);
+        
         game_arg arg = game_arg_create(c, s->g);
         get_game_state(eggzagon);
 

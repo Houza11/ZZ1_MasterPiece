@@ -43,7 +43,9 @@ struct entity
 };
 
 entity* entity_create(entity_type type, behavior* b_will_be_cloned);
+entity* entity_create_ordi_random(game* g);
 entity* entity_clone(entity* e);
+void entity_init_random(game* g, entity* e);
 void entity_behavior_set(entity* e, behavior* b_will_be_cloned);
 void entity_free(entity* e);
 behavior* entity_behavior(entity* e);
