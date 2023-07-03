@@ -29,6 +29,10 @@ typedef struct
 typedef struct
 {
     int dummy;
+    texture* fond;
+    texture* fleche;
+
+    
 } eggzagon_draw_state;
 
 void eggzagon_load(game_arg arg);

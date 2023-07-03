@@ -21,12 +21,17 @@ void eggzagon_load(game_arg arg)
     }
     mstate->nb_tour = 0;
     mstate->player_posX = 0;
+    dstate->fond = texture_create(c,"asset/fond.png");
+    dstate->fleche = texture_create(c,"asset/fleche.png");
+
 }
 
 // décharge tout sauf le mutable state
 void eggzagon_unload(game_arg arg)
 {
     get_game_state(eggzagon);
+    texture_free(dstate->fleche);
+    texture_free(dstate->fond);
 }
 
 void eggzagon_unload_mutable(game_arg arg)
@@ -123,13 +128,25 @@ void eggzagon_draw(game_arg arg)
         {
             pen_color(c, mstate->is_walls[x][y] ? color_red : color_white);
             //pen_rect(c, rectanglef(64*x, -64*(y-coef), 48, 48));
-            pen_rect(c, rectanglef(x+0.05, y+0.05, 0.9, 0.9));
+            //pen_rect(c, rectanglef(x+0.05, -y+0.05, 0.9, 0.9));
+            texture_rectf(dstate->fleche);
+            if(mstate->is_walls[x][y]){
+            pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x+0.05, -y+0.05, 0.9, 0.9));
+            }
+            
         }
     }
     pen_color(c, color_green);
-    pen_rect(c, rectanglef(mstate->player_posX, istate->nb_ligne+1, 1, 1));
+    pen_rect(c, rectanglef(mstate->player_posX, istate->nb_ligne-3, 1, 1));
+    //pen_texture_at(c,dstate->fleche,rectangle(x+0.05, -y+0.05, 0.9, 0.9),x+0.05,-y+0.05,0.9,0.9);
+    
+    
+    
+    
 
     camera_pop(c);
+
+    
 }
 
 void eggzagon_draw_rule(game_arg arg, rule* r)
