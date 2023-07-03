@@ -189,8 +189,6 @@ game_mutable* game_internal_mutable_clone(game_mutable* mut)
     return copy;
 }
 
-
-
 game* game_clone(context* c, game* g)
 {
     check(gtype->is_loaded == true);

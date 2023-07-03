@@ -12,20 +12,18 @@ void scene_jeu_load(argument arg)
 {
     obtenir_scene_state;
 
-    int nb_colonne = 6;
-    int nb_ligne   = EGG_NB_LIGNE;
     int nb_entity = 10;
 
     // pour avoir 2 variables arg
     {
 
-        current_game = game_create(eggzagon, nb_colonne, nb_ligne, 1, EGGZAGON_OUTPUT_MOVE_RANGE, nb_entity);
+        current_game = game_create(egg, egg_nb_ligne, 3, 1, EGG_OUTPUT_MOVE_RANGE, nb_entity);
 
         game_arg arg = game_arg_create(c, current_game);
-        game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
-        get_game_state(eggzagon);
+        //game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
+        game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
+        get_game_state(egg);
 
-        game_immutable_state->nb_colonne = nb_colonne;
         game_load(c, the_game);
     }
 }

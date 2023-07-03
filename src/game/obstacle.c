@@ -2,12 +2,12 @@
 #define tab_size(t) (sizeof(t)/sizeof(t[0]))
 
 
-void copy_pattern(game_arg arg, obstacle p[][EGG_NB_LIGNE], int size)
+void copy_pattern(game_arg arg, obstacle p[][egg_nb_ligne], int size)
 {
     for (int i = 0; i < size; i++)
     {
         vec* line = vec_empty(obstacle);
-        for (int j = 0; j < EGG_NB_LIGNE; j++)
+        for (int j = 0; j < egg_nb_ligne; j++)
         {
             int a = p[i][j];
             if (a < 0) { a = 0;}
@@ -22,7 +22,7 @@ void copy_pattern(game_arg arg, obstacle p[][EGG_NB_LIGNE], int size)
 #define NB_PATTERN 5
 #define pattern(number, pattern_name) case number: copy_pattern(arg, pattern_name, tab_size(pattern_name)); return tab_size(pattern_name);
 #define tab_size(t) (sizeof(t)/sizeof(t[0]))
-#define pattern_create(name) obstacle name[][EGG_NB_LIGNE]
+#define pattern_create(name) obstacle name[][egg_nb_ligne]
 
 int pattern_add(game_arg arg, int id_pattern)
 {
