@@ -49,6 +49,7 @@ typedef struct
 
     time timer; // since the beginning of the program
     int  nb_update;
+    bool paused;
 
     vec* /* of scene */ scenes;
     void* scene;
@@ -63,5 +64,9 @@ typedef struct
     texture* _pen_font;
 
     the_global_state* _global_state;
+
+    int fps;
+    int fps_counter;
+    time last_fps_tick;
 } context;
 #endif

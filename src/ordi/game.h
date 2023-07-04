@@ -12,7 +12,7 @@ struct game_arg
 // bool is over
 typedef void* (*game_clone_fn)  (game_arg arg);
 typedef void  (*game_fn)        (game_arg arg);
-typedef void  (*game_draw_rule_fn)(game_arg arg, rule* r);
+typedef void  (*game_draw_rule_fn)(game_arg arg, entity* e, rule* r, int idx);
 
 typedef void  (*game_get_input_fn)(game_arg arg, entity* e);
 
@@ -20,7 +20,7 @@ typedef void  (*game_get_input_fn)(game_arg arg, entity* e);
 typedef bool  (*game_rule_match_fn)(game_arg arg, entity* e, rule* r);
 
 #define GAME_STATE_RUNNING             0
-#define GAME_STATE_END_OF_GAME         1
+#define GAME_STATE_GAME_OVER           1
 #define GAME_STATE_REACH_MAX_RECURSION 2
 
 // internal mutable state
@@ -67,6 +67,10 @@ struct game_type
 
     game_get_input_fn       player_input;
     game_rule_match_fn      rule_match;
+
+    things_to_char_fn       input_to_char;
+    things_to_char_fn       output_to_char;
+    game_fn                 printf;
     // rule_input
 
     int condition_input_size;
@@ -87,8 +91,7 @@ struct game_type
     bool is_loaded;
 };
 
-
-#define game_create(name, condition_input_size, condition_input_max_range, condition_output_size, condition_output_max_range, nb_behavior)\
+#define game_create(name)\
     game_create_arg(\
         c,\
         sizeof( name ## _immutable_state),\
@@ -103,11 +106,9 @@ struct game_type
         name ## _unload,\
         name ## _player_input,\
         name ## _rule_match,\
-        condition_input_size,\
-        condition_input_max_range,\
-        condition_output_size,\
-        condition_output_max_range,\
-        nb_behavior /* nb behavior*/\
+        name ## _rule_input_to_char,\
+        name ## _rule_output_to_char,\
+        name ## _printf\
     )
 
 game* game_create_arg(
@@ -124,11 +125,10 @@ game* game_create_arg(
     game_fn unload,
     game_get_input_fn player_input,
     game_rule_match_fn rule_match,
-    int condition_input_size,
-    int condition_input_max_range,
-    int condition_output_size,
-    int condition_output_max_range,
-    int nb_behavior);
+    things_to_char_fn input_to_char,
+    things_to_char_fn output_to_char,
+    game_fn printf
+    );
 
 game_arg game_arg_create(context* c, game* g);
 
@@ -138,7 +138,7 @@ void  game_load(context* c, game* g);
 void  game_reset(context* c, game* g);
 void  game_unload(context* c, game* g);
 void  game_draw(context* c, game* g);
-void  game_draw_rule(context* c, game* g, rule* r);
+void  game_printf(context* c, game* g);
 game* game_clone(context* c, game* g);
 
 void game_get_input(context* c, game* g, entity* e);
@@ -147,4 +147,11 @@ bool game_rule_match(context* c, game* g, entity* e, rule* r);
 
 entity* game_optimize(context* c, game* g);
 void    game_set_entity_type(game* g, entity_type type);
+
+void game_ordi_configure(game* g,
+    int condition_input_size,
+    int condition_input_max_range,
+    int condition_output_size,
+    int condition_output_max_range,
+    int nb_behavior);
 #endif
