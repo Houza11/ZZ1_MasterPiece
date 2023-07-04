@@ -63,9 +63,6 @@ void window_update(context* c)
 
     SDL_GetWindowPosition(c->window, &c->window_x, &c->window_y);
     SDL_GetWindowSize(c->window, &c->window_width, &c->window_height);
-
-    c->window_ratio_width_div_height = c->screen_width/(float)c->screen_height;
-    c->window_ratio_height_div_width = c->screen_height/(float)c->screen_width;
 }
 
 int screen_width(context* c) { return c->screen_width; }
@@ -78,5 +75,5 @@ int window_width(context* c) { return c->window_width; }
 int window_height(context* c) { return c->window_height; }
 int window_x(context* c) { return c->window_x; }
 int window_y(context* c) { return c->window_y; }
-float window_ratio_width_div_height(context* c) { return c->window_ratio_width_div_height; }
-float window_ratio_height_div_width(context* c) { return c->window_ratio_width_div_height; }
+float window_ratio_width_div_height(context* c) { return window_width(c)/(float)window_height(c); }
+float window_ratio_height_div_width(context* c) { return window_height(c)/(float)window_width(c); }

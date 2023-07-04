@@ -82,5 +82,5 @@ void scene_jeu_printf(argument arg)
 {
     obtenir_scene_state;
     game_printf(c, current_game);
-    printf("J'ai perdu au jeu \n");
+    //printf("J'ai perdu au jeu \n");
 }

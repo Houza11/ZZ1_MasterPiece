@@ -146,7 +146,8 @@ entity* entity_create_ordi_random(game* g)
     behavior* b = behavior_empty();
     rule* r_default = rule_create(g);
 
-    repeat(i, 1)
+    #define default_nb_rule 1
+    repeat(i, default_nb_rule)
     {
         behavior_add_rule(b, r_default);
     }
@@ -164,31 +165,31 @@ entity* entity_create(entity_type type, behavior* b_will_be_cloned)
     e->id = 0;
     e->type = type;
     e->score = 0;
-    e->_behavior = behavior_clone(b_will_be_cloned);
+    e->behavior = behavior_clone(b_will_be_cloned);
     return e;
 }
 
 behavior* entity_behavior(entity* e)
 {
-    return e->_behavior;
+    return e->behavior;
 }
 
 void entity_behavior_set(entity* e, behavior* b_will_be_cloned)
 {
-    behavior_free(e->_behavior);
-    e->_behavior = behavior_clone(b_will_be_cloned);
+    behavior_free(e->behavior);
+    e->behavior = behavior_clone(b_will_be_cloned);
 }
 
 void entity_free(entity* e)
 {
     if(e == null) return;
-    behavior_free(e->_behavior);
+    behavior_free(e->behavior);
     free(e);
 }
 
 entity* entity_clone(entity* e)
 {
-    entity* copy = entity_create(e->type, e->_behavior);
+    entity* copy = entity_create(e->type, e->behavior);
     copy->score = e->score;
     copy->id = e->id;
     return copy;

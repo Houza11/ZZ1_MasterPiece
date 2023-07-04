@@ -8,9 +8,9 @@ camera_state camera_get(context* c);
 void camera_set(context* c, camera_state s);
 void camera_push(context* c, camera_state state);
 void camera_push_set(context* c, camera_state state);
-void camera_push_focus_fullscreen(context* c, rectf source);
-void camera_push_focus(context* c, rectf source, rectf dest);
-void camera_push_focus_centered(context* c, rectf source, rectf dest, float center_x_coef, float center_y_coef);
+rectf camera_push_focus_fullscreen(context* c, rectf source);
+rectf camera_push_focus(context* c, rectf source, rectf dest);
+rectf camera_push_focus_centered(context* c, rectf source, rectf dest, float center_x_coef, float center_y_coef);
 void camera_pop(context* c);
 
 bool camera_load(context* c);

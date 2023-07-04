@@ -32,6 +32,10 @@ name ## _draw_state * game_draw_state = (name ## _draw_state *)(the_game->draw_s
 bool need_reset = (gtype->is_loaded);\
 entity* current_entity = (imstate->current_entity);\
 float draw_coef = (imstate->draw_coef);\
+float best_score_player  = (the_game->internal_mutable_state->best_score_player);\
+float best_score_ordi  = (the_game->internal_mutable_state->best_score_ordi);\
+unused(best_score_player);\
+unused(best_score_ordi);\
 unused(arg);\
 unused(the_game);\
 unused(game_mutable_state);\

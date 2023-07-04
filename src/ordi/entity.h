@@ -42,7 +42,7 @@ struct entity
 {
     int id;
     entity_type type;
-    behavior* _behavior;
+    behavior* behavior;
     float score;
 };
 

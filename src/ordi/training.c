@@ -18,6 +18,9 @@
 #define gen_max_update_per_entity     (mstate->generation_update_per_entity)
 #define gen_current_entity (gen_idx_training < gen_length ? gen_get(gen_idx_training) : null)
 
+#define gen_delta_score (mstate->gen_delta_score)
+
+
 #define game_state (mstate->state)
 #define gen_get(idx) gen_get_at(g, idx)
 
@@ -43,9 +46,12 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
 
     if(((best_entity == null) || (e->score > best_entity->score)) && (e != best_entity))
     {
+
         if(best_entity != null)
         {
             entity_free(best_entity);
+            float old_score = best_entity->score;
+            gen_delta_score += e->score - old_score;
         }
         best_entity = entity_clone(e);
         
@@ -63,7 +69,19 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
 
 void game_choose_next_generation(context* c, game* g)
 {
-    unused(c);
+    gen_delta_score -= 1/200.0f;
+    if(gen_delta_score < 0)
+    {
+        repeat(i, gen_length)
+        {
+            entity* e = gen_get(i);
+            rule* r = rule_create(g);
+            behavior_add_rule(entity_behavior(e), r);
+            rule_free(r);
+        }
+        gen_delta_score = 10;
+    }
+
 
 
     g->internal_mutable_state->nb_generation++;
@@ -123,6 +141,7 @@ void game_init_training_if_needed(context* c, game* g)
     gen_current_idx_nb_update = 0;
     // hardcoder
     gen_max_update_per_entity = 64;
+    gen_delta_score = 4;
 }
 
 
@@ -165,9 +184,6 @@ void update_current_entity(context* c, game* g)
 // train the generation, and choose the best
 void game_train_best_ordi(context* c, game* g)
 {
-    //return;
-    //game_trainning_printf(c, g);
-    //return;
     game_init_training_if_needed(c, g);
 
     repeat(i, 100)
@@ -178,15 +194,7 @@ void game_train_best_ordi(context* c, game* g)
             game_choose_next_generation(c, g);
         }
     }
-    /*
-    if(mstate->generation->length < gtype->nb_behavior)
-    {
 
-        //behavior* b
-    }*/
-
-
-    //todo;
     unused(c);
     unused(g);
 }

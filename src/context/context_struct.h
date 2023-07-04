@@ -12,9 +12,6 @@ typedef struct
     int screen_width;
     int screen_height;
 
-    float window_ratio_width_div_height;
-    float window_ratio_height_div_width;
-
     SDL_Window* window;
     int window_width;
     int window_height;
