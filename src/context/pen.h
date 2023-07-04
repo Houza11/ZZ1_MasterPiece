@@ -28,10 +28,9 @@ void pen_texture(context* c, texture* t, rect src, rectf dest);
 void pen_texture_at(context* c, texture* t, rect src, float x, float y, float scaleX, float scaleY);
 void pen_texture_at_center(context* c, texture* t, rect src, float x, float y, float scaleX, float scaleY, float coef_centerX, float coef_centerY);
 
-void pen_animation_at(context* c, animation* a, float x, float y, float scaleX, float scaleY, time t);
-void pen_animation_at_center(context* c, animation* a, float x, float y, float scaleX, float scaleY, float coef_centerX, float coef_centerY, time t);
-void pen_animation(context* c, animation* a, rectf dest, time t);
-
+void pen_animation_at(context* c, animation* a, float x, float y, float scaleX, float scaleY, time t, int ligne);
+void pen_animation_at_center(context* c, animation* a, float x, float y, float scaleX, float scaleY, float coef_centerX, float coef_centerY, time t, int ligne);
+void pen_animation(context* c, animation* a, rectf dest, time t, int ligne);
 /*
 bool pen_is_down(context*  c);
 void pen_down(context* c);

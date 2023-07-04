@@ -83,9 +83,11 @@ void egg_load(game_arg arg)
     
     dstate->fond = texture_create(c,"asset/fond.png");
     dstate->arbalete = texture_create(c,"asset/arbalete.png");
-    dstate->sprite_archere=sprite_sheet_create(c,"asset/archere_walk_arriere.png",32,32);
-     dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
-    dstate->personnage=animation_create(dstate->sprite_archere,frequence_s(10));
+    dstate->sprite_archere_walk=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
+    dstate->sprite_archere_idle=sprite_sheet_create(c,"asset/archere_base.png",32,32);
+    dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
+    dstate->personnage_walk=animation_create(dstate->sprite_archere_walk,frequence_s(10));
+    dstate->personnage_idle=animation_create(dstate->sprite_archere_idle,frequence_s(10));
     dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
     mstate->player_y = 0;
     mstate->player_x = 0;
@@ -99,9 +101,10 @@ void egg_unload(game_arg arg)
     texture_free(dstate->fleche);
     texture_free(dstate->fond);
     texture_free(dstate->arbalete);
-    sprite_sheet_free(dstate->sprite_archere);
+    sprite_sheet_free(dstate->sprite_archere_walk);
+    sprite_sheet_free(dstate->sprite_archere_idle);
     sprite_sheet_free(dstate->sprite_fleche);
-    animation_free(dstate->personnage);
+    animation_free(dstate->personnage_walk);
     animation_free(dstate->fleche);
 
     repeat(i, egg_grid->length)
@@ -237,7 +240,7 @@ void egg_draw(game_arg arg)
                 int arrow_new_x = x;
                 float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
 
-                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 1, 1),c->timer);
+                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 0.9, 0.9),c->timer,0);
             }
         }
     }
@@ -245,8 +248,11 @@ void egg_draw(game_arg arg)
     dstate->player_y = moyenne_ponderee(dstate->player_y, mstate->player_y, 0.85);
 
     //float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
+    bool perso_base = abs(mstate->player_y-state->player_y) < 1/32.0f;
+    bool vers_le_haut = mstate->player_y-state->player_y > 0;
 
-    pen_animation(c,dstate->personnage,rectanglef(0, dstate->player_y, 1, 1),c->timer);
+
+    pen_animation(c,dstate->personnage_walk,rectanglef(0, dstate->player_y, 1, 1),c->timer,2);
    // pen_color(c, color_green);
     //pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
 

@@ -209,22 +209,24 @@ void pen_texture_at_center(context* c, texture* t, rect src, float x, float y, f
 }
 
 
-void pen_animation_at(context* c, animation* a, float x, float y, float scaleX, float scaleY, time t)
+void pen_animation_at(context* c, animation* a, float x, float y, float scaleX, float scaleY, time t, int ligne)
 {
     if( !a->nb_frame ) return;
-    pen_animation(c, a, rectanglef(x, y, texture_width(a->sprite_sheet->t)/a->nb_frame*scaleX, texture_height(a->sprite_sheet->t)*scaleY), t);
+    pen_animation(c, a, rectanglef(x, y, texture_width(a->sprite_sheet->t)/a->nb_frame*scaleX, texture_height(a->sprite_sheet->t)*scaleY), t, ligne);
 }
 
-void pen_animation_at_center(context* c, animation* a, float x, float y, float scaleX, float scaleY, float coef_centerX, float coef_centerY, time t)
+void pen_animation_at_center(context* c, animation* a, float x, float y, float scaleX, float scaleY, float coef_centerX, float coef_centerY, time t, int ligne)
 {
     float frame_width_scaled =  animation_width (a) *scaleX;
     float frame_height_scaled = animation_height(a) *scaleY;
-    pen_animation(c, a, rectanglef(x-frame_width_scaled*coef_centerX, y-frame_height_scaled*coef_centerY, frame_width_scaled, frame_height_scaled), t);
+    pen_animation(c, a, rectanglef(x-frame_width_scaled*coef_centerX, y-frame_height_scaled*coef_centerY, frame_width_scaled, frame_height_scaled), t, ligne);
 }
 
-void pen_animation(context* c, animation* a, rectf dest, time t)
+void pen_animation(context* c, animation* a, rectf dest, time t, int ligne)
 {
-    pen_texture(c, a->sprite_sheet->t, *animation_get_frame(a, t), dest);
+    rect source = *animation_get_frame(a, t);
+    source.y += ligne * a->sprite_sheet->frame_height;
+    pen_texture(c, a->sprite_sheet->t, source, dest);
 }
 
 #define NUM_COL_LETTER 16
