@@ -237,7 +237,7 @@ void egg_draw(game_arg arg)
                 int arrow_new_x = x;
                 float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
 
-                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 1, 1),c->timer);
+                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 0.9, 0.9),c->timer);
             }
         }
     }
