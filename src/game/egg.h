@@ -47,6 +47,7 @@ typedef struct
     animation* personnage;
     animation* fleche;
     texture* arbalete;
+    float player_y;
 } egg_draw_state;
 
 void egg_load(game_arg arg);

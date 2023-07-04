@@ -11,5 +11,7 @@ void texture_free(texture* t);
 rect texture_rect(texture* t);
 rectf texture_rectf(texture* t);
 
+void texture_printf();
+
 
 #endif

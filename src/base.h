@@ -10,6 +10,7 @@
 #include "struct_forward_declaration.h"
 
 #include "util/math.h"
+#include "util/tweening.h"
 #include "util/angle.h"
 #include "util/color.h"
 #include "util/rectangle.h"

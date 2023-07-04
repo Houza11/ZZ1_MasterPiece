@@ -47,6 +47,7 @@ int main(int argc, char *argv[])
     sdl_unload();
 
     memory_printf();
+    texture_printf();
 
     return 0;
 }

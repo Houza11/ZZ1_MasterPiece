@@ -1,5 +1,7 @@
 #include "base.h"
 
+int nb_texture = 0;
+
 int texture_width(texture* t)
 {
     if(t == null){ return 0;}
@@ -52,11 +54,18 @@ texture* texture_create(context* c, char *path)
     }
 
     printf("texture %s chargée\n", path);
-
+    nb_texture++;
     return my_texture;
 }
 
 void texture_free(texture* t)
 {
+    if(t == null) return;
+    nb_texture--;
     SDL_DestroyTexture(t);
+}
+
+void texture_printf()
+{
+    printf("texture %i chargée\n", nb_texture);
 }
