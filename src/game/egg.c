@@ -98,7 +98,6 @@ void egg_load(game_arg arg)
 void egg_unload(game_arg arg)
 {
     get_game_state(egg);
-    texture_free(dstate->fleche);
     texture_free(dstate->fond);
     texture_free(dstate->arbalete);
     sprite_sheet_free(dstate->sprite_archere_walk);
@@ -233,9 +232,7 @@ void egg_draw(game_arg arg)
         {
             if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
             {
-                rect arrow_fond_rect = texture_rect(dstate->fleche);
-                arrow_fond_rect.w /= 4;
-
+            
                 int arrow_old_x = x+1;
                 int arrow_new_x = x;
                 float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
@@ -248,9 +245,12 @@ void egg_draw(game_arg arg)
     dstate->player_y = moyenne_ponderee(dstate->player_y, mstate->player_y, 0.85);
 
     //float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
-    bool perso_base = abs(mstate->player_y-state->player_y) < 1/32.0f;
-    bool vers_le_haut = mstate->player_y-state->player_y > 0;
+    bool perso_base = abs(mstate->player_y-gstate->player_y) < 1/32.0f;
+    bool vers_le_haut = mstate->player_y-gstate->player_y > 0;
 
+    if(perso_base){
+        
+    }
 
     pen_animation(c,dstate->personnage_walk,rectanglef(0, dstate->player_y, 1, 1),c->timer,2);
    // pen_color(c, color_green);
