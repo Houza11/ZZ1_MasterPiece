@@ -47,9 +47,11 @@ typedef struct
 typedef struct
 {
     texture* fond;
-    sprite_sheet* sprite_archere;
+    sprite_sheet* sprite_archere_walk;
+    sprite_sheet* sprite_archere_idle;
     sprite_sheet* sprite_fleche;
-    animation* personnage;
+    animation* personnage_walk;
+    animation* personnage_idle;
     animation* fleche;
     texture* arbalete;
     float player_y;

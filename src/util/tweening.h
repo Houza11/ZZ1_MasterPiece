@@ -5,5 +5,7 @@
 float lerpf(float ancienne_val, float nouvelle_val, float coef);
 float tweening_linear(float ancienne_val, float nouvelle_val, float coef);
 float tweening_sqrt(float ancienne_val, float nouvelle_val, float coef);
+float tweening_square(float ancienne_val, float nouvelle_val, float coef);
+float tweening_power(float ancienne_val, float nouvelle_val, float coef, float power);
 float moyenne_ponderee(float val1, float val2, float coef_val_1);
 #endif

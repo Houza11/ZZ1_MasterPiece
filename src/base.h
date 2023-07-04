@@ -31,10 +31,11 @@
 #include "context/camera.h"
 #include "context/pen.h"
 
-#include "./ordi/entity.h"
-#include "./ordi/game.h"
+#include "ordi/entity.h"
+#include "ordi/game.h"
+#include "ordi/training.h"
 
-#include "./game/all_game.h"
+#include "game/all_game.h"
 
 #include "scene/all_scene.h"
 

@@ -84,7 +84,6 @@ game* game_create_arg(
         t->printf = printf;
 
         t->maximize_score = true;
-        t->best_entity = null;
         t->is_loaded = false;
 
         t->condition_input_size = -1;
@@ -98,6 +97,14 @@ game* game_create_arg(
         m->draw_dest = window_rectf(c);
         m->state = GAME_STATE_RUNNING;        
         m->_nb_update = 0;
+
+        m->best_score_player = 0; 
+        m->best_score_ordi   = 0; 
+
+        m->nb_generation = 0;
+        m->current_entity   = null; 
+        m->best_ordi        = null;
+        m->generation       = null;
     }
     return g;
 }
@@ -134,11 +141,6 @@ void game_update_fixed(context* c, game* g)
     gtype->update(arg);
 }
 
-void game_reset(context* c, game* g)
-{
-    game_load(c, g);
-}
-
 void game_load(context* c, game* g)
 {
     //check(gtype->is_loaded == false);
@@ -151,8 +153,23 @@ void game_load(context* c, game* g)
 
 void game_internal_mutable_free(game_mutable* mut)
 {
-    entity_free(mut->current_entity);
     tab_free(mut->input);
+    if(mut->best_ordi != null)
+    {
+        entity_free(mut->best_ordi);
+    }
+    if(mut->current_entity != null)
+    {
+        entity_free(mut->current_entity);
+    }
+    if(mut->generation != null)
+    {
+        repeat(i, mut->generation->length)
+        {
+            entity_free(vec_get(mut->generation, entity*, i));
+        }
+        vec_free_lazy(mut->generation);
+    }
     free(mut);
 }
 
@@ -160,20 +177,11 @@ void game_internal_mutable_free(game_mutable* mut)
 void game_type_unload(context* c, game* g)
 {
     unused(c);
-    if(gtype->best_entity != null)
-    {
-        entity_free(gtype->best_entity);
-    }
     free(gtype);
     g->type = null;
 }
 
-entity* game_optimize(context* c, game* g)
-{
-    todo;
-    unused(c);
-    unused(g);
-}
+
 
 
 void game_unload(context* c, game* g)
@@ -287,4 +295,10 @@ void game_get_input(context* c, game* g, entity* e)
 void game_set_entity_type(game* g, entity_type type)
 {
     current_entity->type = type;
+}
+
+void game_reset(context* c, game* g)
+{
+    game_load(c, g);
+    current_entity->score = 0;
 }
