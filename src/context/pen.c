@@ -227,13 +227,11 @@ void pen_animation(context* c, animation* a, rectf dest, time t)
     pen_texture(c, a->sprite_sheet->t, *animation_get_frame(a, t), dest);
 }
 
-
 #define NUM_COL_LETTER 16
 #define LETTER_WIDTH  18
 #define LETTER_HEIGHT 18
 #define INTERLIGNE 0.2
 #define LETTER_SPACING -0.5
-
 
 void pen_text_at(context* c, char* text, float x, float y, float pixel_ligne_height)
 {

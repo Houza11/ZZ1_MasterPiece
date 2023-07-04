@@ -30,6 +30,8 @@ int animation_height(animation* a)
 
 rect* animation_get_frame(animation* a, time t)
 {
+    if(a->nb_frame <= 0){ return null; }
+
     int frame_number = t / a->frame_duration - a->first_frame;
     int frame_id;
     if (a->loop)

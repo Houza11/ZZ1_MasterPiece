@@ -310,7 +310,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         {
             if(can_damage(grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x)))
             {
-                dx = x;
+                dx = x+1;
                 break;;
             }
         }
