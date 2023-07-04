@@ -19,8 +19,8 @@ void scene_jeu_load(argument arg)
         game_arg arg = game_arg_create(c, current_game);
         get_game_state(egg);
         game_load(c, the_game);
-        //game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
-        game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
+        game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
+        //game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
         #define current_entity current_game->internal_mutable_state->current_entity
         behavior* b = entity_behavior(current_entity);
         rule* r = behavior_get_rule(b, 0);

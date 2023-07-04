@@ -31,6 +31,7 @@ obstacle grid_get(game_arg arg, int ligne, int colonne)
     return grid_get_fixed(arg, ligne, colonne+mstate->player_x);
 }
 
+
 void grid_set(game_arg arg, int ligne, int colonne, obstacle val)
 {
     get_game_state(egg);
@@ -53,14 +54,14 @@ void init_grid(game_arg arg)
     {
         pattern_add_empty_line(arg);
     }
+
+
     
-    while(egg_grid->length < istate->nb_colonne)
+
+    int j = 0;
+    while(j < egg_nb_colonne)
     {
-        int j = 0;
-        while(j < egg_nb_ligne)
-        {
-            j += pattern_add(arg, -1);
-        }
+        j += pattern_add(arg, -1);
     }
 }
 

@@ -21,6 +21,8 @@ typedef struct
     vec* /* of vec* of EGG_obstacle */ grid;
 } egg_immutable_state;
 
+#define EGG_NB_COLONNE (istate->nb_colonne)
+#define EGG_NB_LIGNE 5
 #define egg_nb_colonne (istate->nb_colonne)
 #define egg_nb_ligne 5
 
@@ -29,6 +31,9 @@ typedef struct
 typedef int8 obstacle;
 #define EGG_OBSTACLE_NONE  0
 #define EGG_OBSTACLE_ARROW 1
+
+#define EGG_OBSTACLE_ENTRY -1
+#define EGG_OBSTACLE_EXIT  -2
 
 typedef struct
 {
