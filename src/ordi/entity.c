@@ -30,11 +30,9 @@ rule* rule_clone(rule* r)
     return copy;
 }
 
-void rule_printf(rule* r)
+void rule_printf(game* g, rule* r)
 {
-    printf("input : "); tab_printf(r->input);
-    printf("ouput : "); tab_printf(r->output);
-    printf("\n");
+    rule_printf_custom(r, g->type->input_to_char, g->type->output_to_char);
 }
 
 void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn output)
@@ -114,13 +112,13 @@ void behavior_add_rule(behavior* b, rule* r_will_be_copied)
     vec_add(b->rules, rule*, rule_clone(r_will_be_copied));
     //behavior_set_rule(b, behavior_nb_rule(b)-1, r_will_be_copied);
 }
-void behavior_printf(behavior* b)
+void behavior_printf(game* g, behavior* b)
 {
     printf("behavior: {\n");
     repeat(i, behavior_nb_rule(b))
     {
-        printf("r%i  ", i);
-        rule_printf(behavior_get_rule(b, i));
+        printf("   r%i  ", i);
+        rule_printf(g, behavior_get_rule(b, i));
     }
     printf("}\n");
 }
@@ -140,7 +138,6 @@ void entity_init_random(game* g, entity* e)
             tab_set(r->output, j, rand()% g->type->condition_output_max_range);
         }
     }
-    
     e->score = 0;
 }
 
@@ -194,11 +191,16 @@ entity* entity_clone(entity* e)
     entity* copy = entity_create(e->type, e->_behavior);
     copy->score = e->score;
     copy->id = e->id;
+    copy->_behavior = behavior_clone(e->_behavior);
     return copy;
 }
-void entity_printf(entity* e)
+void entity_printf(game* g, entity* e)
 {
-    
+    if(e == null) 
+    {
+        printf("entity null\n");
+        return;
+    }
     printf("entity %s with score %.3f\n", e->type == ENTITY_TYPE_PLAYER ? "player" : "ordi", e->score);
-    behavior_printf(entity_behavior(e));
+    behavior_printf(g, entity_behavior(e));
 }

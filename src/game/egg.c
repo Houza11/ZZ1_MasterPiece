@@ -67,12 +67,17 @@ void egg_load(game_arg arg)
     get_game_state(egg);
 
     mstate->nb_tour = 0;
+    mstate->player_y = egg_nb_ligne/2;
+    mstate->player_x = 0;
+
+    if(dstate != null)
+    {
+        dstate->player_y = mstate->player_y;
+    }
 
     if(need_reset)
     {
-        mstate->player_y = 0;
-        mstate->player_x = 0;
-        dstate->player_y = mstate->player_y;
+
     }else
     {
         game_ordi_configure(the_game, egg_nb_ligne, EGG_INPUT_MAX_RANGE, 1, EGG_OUTPUT_MOVE_RANGE, 10);
@@ -315,7 +320,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
 
         // distance pour le prochain osbtacle
         int dx = EGG_INPUT_MAX_RANGE;
-        repeat(x, EGG_INPUT_MAX_RANGE) // -1 because of the Osef symbol
+        repeat(x, EGG_INPUT_MAX_RANGE+1) // -1 because of the Osef symbol
         {
             if(can_damage(grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x)))
             {

@@ -14,7 +14,7 @@ rule* rule_create(game* g);
 rule* rule_create_with_size(int size_input, int size_ouput);
 void  rule_free(rule* r);
 rule* rule_clone(rule* r);
-void  rule_printf(rule* r);
+void  rule_printf(game* g, rule* r);
 void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn output);
 
 struct behavior
@@ -33,7 +33,7 @@ void behavior_set_rule(behavior* b, int idx, rule* r_will_be_copied);
 void behavior_insert_rule(behavior* b, int idx, rule* r_will_be_copied);
 void behavior_add_rule(behavior* b, rule* r_will_be_copied);
 void behavior_remove_rule(behavior* b, int idx);
-void behavior_printf(behavior* b);
+void behavior_printf(game* g, behavior* b);
 
 #define ENTITY_TYPE_PLAYER 0
 #define ENTITY_TYPE_ORDI   1
@@ -53,5 +53,5 @@ void entity_init_random(game* g, entity* e);
 void entity_behavior_set(entity* e, behavior* b_will_be_cloned);
 void entity_free(entity* e);
 behavior* entity_behavior(entity* e);
-void entity_printf(entity* e);
+void entity_printf(game* g, entity* e);
 #endif

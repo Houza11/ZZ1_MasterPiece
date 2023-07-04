@@ -37,9 +37,11 @@ void global_state_draw_foreground(context* c)
 {
     camera_push_set(c, camera_default());
     pen_formatted_text_at_center(c, 0, window_height(c), FONT_SIZE_SMALL, 0, 1, "%i fps", c->fps);
+    pen_formatted_text_at_center(c, window_width(c), window_height(c), FONT_SIZE_SMALL, 1, 1, "%i malloc", memory_get_nb_alloc());
+    
     if(c->paused)
     {
-        pen_text_at_center(c, "paused (P)", window_width(c), window_height(c), FONT_SIZE_SMALL, 1, 1);
+        pen_text_at_center(c, "paused (P)", window_width(c), window_height(c)-FONT_SIZE_SMALL, FONT_SIZE_SMALL, 1, 1);
     }
     camera_pop(c);
 }

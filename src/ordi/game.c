@@ -32,6 +32,7 @@ void game_ordi_configure(game* g,
 
     m->input = tab_create(condition_output_size, 0);
     m->current_entity = entity_create_ordi_random(g);
+    m->best_ordi = entity_create_ordi_random(g);
 }
 
 game* game_create_arg(
@@ -105,6 +106,7 @@ game* game_create_arg(
         m->current_entity   = null; 
         m->best_ordi        = null;
         m->generation       = null;
+        m->input            = null;
     }
     return g;
 }
@@ -123,6 +125,8 @@ game_arg game_arg_create(context* c, game* g)
 
 void game_update(context* c, game* g, int ups)
 {
+    game_train_best_ordi(c, g);
+
     if(g->internal_mutable_state->state != GAME_STATE_RUNNING) return;
 
     g->internal_mutable_state->draw_coef += 1.0f/ups;
@@ -138,6 +142,16 @@ void game_update_fixed(context* c, game* g)
 {
     check(gtype->is_loaded == true);
     g->internal_mutable_state->_nb_update++;
+
+    entity* e = g->internal_mutable_state->current_entity;
+    float score = e->score;
+    if(score >= g->internal_mutable_state->best_score_player && e->type == ENTITY_TYPE_PLAYER)
+    {
+        g->internal_mutable_state->best_score_player = score;
+    }else if(score >= g->internal_mutable_state->best_score_ordi && e->type == ENTITY_TYPE_ORDI)
+    {
+        g->internal_mutable_state->best_score_ordi = score;
+    }
     gtype->update(arg);
 }
 
@@ -208,9 +222,18 @@ game_mutable* game_internal_mutable_clone(game_mutable* mut)
     game_mutable* copy = create(game_mutable);
     copy->_nb_update = mut->_nb_update;
     copy->draw_dest = mut->draw_dest;
-    copy->input = tab_clone(copy->input);
-    copy->current_entity = entity_clone(mut->current_entity);
+    copy->input = tab_clone(mut->input);
     copy->state = mut->state;
+    copy->generation_idx_training = mut->generation_idx_training;
+    copy->generation_current_idx_nb_update = mut->generation_current_idx_nb_update;
+    copy->generation_update_per_entity = mut->generation_update_per_entity;
+    copy->nb_generation = mut->nb_generation;
+
+    // not clonned
+    copy->current_entity = null;//mut->current_entity;
+    copy->best_ordi = null;
+    copy->generation = null;
+    copy->draw_coef = NAN;
     return copy;
 }
 
@@ -220,13 +243,15 @@ void game_printf(context* c, game* g)
 {
     printf("\n\n");
     gtype->printf(arg);
-    printf("entity %i : score %.1f, is ordi %i\n", current_entity->id, current_entity->score, current_entity->type == ENTITY_TYPE_ORDI);
+    printf("current entity %i : score %.1f, is ordi %i\n", current_entity->id, current_entity->score, current_entity->type == ENTITY_TYPE_ORDI);
     behavior* b = entity_behavior(current_entity);
     repeat(i, behavior_nb_rule(b))
     {
         rule* r = behavior_get_rule(b, i);
         rule_printf_custom(r, gtype->input_to_char, gtype->output_to_char);
     }
+
+    game_trainning_printf(c, g);
 }
 
 void game_draw(context* c, game* g)

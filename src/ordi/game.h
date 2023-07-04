@@ -38,10 +38,16 @@ struct game_mutable
     vec* generation;
     int nb_generation;
 
+    int generation_idx_training;
+    int generation_current_idx_nb_update;
+    int generation_update_per_entity;
+
     // currrent player or cpu input
     tab*    input;
     int     _nb_update;
     float   draw_coef;
+
+    float gen_delta_score;
 
     float best_score_player;
     float best_score_ordi;
@@ -161,4 +167,6 @@ void game_ordi_configure(game* g,
     int condition_output_size,
     int condition_output_max_range,
     int nb_behavior);
+
+void game_internal_mutable_free(game_mutable* mut);
 #endif

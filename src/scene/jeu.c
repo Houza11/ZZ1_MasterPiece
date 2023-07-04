@@ -66,10 +66,10 @@ bool scene_jeu_event (argument arg)
         {
             switch (ev->key.keysym.sym)
             {
-                case SDLK_p: game_set_entity_type(current_game, ENTITY_TYPE_PLAYER); break;;
-                case SDLK_o: game_set_entity_type(current_game, ENTITY_TYPE_ORDI); break;
+                case SDLK_a: game_set_entity_type(current_game, ENTITY_TYPE_PLAYER); break;;
+                case SDLK_z: game_set_entity_type(current_game, ENTITY_TYPE_ORDI); break;
                 case SDLK_r: game_reset(c, current_game); break;
-                case SDLK_g: game_train_best_ordi(c, current_game); break;
+                //case SDLK_g: game_train_best_ordi(c, current_game); break;
                 default: break;
             }
         } break;
