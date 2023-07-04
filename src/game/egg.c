@@ -194,9 +194,9 @@ void egg_draw(game_arg arg)
         {
             rect fond_rect = texture_rect(dstate->fond);
             fond_rect.w /= 2;
-            int parite = (x+y+mstate->nb_tour) % 2;
+            int parite = (x+y) % 2;
             fond_rect.x = fond_rect.w *parite;
-            pen_texture(c,dstate->fond,fond_rect,rectanglef(x-coef,y,1,1));
+            pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
         }
     }
 
@@ -206,7 +206,10 @@ void egg_draw(game_arg arg)
         {
             if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
             {
-                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x-coef, y, 0.9, 0.9));
+                rect arrow_fond_rect = texture_rect(dstate->fleche);
+                arrow_fond_rect.w /= 4;
+
+                pen_texture(c,dstate->fleche, arrow_fond_rect, rectanglef(x-coef, y, 0.9, 0.9));
             }
         }
     }
