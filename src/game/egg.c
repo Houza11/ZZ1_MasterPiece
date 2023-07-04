@@ -289,7 +289,9 @@ void egg_draw(game_arg arg)
 
     camera_pop(c);
 
-    pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "score : %.0f, best score : %.0f, best score ia %.0f", current_entity->score, best_score_player, best_score_ordi);
+    pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "%.0f", current_entity->score);
+    pen_formatted_text_at_center(c, window_width(c)/2, 0, FONT_SIZE_NORMAL, 0.5, 0, "A ~ %.0f", best_score_player);
+    pen_formatted_text_at_center(c, window_width(c), 0, FONT_SIZE_NORMAL, 1, 0, "Z ~ ordi %.0f", best_score_ordi);
     //pen_formatted_text_at_center(c, 0, FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%.2f", coef);
     //pen_formatted_text_at_center(c, 0, 2*FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%i", mstate->nb_tour);
 

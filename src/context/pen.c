@@ -229,11 +229,20 @@ void pen_animation(context* c, animation* a, rectf dest, time t, int ligne)
     pen_texture(c, a->sprite_sheet->t, source, dest);
 }
 
+
 #define NUM_COL_LETTER 16
 #define LETTER_WIDTH  18
 #define LETTER_HEIGHT 18
 #define INTERLIGNE 0.2
 #define LETTER_SPACING -0.5
+
+/*
+#define NUM_COL_LETTER 16
+#define LETTER_WIDTH  256
+#define LETTER_HEIGHT 256
+#define INTERLIGNE 0.2
+#define LETTER_SPACING -0.5
+*/
 
 void pen_text_at(context* c, char* text, float x, float y, float pixel_ligne_height)
 {
@@ -284,10 +293,10 @@ void pen_char_at(context* c, char letter, float x, float y, float pixel_ligne_he
 
 void pen_char(context* c, char letter, rectf dest)
 {
-    if (letter > ' ' && letter != '\\')
+    if ((uint8)letter > (uint8)' ' && letter != '\\')
     {
-        rect mask = rectangle((letter % NUM_COL_LETTER) * LETTER_WIDTH,
-                              ((letter / NUM_COL_LETTER)) * LETTER_HEIGHT,
+        rect mask = rectangle((((uint8)letter) % NUM_COL_LETTER) * LETTER_WIDTH,
+                              ((((uint8)letter) / NUM_COL_LETTER)) * LETTER_HEIGHT,
                               LETTER_WIDTH, LETTER_HEIGHT);
         pen_texture(c, c->_pen_font, mask, dest);
     }
@@ -296,6 +305,7 @@ void pen_char(context* c, char letter, rectf dest)
 bool pen_load(context* c)
 {
     c->_pen_font = texture_create(c, "asset/font_amstrad_cpc_18.png");
+    //c->_pen_font = texture_create(c, "asset/josefin_sans_256.png");
     pen_mode(c, PEN_MODE_FILL);
 
     return true;

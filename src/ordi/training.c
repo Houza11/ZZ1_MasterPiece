@@ -49,8 +49,8 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
 
         if(best_entity != null)
         {
-            entity_free(best_entity);
             float old_score = best_entity->score;
+            entity_free(best_entity);
             gen_delta_score += e->score - old_score;
         }
         best_entity = entity_clone(e);
@@ -78,8 +78,9 @@ void game_choose_next_generation(context* c, game* g)
             rule* r = rule_create(g);
             behavior_add_rule(entity_behavior(e), r);
             rule_free(r);
+            //printf("%i\n", e->behavior->rules->length);
         }
-        gen_delta_score = 10;
+        gen_delta_score = 50;
     }
 
 
@@ -94,7 +95,7 @@ void game_choose_next_generation(context* c, game* g)
     {
         if(replace_best_entity_if_needed(c, g, gen_get(i)))
         {
-            entity_printf(g, gen_get(i));
+            //entity_printf(g, gen_get(i));
         }
     }
 
