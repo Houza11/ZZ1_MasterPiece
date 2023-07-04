@@ -50,4 +50,6 @@ unused(entity_input);\*/
 // recupère : scene* sce, state* s, scene_info* info, event* ev , (+ malloc également automatiquement la structure nommé "state" et l'associe à la scene)
 #define obtenir_game_state get_game_state
 
-#include "eggzagon.h"
+#include "egg.h"
+
+#include "obstacle.h"

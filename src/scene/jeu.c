@@ -12,22 +12,26 @@ void scene_jeu_load(argument arg)
 {
     obtenir_scene_state;
 
-    int nb_colonne = 6;
-    int nb_ligne   = 4;
-    int nb_entity = 10;
-
     // pour avoir 2 variables arg
     {
-
-        current_game = game_create(eggzagon, nb_colonne, nb_ligne, 1, EGGZAGON_OUTPUT_MOVE_RANGE, nb_entity);
+        current_game = game_create(egg);
 
         game_arg arg = game_arg_create(c, current_game);
-        game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
-        get_game_state(eggzagon);
-
-        game_immutable_state->nb_ligne = nb_ligne;
-        game_immutable_state->nb_colonne = nb_colonne;
+        get_game_state(egg);
         game_load(c, the_game);
+        //game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
+        game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
+        #define current_entity current_game->internal_mutable_state->current_entity
+        behavior* b = entity_behavior(current_entity);
+        rule* r = behavior_get_rule(b, 0);
+        tab_set(r->input, 0, 2);
+        //tab_set(r->input, 0, EGG_INPUT_OSEF);
+        tab_set(r->input, 1, EGG_INPUT_OSEF);
+        tab_set(r->input, 2, EGG_INPUT_OSEF);
+        tab_set(r->input, 3, EGG_INPUT_OSEF);
+        tab_set(r->input, 4, EGG_INPUT_OSEF);
+
+        tab_set(r->output, 0, EGG_OUTPUT_MOVE_UP);
     }
 }
 
@@ -46,7 +50,7 @@ void scene_jeu_update(argument arg)
 void scene_jeu_draw(argument arg)
 {
     obtenir_scene_state;
-    pen_text_at_center(c, "le jeu", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
+    //pen_text_at_center(c, "le jeu", window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5);
 
     game_draw(c, current_game);
 }
@@ -60,5 +64,6 @@ bool scene_jeu_event (argument arg)
 void scene_jeu_printf(argument arg)
 {
     obtenir_scene_state;
+    game_printf(c, current_game);
     printf("J'ai perdu au jeu \n");
 }

@@ -67,7 +67,6 @@ void scene_draw(context* c, scene* sce)
     pen_clear(c);
     pen_color(c, co);*/
 
-    global_state_draw(c);
     sce->info.draw(get_argument);
 }
 

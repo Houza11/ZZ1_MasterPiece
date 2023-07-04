@@ -8,6 +8,8 @@
 typedef vec tab;
 #define tab_as_array(_tab, _name) tab_type* _name = (tab_type*)((_tab)->values); int _name ## _size = (int)((_tab)->length);
 
+typedef char (*things_to_char_fn)(int);
+
 int  tab_get(tab* t, int idx);
 void tab_set(tab* t, int idx, int val);
 int  tab_length(tab* t);
@@ -20,5 +22,6 @@ void tab_free(tab* t);
 
 tab* tab_clone(tab* t);
 void tab_printf(tab* t);
+void tab_printf_custom(tab* t, things_to_char_fn get_char);
 
 #endif

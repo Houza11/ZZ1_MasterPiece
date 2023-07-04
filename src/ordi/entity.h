@@ -5,13 +5,17 @@
 struct rule
 {
     tab*  input;
+    tab*  output;
     rectf draw_dest;
 };
 
-rule* rule_create(int size);
+
+rule* rule_create(game* g);
+rule* rule_create_with_size(int size_input, int size_ouput);
 void  rule_free(rule* r);
 rule* rule_clone(rule* r);
 void  rule_printf(rule* r);
+void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn output);
 
 struct behavior
 {
