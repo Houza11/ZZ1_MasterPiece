@@ -28,6 +28,9 @@ typedef int8 obstacle;
 #define EGG_OBSTACLE_NONE  0
 #define EGG_OBSTACLE_ARROW 1
 
+#define EGG_OBSTACLE_ENTRY -1
+#define EGG_OBSTACLE_EXIT  -2
+
 typedef struct
 {
     // is_wall[nb_colonne][nb_ligne] aka [x][y]

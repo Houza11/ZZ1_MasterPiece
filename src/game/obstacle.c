@@ -1,5 +1,5 @@
 #include "base.h"
-#define tab_size(t) (sizeof(t)/sizeof(t[0]))
+
 
 
 void copy_pattern(game_arg arg, obstacle p[][EGG_NB_LIGNE], int size)
@@ -69,4 +69,72 @@ int pattern_add(game_arg arg, int id_pattern)
         pattern(4, e);
         default: return 0;
     }
+}
+
+obstacle** pattern_shift_match_exits(obstacle** p, obstacle* exits, int pattern_ID)
+{
+    int size = tab_size(p);
+    
+    //clone p
+    obstacle** shifted_pattern = create_array(obstacle*, size);
+    for (int i = 0; i < size; i++)
+    {
+        shifted_pattern[i] = create_array(obstacle, EGG_NB_LIGNE);
+    }
+    
+
+    //cherche une entrée et une sortie aléatoire
+    int mark_entry = -1;
+    int mark_exit  = -1;
+    // for (int i = 0; i < EGG_NB_LIGNE; i++)
+    // {
+    //     if (p[0][i] == -1)
+    //     {
+    //         mark_entry = mark_entry == -1 ? 
+    //                      i                :
+    //                      (mark_entry = rand()%EGG_NB_LIGNE == 1 ? //Proba 1/5
+    //                                    mark_entry               :
+    //                                    i);
+    //     }
+
+    //     if (exits[i] == -2)
+    //     {
+    //         mark_exit = mark_exit == -1 ? 
+    //                     i               :
+    //                     (mark_exit = rand()%EGG_NB_LIGNE == 1 ? //Proba 1/5
+    //                                   mark_exit               :
+    //                                   i);
+    //     }
+    // }
+    for (int i = 0; i < 30; i++)
+    {
+        mark_entry = rand()%EGG_NB_LIGNE;
+        if (p[0][mark_entry] == EGG_OBSTACLE_ENTRY) { break; }
+    }
+    if (p[0][mark_entry] != EGG_OBSTACLE_ENTRY) {SDL_Log("Impossible de trouver une entrée pour le pattern %d\n", pattern_ID);return NULL;}
+    
+    for (int i = 0; i < 30; i++)
+    {
+        mark_exit = rand()%EGG_NB_LIGNE;
+        if (exits[mark_exit] == EGG_OBSTACLE_EXIT) { break; }
+    }
+    if (exits[mark_entry] != EGG_OBSTACLE_EXIT) {SDL_Log("Impossible de trouver une sortie pour le pattern %d\n", pattern_ID);return NULL;}
+
+
+
+
+    int shift = mark_entry - mark_exit;
+    if (shift)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < EGG_NB_LIGNE; j++)
+            {
+                shifted_pattern[i][j] = p[i][ (j+shift + EGG_NB_LIGNE)%EGG_NB_LIGNE ];
+            }
+        }
+    }
+    return shifted_pattern;
+    
+    
 }
