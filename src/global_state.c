@@ -62,7 +62,7 @@ bool global_state_event(context* c, event* ev)
             switch (ev->key.keysym.sym)
             {
                 case SDLK_ESCAPE: c->should_exit = true; break;
-                case SDLK_r: scene_set(c, jeu); return true;
+                case SDLK_j: scene_set(c, jeu); return true;
                 case SDLK_d: scene_printf(c, (scene*)(c->scene)); return true;
                 default: break;
             }

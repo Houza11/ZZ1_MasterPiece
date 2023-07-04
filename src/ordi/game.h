@@ -30,12 +30,21 @@ struct game_mutable
     game_state state;
     rectf draw_dest;
 
+    // player or ordi
     entity* current_entity;
+
+    entity* best_ordi;
+    // of ordi*
+    vec* generation;
+    int nb_generation;
 
     // currrent player or cpu input
     tab*    input;
     int     _nb_update;
     float   draw_coef;
+
+    float best_score_player;
+    float best_score_ordi;
 };
 
 struct game
@@ -81,7 +90,6 @@ struct game_type
 
     // >= 1
     int nb_behavior;
-    entity* best_entity;
 
     // of entity
     //vec*  generation;
@@ -145,8 +153,7 @@ void game_get_input(context* c, game* g, entity* e);
 void game_get_player_input(context* c, game* g, entity* e);
 bool game_rule_match(context* c, game* g, entity* e, rule* r);
 
-entity* game_optimize(context* c, game* g);
-void    game_set_entity_type(game* g, entity_type type);
+void game_set_entity_type(game* g, entity_type type);
 
 void game_ordi_configure(game* g,
     int condition_input_size,
