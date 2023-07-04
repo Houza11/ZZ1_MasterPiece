@@ -67,10 +67,10 @@ void egg_load(game_arg arg)
     get_game_state(egg);
 
     mstate->nb_tour = 0;
-
+    mstate->player_y = egg_nb_ligne/2;
     if(need_reset)
     {
-        mstate->player_y = 0;
+      
         mstate->player_x = 0;
         dstate->player_y = mstate->player_y;
     }else
@@ -80,9 +80,11 @@ void egg_load(game_arg arg)
         dstate->arbalete = texture_create(c,"asset/arbalete.png");
         dstate->sprite_archere_walk=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
         dstate->sprite_archere_idle=sprite_sheet_create(c,"asset/archere_base.png",32,32);
+        dstate->sprite_archere_mort=sprite_sheet_create(c,"asset/mort.png",32,32);
         dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
         dstate->personnage_walk = animation_create(dstate->sprite_archere_walk,frequence_s(10));
-        dstate->personnage_idle = animation_create(dstate->sprite_archere_idle,frequence_s(10));
+        dstate->personnage_idle = animation_create(dstate->sprite_archere_idle,frequence_s(5));
+        dstate->personnage_mort = animation_create(dstate->sprite_archere_mort,frequence_s(2));
         dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
 
         istate->nb_colonne = 100;
@@ -191,7 +193,7 @@ void egg_update(game_arg arg)
 
 void egg_draw(game_arg arg)
 {
-    
+
     get_game_state(egg);
 
     float coef = draw_coef;
@@ -224,11 +226,9 @@ void egg_draw(game_arg arg)
             taille = 1.2;
         }
 
-
-        
-        pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5,y+0.5,taille/24,taille/24, 0.5, 0.5);
+        int recul = grid_get(arg, y, colonne_arbalete-1) == EGG_OBSTACLE_ARROW ? 1 : 0;        
+        pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(coef*recul),y+0.5,taille/24,taille/24, 0.5, 0.5);
     }
-
     repeat(x, nb_colonne-1)
     {
         repeat(y, nb_ligne)
@@ -248,14 +248,23 @@ void egg_draw(game_arg arg)
     dstate->player_y = moyenne_ponderee(dstate->player_y, mstate->player_y, 0.85);
 
     //float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
+    
     bool perso_base = abs(mstate->player_y-gstate->player_y) < 1/32.0f;
-    bool vers_le_haut = mstate->player_y-gstate->player_y > 0;
-    unused(vers_le_haut);
-    if(perso_base){
-        
+    bool vers_le_haut = mstate->player_y-gstate->player_y < 0;
+    
+    if(current_game_state == GAME_STATE_GAME_OVER)
+    {
+        pen_animation(c,dstate->personnage_mort,rectanglef(0, dstate->player_y, 1, 1),c->timer,0);
+
+    } 
+    else if(perso_base)
+    {
+        pen_animation(c,dstate->personnage_idle,rectanglef(0, dstate->player_y, 1, 1),c->timer,2);
+    }else {
+
+        pen_animation(c,dstate->personnage_walk,rectanglef(0, dstate->player_y, 1, 1),c->timer,(vers_le_haut ? 4:0));
     }
 
-    pen_animation(c,dstate->personnage_walk,rectanglef(0, dstate->player_y, 1, 1),c->timer,2);
    // pen_color(c, color_green);
     //pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
 
@@ -264,6 +273,11 @@ void egg_draw(game_arg arg)
     pen_formatted_text_at_center(c, 0, 2*FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%i", mstate->nb_tour);
 
     camera_pop(c);
+
+    if(current_game_state == GAME_STATE_GAME_OVER){
+         pen_formatted_text_at_center(c,window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5, "%.1f", current_entity->score);
+    }
+
 }
 
 char egg_rule_output_to_char(int output)

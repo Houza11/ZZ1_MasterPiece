@@ -49,9 +49,11 @@ typedef struct
     texture* fond;
     sprite_sheet* sprite_archere_walk;
     sprite_sheet* sprite_archere_idle;
+    sprite_sheet* sprite_archere_mort;
     sprite_sheet* sprite_fleche;
     animation* personnage_walk;
     animation* personnage_idle;
+    animation* personnage_mort;
     animation* fleche;
     texture* arbalete;
     float player_y;
