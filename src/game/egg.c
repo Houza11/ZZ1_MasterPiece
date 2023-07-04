@@ -86,6 +86,7 @@ void egg_load(game_arg arg)
     dstate->personnage=animation_create(dstate->sprite,frequence_s(10));
     mstate->player_y = 0;
     mstate->player_x = 0;
+    dstate->player_y = mstate->player_y;
 }
 
 // décharge tout sauf le mutable state
@@ -142,7 +143,7 @@ bool check_receive_damage(game_arg arg, int offset_y, int offset_x)
     get_game_state(egg);
     if(can_damage(grid_get(arg, ((mstate->player_y+offset_y)+egg_nb_ligne)%egg_nb_ligne, offset_x)))
     {
-        gstate = GAME_STATE_GAME_OVER;
+        current_game_state = GAME_STATE_GAME_OVER;
         // game over
         return true;
     }
@@ -154,12 +155,13 @@ void egg_update(game_arg arg)
 {
     get_game_state(egg);
 
-    if(gstate != GAME_STATE_RUNNING) return;
+    if(current_game_state != GAME_STATE_RUNNING) return;
     
     egg_set_default_input(arg);
     game_get_input(c,the_game, current_entity);
 
     egg_output player_input = tab_first_value(entity_input);
+    mstate->player_x++;
     
     switch (player_input)
     {
@@ -170,7 +172,6 @@ void egg_update(game_arg arg)
     mstate->player_y = (mstate->player_y+egg_nb_ligne)%egg_nb_ligne;
     if(check_receive_damage(arg, 0, 0)) return;
 
-    mstate->player_x++;
     mstate->nb_tour++;
 
     if(check_receive_damage(arg, 0, 0)) return;
@@ -179,12 +180,13 @@ void egg_update(game_arg arg)
     
 }
 
+#define egg_lerp lerpf
+
 void egg_draw(game_arg arg)
 {
     get_game_state(egg);
 
     float coef = draw_coef;
-    coef = 0;
 
     int nb_ligne = egg_nb_ligne;
     int nb_colonne = 3*egg_nb_ligne;
@@ -214,15 +216,26 @@ void egg_draw(game_arg arg)
                 rect arrow_fond_rect = texture_rect(dstate->fleche);
                 arrow_fond_rect.w /= 4;
 
-                pen_texture(c,dstate->fleche, arrow_fond_rect, rectanglef(x-coef+1, y, 0.9, 0.9));
+                int arrow_old_x = x+1;
+                int arrow_new_x = x;
+                float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
+
+                pen_texture(c,dstate->fleche, arrow_fond_rect, rectanglef(lerp, y, 0.9, 0.9));
             }
         }
     }
-    pen_animation(c,dstate->personnage,rectanglef(0, mstate->player_y, 1, 1),c->timer);
+
+    dstate->player_y = moyenne_ponderee(dstate->player_y, mstate->player_y, 0.85);
+
+    //float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
+
+    pen_animation(c,dstate->personnage,rectanglef(0, dstate->player_y, 1, 1),c->timer);
    // pen_color(c, color_green);
     //pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
 
     pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "%f", current_entity->score);
+    pen_formatted_text_at_center(c, 0, FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%.2f", coef);
+    pen_formatted_text_at_center(c, 0, 2*FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%i", mstate->nb_tour);
 
     camera_pop(c);
 }
@@ -263,8 +276,6 @@ void egg_player_input(game_arg arg, entity* e)
     }
 }
 
-
-
 bool egg_rule_match(game_arg arg, entity* e, rule* r)
 {
     get_game_state(egg);
@@ -294,6 +305,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         }
     }
 
+    //dstate->player_y
     // match
     output_single_value(tab_first_value(r->output));
 
