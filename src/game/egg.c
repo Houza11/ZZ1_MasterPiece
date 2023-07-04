@@ -82,9 +82,11 @@ void egg_load(game_arg arg)
     mstate->nb_tour = 0;
     
     dstate->fond = texture_create(c,"asset/fond.png");
-    dstate->fleche = texture_create(c,"asset/fleche.png");
-    dstate->sprite=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
-    dstate->personnage=animation_create(dstate->sprite,frequence_s(10));
+    dstate->arbalete = texture_create(c,"asset/arbalete.png");
+    dstate->sprite_archere=sprite_sheet_create(c,"asset/archere_walk_arriere.png",32,32);
+     dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
+    dstate->personnage=animation_create(dstate->sprite_archere,frequence_s(10));
+    dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
     mstate->player_y = 0;
     mstate->player_x = 0;
     dstate->player_y = mstate->player_y;
@@ -96,8 +98,11 @@ void egg_unload(game_arg arg)
     get_game_state(egg);
     texture_free(dstate->fleche);
     texture_free(dstate->fond);
-     sprite_sheet_free(dstate->sprite);
+    texture_free(dstate->arbalete);
+    sprite_sheet_free(dstate->sprite_archere);
+    sprite_sheet_free(dstate->sprite_fleche);
     animation_free(dstate->personnage);
+    animation_free(dstate->fleche);
 
     repeat(i, egg_grid->length)
     {
@@ -191,6 +196,7 @@ void egg_draw(game_arg arg)
 
     int nb_ligne = egg_nb_ligne;
     int nb_colonne = 3*egg_nb_ligne;
+    int colonne_arbalete = nb_colonne-1;
 
     rectf area = rectanglef(0,0, nb_colonne, nb_ligne);
     camera_push_focus_fullscreen(c, area);
@@ -208,7 +214,17 @@ void egg_draw(game_arg arg)
         }
     }
 
-    repeat(x, nb_colonne)
+    repeat(y,nb_ligne){
+        rect arbalete_fond_rect = texture_rect(dstate->arbalete);
+        float taille = 1;// = 1+ abs(4*sin(pi*(second(c->timer)+from_s(y/(float)nb_ligne))))*0.25;
+        if(grid_get(arg, y, colonne_arbalete) == EGG_OBSTACLE_ARROW)
+        {
+            taille = 1.2;
+        }
+        pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5,y+0.5,taille/24,taille/24, 0.5, 0.5);
+    }
+
+    repeat(x, nb_colonne-1)
     {
         repeat(y, nb_ligne)
         {
@@ -221,7 +237,7 @@ void egg_draw(game_arg arg)
                 int arrow_new_x = x;
                 float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
 
-                pen_texture(c,dstate->fleche, arrow_fond_rect, rectanglef(lerp, y, 0.9, 0.9));
+                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 1, 1),c->timer);
             }
         }
     }

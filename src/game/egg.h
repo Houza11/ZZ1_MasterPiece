@@ -47,9 +47,11 @@ typedef struct
 typedef struct
 {
     texture* fond;
-    texture* fleche;
-    sprite_sheet* sprite;
+    sprite_sheet* sprite_archere;
+    sprite_sheet* sprite_fleche;
     animation* personnage;
+    animation* fleche;
+    texture* arbalete;
     float player_y;
 } egg_draw_state;
 
