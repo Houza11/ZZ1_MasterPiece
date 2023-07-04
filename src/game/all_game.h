@@ -8,13 +8,15 @@
 #define state_mut  game_mutable_state
 #define mstate  game_mutable_state
 
+// draw state, graphical state
 #define state_draw game_draw_state
 #define dstate game_draw_state
+#define gstate game_draw_state
 
 // internal mutable state
 #define imstate  game_intern_mutable
 
-#define gstate imstate->state
+#define current_game_state imstate->state
 
 #define entity_input (game_intern_mutable->input)
 #define output_single_value(v) tab_set(entity_input, 0, v)

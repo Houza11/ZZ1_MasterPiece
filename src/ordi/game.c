@@ -117,8 +117,9 @@ game_arg game_arg_create(context* c, game* g)
 void game_update(context* c, game* g, int ups)
 {
     if(g->internal_mutable_state->state != GAME_STATE_RUNNING) return;
-    
+
     g->internal_mutable_state->draw_coef += 1.0f/ups;
+    
     if(g->internal_mutable_state->draw_coef >= 1)
     {
         g->internal_mutable_state->draw_coef = 0;

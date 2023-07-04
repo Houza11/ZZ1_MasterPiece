@@ -46,11 +46,11 @@ typedef struct
 
 typedef struct
 {
-    int dummy;
     texture* fond;
     texture* fleche;
-
-    
+    sprite_sheet* sprite;
+    animation* personnage;
+    float player_y;
 } egg_draw_state;
 
 void egg_load(game_arg arg);
