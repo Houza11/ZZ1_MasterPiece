@@ -82,7 +82,8 @@ void egg_load(game_arg arg)
     
     dstate->fond = texture_create(c,"asset/fond.png");
     dstate->fleche = texture_create(c,"asset/fleche.png");
-
+    dstate->sprite=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
+    dstate->personnage=animation_create(dstate->sprite,frequence_s(10));
     mstate->player_y = 0;
     mstate->player_x = 0;
 }
@@ -93,6 +94,8 @@ void egg_unload(game_arg arg)
     get_game_state(egg);
     texture_free(dstate->fleche);
     texture_free(dstate->fond);
+     sprite_sheet_free(dstate->sprite);
+    animation_free(dstate->personnage);
 
     repeat(i, egg_grid->length)
     {
@@ -181,12 +184,14 @@ void egg_draw(game_arg arg)
     get_game_state(egg);
 
     float coef = draw_coef;
+    coef = 0;
 
     int nb_ligne = egg_nb_ligne;
     int nb_colonne = 3*egg_nb_ligne;
 
     rectf area = rectanglef(0,0, nb_colonne, nb_ligne);
     camera_push_focus_fullscreen(c, area);
+    
 
     repeat(x, nb_colonne)
     {
@@ -209,12 +214,13 @@ void egg_draw(game_arg arg)
                 rect arrow_fond_rect = texture_rect(dstate->fleche);
                 arrow_fond_rect.w /= 4;
 
-                pen_texture(c,dstate->fleche, arrow_fond_rect, rectanglef(x-coef, y, 0.9, 0.9));
+                pen_texture(c,dstate->fleche, arrow_fond_rect, rectanglef(x-coef+1, y, 0.9, 0.9));
             }
         }
     }
-    pen_color(c, color_green);
-    pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
+    pen_animation(c,dstate->personnage,rectanglef(0, mstate->player_y, 1, 1),c->timer);
+   // pen_color(c, color_green);
+    //pen_rect(c, rectanglef(0, mstate->player_y, 1, 1));
 
     pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "%f", current_entity->score);
 
