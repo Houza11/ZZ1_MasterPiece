@@ -55,9 +55,6 @@ void init_grid(game_arg arg)
         pattern_add_empty_line(arg);
     }
 
-
-    
-
     int j = 0;
     while(j < egg_nb_colonne)
     {
@@ -69,29 +66,29 @@ void egg_load(game_arg arg)
 {
     get_game_state(egg);
 
+    mstate->nb_tour = 0;
+
     if(need_reset)
     {
-        todo;
+        mstate->player_y = 0;
+        mstate->player_x = 0;
+        dstate->player_y = mstate->player_y;
     }else
     {
         game_ordi_configure(the_game, egg_nb_ligne, EGG_INPUT_MAX_RANGE, 1, EGG_OUTPUT_MOVE_RANGE, 10);
+        dstate->fond = texture_create(c,"asset/fond.png");
+        dstate->arbalete = texture_create(c,"asset/arbalete.png");
+        dstate->sprite_archere_walk=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
+        dstate->sprite_archere_idle=sprite_sheet_create(c,"asset/archere_base.png",32,32);
+        dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
+        dstate->personnage_walk = animation_create(dstate->sprite_archere_walk,frequence_s(10));
+        dstate->personnage_idle = animation_create(dstate->sprite_archere_idle,frequence_s(10));
+        dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
+
+        istate->nb_colonne = 100;
+        init_grid(arg);
     }
     //game_type->is_loaded
-    istate->nb_colonne = 100;
-    init_grid(arg);
-    mstate->nb_tour = 0;
-    
-    dstate->fond = texture_create(c,"asset/fond.png");
-    dstate->arbalete = texture_create(c,"asset/arbalete.png");
-    dstate->sprite_archere_walk=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
-    dstate->sprite_archere_idle=sprite_sheet_create(c,"asset/archere_base.png",32,32);
-    dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
-    dstate->personnage_walk=animation_create(dstate->sprite_archere_walk,frequence_s(10));
-    dstate->personnage_idle=animation_create(dstate->sprite_archere_idle,frequence_s(10));
-    dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
-    mstate->player_y = 0;
-    mstate->player_x = 0;
-    dstate->player_y = mstate->player_y;
 }
 
 // décharge tout sauf le mutable state
@@ -104,6 +101,7 @@ void egg_unload(game_arg arg)
     sprite_sheet_free(dstate->sprite_archere_idle);
     sprite_sheet_free(dstate->sprite_fleche);
     animation_free(dstate->personnage_walk);
+    animation_free(dstate->personnage_idle);
     animation_free(dstate->fleche);
 
     repeat(i, egg_grid->length)
@@ -188,10 +186,12 @@ void egg_update(game_arg arg)
     
 }
 
+//#define egg_lerp lerpf
 #define egg_lerp lerpf
 
 void egg_draw(game_arg arg)
 {
+    
     get_game_state(egg);
 
     float coef = draw_coef;
@@ -223,6 +223,9 @@ void egg_draw(game_arg arg)
         {
             taille = 1.2;
         }
+
+
+        
         pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5,y+0.5,taille/24,taille/24, 0.5, 0.5);
     }
 
@@ -247,7 +250,7 @@ void egg_draw(game_arg arg)
     //float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
     bool perso_base = abs(mstate->player_y-gstate->player_y) < 1/32.0f;
     bool vers_le_haut = mstate->player_y-gstate->player_y > 0;
-
+    unused(vers_le_haut);
     if(perso_base){
         
     }
