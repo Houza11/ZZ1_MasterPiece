@@ -191,7 +191,6 @@ entity* entity_clone(entity* e)
     entity* copy = entity_create(e->type, e->_behavior);
     copy->score = e->score;
     copy->id = e->id;
-    copy->_behavior = behavior_clone(e->_behavior);
     return copy;
 }
 void entity_printf(game* g, entity* e)

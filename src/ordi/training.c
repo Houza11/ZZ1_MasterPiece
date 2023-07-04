@@ -37,6 +37,7 @@ void gen_set(game* g, int idx, entity* e_will_be_copied)
 
 bool replace_best_entity_if_needed(context* c, game* g, entity* e)
 {
+    //return false;
     unused(c);
     if(e->type != ENTITY_TYPE_ORDI) return false;
 
@@ -48,7 +49,6 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
         }
         best_entity = entity_clone(e);
         
-
         entity_behavior_set(cur_entity, entity_behavior(e));
         
         //float score = cur_entity->score;
@@ -65,10 +65,12 @@ void game_choose_next_generation(context* c, game* g)
 {
     unused(c);
 
+
     g->internal_mutable_state->nb_generation++;
     gen_idx_training = 0;
     gen_current_idx_nb_update = 0;
     //current_entity = null;
+    //return;
 
     repeat(i, gen_length)
     {
@@ -93,7 +95,7 @@ void game_choose_next_generation(context* c, game* g)
     //vec_set(gen, entity*, 0, entity_clone(best_entity));
 
     //return;
-    //gen_set(g, 0, best_entity);
+    gen_set(g, 0, best_entity);
 }
 
 void game_init_training_if_needed(context* c, game* g)
@@ -143,6 +145,7 @@ void update_current_entity(context* c, game* g)
     //current_entity = entity_clone(gen_current_entity);
     //current_entity->score = 0;
     game* copy = game_clone(c, g);
+
     copy->internal_mutable_state->current_entity = gen_current_entity;
     game_reset(c, copy);
 
