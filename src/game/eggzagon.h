@@ -39,6 +39,8 @@ typedef struct
     int dummy;
     texture* fond;
     texture* fleche;
+    sprite_sheet* sprite;
+    animation* personnage;
 
     
 } eggzagon_draw_state;

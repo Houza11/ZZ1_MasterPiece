@@ -50,7 +50,8 @@ void eggzagon_load(game_arg arg)
     
     dstate->fond = texture_create(c,"asset/fond.png");
     dstate->fleche = texture_create(c,"asset/fleche.png");
-
+    //dstate->sprite=sprite_sheet_create(c,"asset/archere.png",0.7,0.7);
+    //dstate->personnage=animation_create(dstate->sprite,frequence_s(10));
     mstate->player_pos_y = 0;
     mstate->grille_x = 0;
 }
@@ -61,6 +62,9 @@ void eggzagon_unload(game_arg arg)
     get_game_state(eggzagon);
     texture_free(dstate->fleche);
     texture_free(dstate->fond);
+   // sprite_sheet_free(dstate->sprite);
+    //animation_free(dstate->personnage);
+    
 
     repeat(i, egg_grid->length)
     {
@@ -142,7 +146,7 @@ void eggzagon_draw(game_arg arg)
 {
     get_game_state(eggzagon);
 
-    //float coef = draw_coef;
+    float coef = draw_coef;
 
     rectf area = rectanglef(0,0, istate->nb_colonne+1, istate->nb_ligne+1);
     camera_push_focus_fullscreen(c, area);
@@ -153,9 +157,13 @@ void eggzagon_draw(game_arg arg)
         repeat(y, istate->nb_ligne)
         {
             rect fond_rect = texture_rect(dstate->fond);
-            fond_rect.w /= 2;
-            if()
+            if(istate->nb_ligne%2==0){
+            fond_rect.x/=2;
             pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
+            }
+            if(istate->nb_ligne%2 != 0){
+            pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
+            }
         }
     }
 
@@ -171,12 +179,14 @@ void eggzagon_draw(game_arg arg)
             
             if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
             {
-                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x, y+istate->nb_ligne-1, 0.9, 0.9));
+                pen_texture(c,dstate->fleche,texture_rect(dstate->fleche), rectanglef(x-coef, y, 0.7, 0.7));
             }
         }
     }
-    pen_color(c, color_green);
-    pen_rect(c, rectanglef(0, mstate->player_pos_y, 1, 1));
+
+   // pen_animation_at(c,dstate->personnage,0,mstate->player_pos_y,0.5,0.5,frequence_s(10));
+    //pen_color(c, color_green);
+    //pen_rect(c, rectanglef(0, mstate->player_pos_y, 1, 1));
 
     camera_pop(c);
 
