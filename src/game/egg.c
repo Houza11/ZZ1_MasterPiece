@@ -350,6 +350,9 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
     tab_as_array(r->input, rule_in);
     unused(rule_in_size);
 
+
+    int time_deformation[] = {0, 0, 1, 1, 0};
+
     repeat(y, egg_nb_ligne)
     {
         if(rule_in[y] == EGG_INPUT_OSEF) continue;
@@ -358,15 +361,15 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         int dx = EGG_INPUT_MAX_RANGE;
         repeat(x, EGG_INPUT_MAX_RANGE+1) // -1 because of the Osef symbol
         {
-            if(egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus)))
+            if(egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus+time_deformation[y])))
             {
-                dx = x+1;
-                break;;
+                dx = x;
+                break;
             }
         }
         //dx += 2; //d in [1, EGG_INPUT_MAX_RANGE]
 
-        if(dx >= rule_in[y])
+        if(dx > rule_in[y])
         {
             return false;
         }
