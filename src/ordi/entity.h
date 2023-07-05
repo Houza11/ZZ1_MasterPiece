@@ -7,6 +7,7 @@ struct rule
     tab*  input;
     tab*  output;
     rectf draw_dest;
+    int   nb_match;
 };
 
 

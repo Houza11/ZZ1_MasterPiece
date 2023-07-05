@@ -27,6 +27,7 @@ rule* rule_clone(rule* r)
     copy->input  = tab_clone(r->input);
     copy->output = tab_clone(r->output);
     copy->draw_dest = r->draw_dest;
+    copy->nb_match = r->nb_match;
     return copy;
 }
 

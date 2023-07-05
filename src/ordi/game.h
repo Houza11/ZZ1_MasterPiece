@@ -46,7 +46,7 @@ struct game_mutable
 
     // currrent player or cpu input
     tab*    input;
-    int     _nb_update;
+    int     nb_update;
     float   draw_coef;
 
     float gen_delta_score;

@@ -44,9 +44,10 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
     unused(c);
     if(e->type != ENTITY_TYPE_ORDI) return false;
 
-    if(((best_entity == null) || (e->score > best_entity->score)) && (e != best_entity))
+    //if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && e->behavior->rules->length < best_entity->behavior->rules->length))))
+    if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && ((rand()%100)<=64)))))
+    //if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && ((rand()%100)<=64) && (e->behavior->rules->length < 4+best_entity->behavior->rules->length)))))
     {
-
         if(best_entity != null)
         {
             float old_score = best_entity->score;
@@ -164,16 +165,31 @@ void game_choose_next_generation(context* c, game* g)
         entity* e = vec_get(next_gen, entity*, i);
         behavior* b = e->behavior;
 
+
         // mutation
         repeat(r_idx, behavior_nb_rule(b))
         {
             rule* r = behavior_get_rule(b, r_idx);
+            
+            if(r->nb_match == 0)
+            {
+                if(rand()%100 <= 50 || b->rules->length <= 1)
+                {
+                    rule_randomize(g, r);
+                }else
+                {
+                    vec_remove_at(b->rules, r_idx);
+                    rule_free(r);
+                    r_idx--;
+                    continue;
+                }
+            }
 
             int nb_mut;
 
             nb_mut = gtype->condition_input_size;
             nb_mut = (rand() % nb_mut)+1;
-            //nb_mut = (rand() % nb_mut);
+            nb_mut = (rand() % nb_mut);
 
             repeat(i, nb_mut)
             {   
@@ -183,7 +199,7 @@ void game_choose_next_generation(context* c, game* g)
 
             nb_mut = gtype->condition_output_size;
             nb_mut = (rand() % nb_mut)+1;
-            //nb_mut = (rand() % nb_mut);
+            nb_mut = (rand() % nb_mut);
 
             repeat(i, nb_mut)
             {   
@@ -195,10 +211,14 @@ void game_choose_next_generation(context* c, game* g)
         // add rule
         if(rand() % 100 <= 50)
         {
-            rule* r = rule_create(g);
-            rule_randomize(g, r);
-            behavior_add_rule(b, r);
-            rule_free(r);
+            int nb_add = 1+(rand()%100 <= 20 ? 1 : 0);
+            repeat(_, nb_add);
+            {
+                rule* r = rule_create(g);
+                rule_randomize(g, r);
+                behavior_add_rule(b, r);
+                rule_free(r);
+            }
         }else if(rand() % 100 <= 5 && b->rules->length > 1)
         {
             int j = rand()%b->rules->length;
@@ -217,7 +237,7 @@ void game_choose_next_generation(context* c, game* g)
         }
     }
 
-    if(mstate->nb_generation % 50 == 0)
+    if(mstate->nb_generation % 800 == 0)
     {
         game_glouton(c, g, next_gen, best_entity, (mstate->nb_generation / 20));
     }
@@ -338,6 +358,10 @@ void update_current_entity(context* c, game* g)
     game* copy = game_clone(c, g);
 
     copy->internal_mutable_state->current_entity = gen_current_entity;
+    repeat(i, behavior_nb_rule(gen_current_entity->behavior))
+    {
+        behavior_get_rule(gen_current_entity->behavior, i)->nb_match = 0;
+    }
     game_reset(c, copy);
 
     gen_current_idx_nb_update = 0;
@@ -360,7 +384,8 @@ void game_train_best_ordi(context* c, game* g)
     //return;
     game_init_training_if_needed(c, g);
 
-    repeat(i, 100)
+    repeat(i, 10)
+    //repeat(i, 100)
     {
         update_current_entity(c, g);
         if(gen_current_entity == null)

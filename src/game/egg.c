@@ -241,9 +241,9 @@ void egg_draw(game_arg arg)
     rectf area = rectanglef(-1,-1, nb_colonne+2, nb_ligne+2);
     area = camera_push_focus_fullscreen(c, area);
     
-    for(int x = floor(area.x); x < ceiling(area.w)+1; x++)
+    for(int x = floor(area.x); x <= area.w; x++)
     {
-        for(int y = floor(area.y); y < ceiling(area.h)+1; y++)
+        for(int y = floor(area.y); y <= area.h; y++)
         {
             // flèche
             rect fond_rect = texture_rect(dstate->fond);

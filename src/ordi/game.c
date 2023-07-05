@@ -110,7 +110,7 @@ game* game_create_arg(
     {
         m->draw_dest = window_rectf(c);
         m->state = GAME_STATE_RUNNING;        
-        m->_nb_update = 0;
+        m->nb_update = 0;
 
         m->best_score_player = 0; 
         m->best_score_ordi   = 0; 
@@ -154,7 +154,13 @@ void game_update(context* c, game* g, int ups)
 void game_update_fixed(context* c, game* g)
 {
     check(gtype->is_loaded == true);
-    g->internal_mutable_state->_nb_update++;
+    if(g->internal_mutable_state->state != GAME_STATE_GAME_OVER)
+    {
+        g->internal_mutable_state->nb_update++;
+    }
+
+
+    gtype->update(arg);
 
     entity* e = g->internal_mutable_state->current_entity;
     float score = e->score;
@@ -165,7 +171,6 @@ void game_update_fixed(context* c, game* g)
     {
         g->internal_mutable_state->best_score_ordi = score;
     }
-    gtype->update(arg);
 }
 
 void game_load(context* c, game* g)
@@ -174,6 +179,7 @@ void game_load(context* c, game* g)
     gtype->load(arg);
     g->internal_mutable_state->draw_coef = 0;
     g->internal_mutable_state->state = GAME_STATE_RUNNING;
+    g->internal_mutable_state->nb_update = 0;
     gtype->is_loaded = true;
     
 }
@@ -250,7 +256,7 @@ void game_unload(context* c, game* g)
 game_mutable* game_internal_mutable_clone(game_mutable* mut)
 {
     game_mutable* copy = create(game_mutable);
-    copy->_nb_update = mut->_nb_update;
+    copy->nb_update = mut->nb_update;
     copy->draw_dest = mut->draw_dest;
     copy->input = tab_clone(mut->input);
     copy->state = mut->state;
@@ -336,13 +342,16 @@ void game_get_input(context* c, game* g, entity* e)
     
     tab_clear(g->internal_mutable_state->input, 0);
 
-    repeat(i, behavior_nb_rule(b))
+
+    //repeat(i, behavior_nb_rule(b))
+    for(int i = behavior_nb_rule(b)-1; i>=0;i--)
     {
         rule* r = behavior_get_rule(b, i);
 
         if(gtype->rule_match(arg, e, r)) 
         {
-            return;
+            r->nb_match++;
+            //return;
         }
     }
 }

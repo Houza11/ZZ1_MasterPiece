@@ -9,26 +9,30 @@ typedef int vs_output;
 #define VS_OUTPUT_MOVE_DOWN   2
 #define VS_OUTPUT_MOVE_RIGHT  3
 #define VS_OUTPUT_MOVE_LEFT   4
+#define VS_OUTPUT_MOVE_BOW    5
+#define VS_OUTPUT_MOVE_SWORD  6
 
-#define VS_OUTPUT_MOVE_RANGE  5
+#define VS_OUTPUT_MOVE_RANGE  7
 
 typedef int vs_input;
 
 #define VS_INPUT_OSEF          0
-#define VS_INPUT_SOL           1
-#define VS_INPUT_MUR           2
-#define VS_INPUT_DAMAGE        3
-#define VS_INPUT_FUTUR_DAMAGE  4
+#define VS_INPUT_SOL           (VS_INPUT_OSEF+1)
+#define VS_INPUT_OUT_OF_ARENA  (VS_INPUT_OSEF+2)
+#define VS_INPUT_DAMAGE        (VS_INPUT_OSEF+3)
+#define VS_INPUT_FUTUR_DAMAGE  (VS_INPUT_OSEF+4)
+#define VS_INPUT_ENEMY_NORMAL  (VS_INPUT_OSEF+5)
 
-#define VS_INPUT_ENEMY_NORMAL  5
-#define VS_INPUT_ENEMY_BOW_LOADING 6
+//#define VS_INPUT_MUR           6
+
+//#define VS_INPUT_ENEMY_BOW_LOADING 6
 /*
 #define VS_INPUT_ENEMY_RIGHT 5
 #define VS_INPUT_ENEMY_LEFT  6
 #define VS_INPUT_ENEMY_UP    7
 #define VS_INPUT_ENEMY_DOWN  8
 */
-#define VS_INPUT_MAX_RANGE   7
+#define VS_INPUT_MAX_RANGE   (VS_INPUT_ENEMY_NORMAL+1)
 
 #define vs_nb_colonne_x 7
 #define vs_nb_ligne_y   7
@@ -43,21 +47,31 @@ typedef struct
 typedef int vs_entity_state;
 #define vs_entity_state_dead         0
 #define vs_entity_state_normal       1
-#define vs_entity_state_load_bow     2
-#define vs_entity_state_attack_sword 3
+#define vs_entity_state_load_bow     VS_OUTPUT_MOVE_BOW
+#define vs_entity_state_attack_sword VS_OUTPUT_MOVE_SWORD
+#define vs_entity_state_win          9
+
 
 typedef int vs_entity_dir;
-#define vs_entity_dir_right 0
-#define vs_entity_dir_left  1
-#define vs_entity_dir_up    2
-#define vs_entity_dir_down  3
+#define vs_entity_dir_up    VS_OUTPUT_MOVE_UP
+#define vs_entity_dir_down  VS_OUTPUT_MOVE_DOWN
+#define vs_entity_dir_right VS_OUTPUT_MOVE_RIGHT
+#define vs_entity_dir_left  VS_OUTPUT_MOVE_LEFT
+/*
+#define vs_entity_dir_right_down  5
+#define vs_entity_dir_right_up    6
+#define vs_entity_dir_left_down   7
+#define vs_entity_dir_left_up     8
+*/
 
+#define vs_bow_loading_time 2
 typedef struct
 {
     int x;
     int y;
     vs_entity_state state;
     vs_entity_dir direction;
+    int var_0;
 }vs_entity;
 
 #define VS_DAMAGE VS_INPUT_DAMAGE

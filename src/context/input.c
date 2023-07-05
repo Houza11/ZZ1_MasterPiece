@@ -90,6 +90,14 @@ bool input_event(context* c, event* ev)
                     push_action(c, action_down);
                 break;
 
+                case SDLK_SPACE:
+                    push_action(c, action_sp0);
+                break;
+
+                case SDLK_n:
+                    push_action(c, action_sp1);
+                break;
+
                 default: break;
             }
         }
@@ -120,7 +128,9 @@ bool action_consume(context* c, action action)
     return false;
 }
 
-bool input_right(context* c) { return action_consume(c, action_right); }
+bool input_right(context* c) { return action_consume(c, action_right);}
 bool input_left (context* c) { return action_consume(c, action_left); }
-bool input_up   (context* c) { return action_consume(c, action_up); }
+bool input_up   (context* c) { return action_consume(c, action_up);   }
 bool input_down (context* c) { return action_consume(c, action_down); }
+bool input_special0(context* c) { return action_consume(c, action_sp0);  }
+bool input_special1(context* c) { return action_consume(c, action_sp1);  }

@@ -40,6 +40,8 @@ bool input_right(context* c);
 bool input_left (context* c);
 bool input_up   (context* c);
 bool input_down (context* c);
+bool input_special0(context* c);
+bool input_special1(context* c);
 
 #define action_expiration from_ms(500)
 
