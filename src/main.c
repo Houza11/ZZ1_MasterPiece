@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     window_center_coef(c, 0.5, 0.5);
 
 
-    scene_set(c, jeu);
-    //scene_set(c, titre);
+    //scene_set(c, jeu);
+    scene_set(c, versus);
     
     while (!c->should_exit)
     {

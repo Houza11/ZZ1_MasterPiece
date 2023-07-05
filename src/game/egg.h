@@ -74,9 +74,9 @@ void egg_player_input(game_arg arg, entity* e);
 bool egg_rule_match(game_arg arg, entity* e, rule* r);
 
 
-void grid_set(game_arg arg, int ligne, int colonne, obstacle val);
-obstacle grid_get(game_arg arg, int ligne, int colonne);
-void grid_push_colonne(game_arg arg, vec* v);
+void egg_grid_set(game_arg arg, int ligne, int colonne, obstacle val);
+obstacle egg_grid_get(game_arg arg, int ligne, int colonne);
+void egg_grid_push_colonne(game_arg arg, vec* v);
 
 char egg_rule_output_to_char(int output);
 char egg_rule_input_to_char(int input);
