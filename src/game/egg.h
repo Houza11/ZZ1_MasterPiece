@@ -13,7 +13,15 @@ typedef int egg_input;
 // 1-3 : Range
 // 
 #define EGG_INPUT_OSEF      0
+
+#define EGG_RULE_BASED_ON_RANGE
+
+#ifdef EGG_RULE_BASED_ON_RANGE
 #define EGG_INPUT_MAX_RANGE 7
+#define EGG_RULE_USE_DENSITY
+#else
+#define EGG_INPUT_MAX_RANGE 4
+#endif
 
 typedef struct
 {
@@ -74,9 +82,9 @@ void egg_player_input(game_arg arg, entity* e);
 bool egg_rule_match(game_arg arg, entity* e, rule* r);
 
 
-void grid_set(game_arg arg, int ligne, int colonne, obstacle val);
-obstacle grid_get(game_arg arg, int ligne, int colonne);
-void grid_push_colonne(game_arg arg, vec* v);
+void egg_grid_set(game_arg arg, int ligne, int colonne, obstacle val);
+obstacle egg_grid_get(game_arg arg, int ligne, int colonne);
+void egg_grid_push_colonne(game_arg arg, vec* v);
 
 char egg_rule_output_to_char(int output);
 char egg_rule_input_to_char(int input);

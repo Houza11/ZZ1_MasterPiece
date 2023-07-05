@@ -67,5 +67,5 @@ void texture_free(texture* t)
 
 void texture_printf()
 {
-    printf("texture %i chargée\n", nb_texture);
+    printf("texture : %i actives\n", nb_texture);
 }
