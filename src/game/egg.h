@@ -13,7 +13,15 @@ typedef int egg_input;
 // 1-3 : Range
 // 
 #define EGG_INPUT_OSEF      0
+
+#define EGG_RULE_BASED_ON_RANGE
+
+#ifdef EGG_RULE_BASED_ON_RANGE
 #define EGG_INPUT_MAX_RANGE 7
+#define EGG_RULE_USE_DENSITY
+#else
+#define EGG_INPUT_MAX_RANGE 4
+#endif
 
 typedef struct
 {
