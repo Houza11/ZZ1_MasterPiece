@@ -109,6 +109,7 @@ void egg_load(game_arg arg)
         dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
         dstate->sprite_robot_walk=sprite_sheet_create(c, "asset/robot_walk.png", 32,32);
         dstate->sprite_robot_mort=sprite_sheet_create(c, "asset/mort_robot.png", 32,32);
+        dstate->sprite_portail_haut=sprite_sheet_create(c,"asset/portail.png",48,48);
         dstate->personnage_walk = animation_create(dstate->sprite_archere_walk,frequence_s(10));
         dstate->personnage_idle = animation_create(dstate->sprite_archere_idle,frequence_s(3));
         dstate->personnage_mort = animation_create(dstate->sprite_archere_mort,frequence_s(2));
