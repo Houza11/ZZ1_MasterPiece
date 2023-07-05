@@ -30,6 +30,18 @@ rule* rule_clone(rule* r)
     return copy;
 }
 
+void rule_randomize(game* g, rule* r)
+{
+    repeat(i, r->input->length)
+    {
+        tab_set(r->input, i, rand()% g->type->condition_input_max_range);
+    }
+    repeat(i, r->output->length)
+    {
+        tab_set(r->output, i, rand()% g->type->condition_output_max_range);
+    }
+}
+
 void rule_printf(game* g, rule* r)
 {
     rule_printf_custom(r, g->type->input_to_char, g->type->output_to_char);
@@ -141,12 +153,11 @@ void entity_init_random(game* g, entity* e)
     e->score = 0;
 }
 
-entity* entity_create_ordi_random(game* g)
+entity* entity_create_ordi_random(game* g, int default_nb_rule)
 {
     behavior* b = behavior_empty();
     rule* r_default = rule_create(g);
 
-    #define default_nb_rule 1
     repeat(i, default_nb_rule)
     {
         behavior_add_rule(b, r_default);

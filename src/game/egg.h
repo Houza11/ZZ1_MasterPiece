@@ -17,7 +17,7 @@ typedef int egg_input;
 #define EGG_RULE_BASED_ON_RANGE
 
 #ifdef EGG_RULE_BASED_ON_RANGE
-#define EGG_INPUT_MAX_RANGE 7
+#define EGG_INPUT_MAX_RANGE 6
 #define EGG_RULE_USE_DENSITY
 #else
 #define EGG_INPUT_MAX_RANGE 4

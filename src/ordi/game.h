@@ -96,6 +96,7 @@ struct game_type
     int condition_output_size;
     int condition_output_max_range;
 
+    int total_entities_generated;
     // >= 1
     int nb_behavior;
 

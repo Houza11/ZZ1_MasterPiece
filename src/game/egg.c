@@ -431,7 +431,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         int dx = EGG_INPUT_MAX_RANGE;
 
         #ifdef EGG_RULE_USE_DENSITY
-        int density;
+        int density = 0;
 
         for(int x = EGG_INPUT_MAX_RANGE; x >= 0; x--)
         #else
@@ -440,11 +440,12 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         {
             if(egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus+time_deformation[y])))
             {
-                dx = x;
 
                 #ifdef EGG_RULE_USE_DENSITY
                 density++;
+                dx = x;
                 #else
+                dx = x+1;
                 break;
                 #endif
             }
@@ -459,7 +460,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         #ifdef EGG_RULE_USE_DENSITY
         if(rule_in[yr+1] == 0) continue; // Osef
 
-        if(density < rule_in[yr+1])
+        if((density+1) < rule_in[yr+1])
         {
             return false;
         }

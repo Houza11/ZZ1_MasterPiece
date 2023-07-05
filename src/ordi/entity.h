@@ -16,7 +16,7 @@ void  rule_free(rule* r);
 rule* rule_clone(rule* r);
 void  rule_printf(game* g, rule* r);
 void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn output);
-
+void rule_randomize(game* g, rule* r);
 struct behavior
 {
     vec* /* rule* */ rules;
@@ -47,7 +47,7 @@ struct entity
 };
 
 entity* entity_create(entity_type type, behavior* b_will_be_cloned);
-entity* entity_create_ordi_random(game* g);
+entity* entity_create_ordi_random(game* g, int default_nb_rule);
 entity* entity_clone(entity* e);
 void entity_init_random(game* g, entity* e);
 void entity_behavior_set(entity* e, behavior* b_will_be_cloned);
