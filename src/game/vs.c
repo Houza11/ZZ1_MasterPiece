@@ -1,6 +1,6 @@
 #include "base.h"
 
-
+#if 0
 #define offset_animation_bonus 3
 #define arbalete_range 15
 bool can_damage(int id)
@@ -55,13 +55,13 @@ void init_grid(game_arg arg)
 
     repeat(i, arbalete_range)
     {
-        egg_pattern_add_empty_line(arg);
+        pattern_add_empty_line(arg);
     }
 
     int j = 0;
     while(j < egg_nb_colonne)
     {
-        j += egg_pattern_add(arg, -1);
+        j += pattern_add(arg, -1);
     }
 }
 
@@ -386,3 +386,4 @@ void egg_printf(game_arg arg)
     unused(arg);
     printf("eggzagon game\n");
 }
+#endif

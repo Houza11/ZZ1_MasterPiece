@@ -1,7 +1,14 @@
 #include "base.h"
 #define tab_size(t) (sizeof(t)/sizeof(t[0]))
 
-
+void egg_pattern_free(obstacle** p, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        free(p[i]);
+    }
+    free(p);
+}
 
 void copy_pattern(game_arg arg, obstacle p[][egg_nb_ligne], int size)
 {
@@ -24,7 +31,7 @@ void copy_pattern(game_arg arg, obstacle p[][egg_nb_ligne], int size)
 #define pattern(number, pattern_name) case number: pattern_shift_match_exits(arg, pattern_name, number, tab_size(pattern_name)); return tab_size(pattern_name);
 #define pattern_create(name) obstacle name[][egg_nb_ligne]
 
-void pattern_add_empty_line(game_arg arg)
+void egg_pattern_add_empty_line(game_arg arg)
 {
     pattern_create(a) = {
         {-2,-2,-2,-2,-2}
@@ -92,20 +99,11 @@ int pattern_shift_match_exits(game_arg arg, obstacle p[][egg_nb_ligne], int patt
         }
         grid_push_colonne(arg, line);
     }
-    pattern_free(shifted_pattern, size);
+    egg_pattern_free(shifted_pattern, size);
     return 0;
 }
 
-void pattern_free(obstacle** p, int size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        free(p[i]);
-    }
-    free(p);
-}
-
-int pattern_add(game_arg arg, int id_pattern)
+int egg_pattern_add(game_arg arg, int id_pattern)
 {
     //Liste des patterns
     pattern_create(a) = {
