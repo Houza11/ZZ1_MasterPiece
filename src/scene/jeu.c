@@ -22,6 +22,7 @@ void scene_jeu_load(argument arg)
         game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
         //game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
         #define current_entity current_game->internal_mutable_state->current_entity
+        /*
         behavior* b = entity_behavior(current_entity);
         rule* r = behavior_get_rule(b, 0);
         tab_set(r->input, 0, 1);
@@ -31,7 +32,7 @@ void scene_jeu_load(argument arg)
         tab_set(r->input, 3, EGG_INPUT_OSEF);
         tab_set(r->input, 4, EGG_INPUT_OSEF);
 
-        tab_set(r->output, 0, EGG_OUTPUT_MOVE_UP);
+        tab_set(r->output, 0, EGG_OUTPUT_MOVE_UP);*/
     }
 }
 

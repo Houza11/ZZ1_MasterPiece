@@ -91,7 +91,16 @@ void egg_load(game_arg arg)
 
     }else
     {
-        game_ordi_configure(the_game, egg_nb_ligne, EGG_INPUT_MAX_RANGE, 1, EGG_OUTPUT_MOVE_RANGE, 10);
+
+        #ifdef EGG_RULE_BASED_ON_RANGE
+            #ifdef EGG_RULE_USE_DENSITY
+            game_ordi_configure(the_game, 2*egg_nb_ligne, EGG_INPUT_MAX_RANGE, 1, EGG_OUTPUT_MOVE_RANGE, 10);
+            #else
+            game_ordi_configure(the_game, egg_nb_ligne, EGG_INPUT_MAX_RANGE, 1, EGG_OUTPUT_MOVE_RANGE, 10);
+            #endif
+        #else
+        game_ordi_configure(the_game, egg_nb_ligne*EGG_INPUT_MAX_RANGE, 2, 1, EGG_OUTPUT_MOVE_RANGE, 10);
+        #endif
         dstate->fond = texture_create(c,"asset/fond.png");
         dstate->arbalete = texture_create(c,"asset/arbalete.png");
         dstate->sprite_archere_walk=sprite_sheet_create(c,"asset/archere_walk.png",32,32);
@@ -331,7 +340,11 @@ char egg_rule_output_to_char(int output)
 }
 char egg_rule_input_to_char(int input)
 {
-    return "X0123456789"[input];
+    #ifdef EGG_RULE_BASED_ON_RANGE
+        return "X0123456789"[input];
+    #else
+        return "X.!"[input];
+    #endif
 }
 
 void egg_draw_rule(game_arg arg, entity* e, rule* r, int idx)
@@ -371,27 +384,77 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
     tab_as_array(r->input, rule_in);
     unused(rule_in_size);
 
+    int time_deformation[] = {0, 0, 1, 1, 0};
+
+    #ifdef EGG_RULE_BASED_ON_RANGE
     repeat(y, egg_nb_ligne)
     {
-        if(rule_in[y] == EGG_INPUT_OSEF) continue;
+        int yr;
+        #ifdef EGG_RULE_USE_DENSITY
+        yr = 2*y;
+        #else
+        yr = y;
+        #endif
+
+        if(rule_in[yr] == EGG_INPUT_OSEF) continue;
 
         // distance pour le prochain osbtacle
         int dx = EGG_INPUT_MAX_RANGE;
+
+        #ifdef EGG_RULE_USE_DENSITY
+        int density;
+
+        for(int x = EGG_INPUT_MAX_RANGE; x >= 0; x--)
+        #else
         repeat(x, EGG_INPUT_MAX_RANGE+1) // -1 because of the Osef symbol
+        #endif
         {
-            if(egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus)))
+            if(egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus+time_deformation[y])))
             {
-                dx = x+1;
-                break;;
+                dx = x;
+
+                #ifdef EGG_RULE_USE_DENSITY
+                density++;
+                #else
+                break;
+                #endif
             }
         }
         //dx += 2; //d in [1, EGG_INPUT_MAX_RANGE]
 
-        if(dx >= rule_in[y])
+        if(dx > rule_in[yr])
         {
             return false;
         }
+
+        #ifdef EGG_RULE_USE_DENSITY
+        if(rule_in[yr+1] == 0) continue; // Osef
+
+        if(density < rule_in[yr+1])
+        {
+            return false;
+        }
+        #endif
+
     }
+    #else
+    //egg_nb_ligne*EGG_INPUT_MAX_RANGE
+    #define index(x,y) (y*EGG_INPUT_MAX_RANGE+x)
+
+    repeat(y, egg_nb_ligne)
+    {
+        repeat(x, EGG_INPUT_MAX_RANGE)
+        {
+            int rval = rule_in[index(x,y)];
+            if(rval == EGG_INPUT_OSEF) continue;
+
+            if(rval != (egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus+time_deformation[y]))))
+            {
+                return false;
+            }
+        }
+    }
+    #endif
 
     //dstate->player_y
     // match
