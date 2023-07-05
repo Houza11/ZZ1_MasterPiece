@@ -24,7 +24,7 @@ void scene_jeu_load(argument arg)
         #define current_entity current_game->internal_mutable_state->current_entity
         behavior* b = entity_behavior(current_entity);
         rule* r = behavior_get_rule(b, 0);
-        tab_set(r->input, 0, 2);
+        tab_set(r->input, 0, 1);
         //tab_set(r->input, 0, EGG_INPUT_OSEF);
         tab_set(r->input, 1, EGG_INPUT_OSEF);
         tab_set(r->input, 2, EGG_INPUT_OSEF);

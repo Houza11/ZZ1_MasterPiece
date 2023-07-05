@@ -80,7 +80,7 @@ void game_choose_next_generation(context* c, game* g)
             rule_free(r);
             //printf("%i\n", e->behavior->rules->length);
         }
-        gen_delta_score = 50;
+        gen_delta_score = 100;
     }
 
 
@@ -117,6 +117,31 @@ void game_choose_next_generation(context* c, game* g)
     gen_set(g, 0, best_entity);
 }
 
+
+
+void import_best_entity(context* c, game* g)
+{
+    unused(c);
+    file* f = game_get_save_file(g, "r");
+
+    if(f == null) 
+    { 
+        printf("import failed, no file");
+        return;
+    }
+
+    entity* e = game_import_one_entity(g, f);
+    if(e != null)
+    {
+        printf("import succeed");
+        vec_add(gen, entity*, e);
+    }else
+    {
+        printf("import failed, no entity null");
+    }
+    fclose(f);
+}
+
 void game_init_training_if_needed(context* c, game* g)
 {
     unused(c);
@@ -130,6 +155,7 @@ void game_init_training_if_needed(context* c, game* g)
 
     gen = vec_empty(entity*);
 
+    import_best_entity(c,g);
     repeat(i, entity_per_gen)
     {
         vec_add(gen, entity*, entity_create_ordi_random(g));
@@ -141,7 +167,7 @@ void game_init_training_if_needed(context* c, game* g)
     gen_idx_training = 0;
     gen_current_idx_nb_update = 0;
     // hardcoder
-    gen_max_update_per_entity = 64;
+    gen_max_update_per_entity = 128;
     gen_delta_score = 4;
 }
 
@@ -185,6 +211,7 @@ void update_current_entity(context* c, game* g)
 // train the generation, and choose the best
 void game_train_best_ordi(context* c, game* g)
 {
+    //return;
     game_init_training_if_needed(c, g);
 
     repeat(i, 100)
