@@ -116,9 +116,9 @@ int egg_pattern_add(game_arg arg, int id_pattern)
     };
     pattern_create(b) = {
         {-1, 1, 1, 1, 1},
-        { 0, 0, 1, 1, 1},
-        { 0, 1, 0, 1, 1},
-        { 0, 1, 1, 0, 1},
+        { 1, 0, 1, 1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 1, 1, 0, 1},
         { -2, 1, 1, 1,-2}
     };
     pattern_create(c) = {
