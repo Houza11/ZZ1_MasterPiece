@@ -126,18 +126,18 @@ void import_best_entity(context* c, game* g)
 
     if(f == null) 
     { 
-        printf("import failed, no file");
+        printf("import failed, no file\n");
         return;
     }
 
     entity* e = game_import_one_entity(g, f);
     if(e != null)
     {
-        printf("import succeed");
+        printf("import succeed\n");
         vec_add(gen, entity*, e);
     }else
     {
-        printf("import failed, no entity null");
+        printf("import failed, entity null\n");
     }
     fclose(f);
 }

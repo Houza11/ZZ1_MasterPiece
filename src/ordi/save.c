@@ -3,15 +3,11 @@
 
 file* game_get_save_file(game* g, char* mode)
 {
-    char* name = (char*)calloc(128, sizeof(char));
-    char* after = name;
-    after = strcpy(after, "/save/");
-    after = strcpy(after, g->type->name);
-    after = strcpy(after, ".txt");
+    char name[512];
+    sprintf(name, "./save/%s_in_%i_%i_out_%i_%i.txt", g->type->name, g->type->condition_input_size, g->type->condition_input_max_range, g->type->condition_output_size, g->type->condition_output_max_range);
     printf("import/export entity from %s : ", name);
     file* f = fopen(name, mode);
-    free(name);
-
+    perror("");
     return f;
 }
 
@@ -53,10 +49,10 @@ void game_export_one_entity(game* g, file* f, entity* e)
     }
 }
 
-int scan_metadata(FILE* f)
+int scan_metadata(file* f)
 {
-    char line[20];
-    char buffer[10];
+    char line[128];
+    char buffer[128];
     fgets(line, 19, f);
     if (line[0] == '~')
     {
@@ -79,8 +75,10 @@ entity* game_import_one_entity(game* g, file* f)
     nb_output = scan_metadata(f);
     nb_rule = scan_metadata(f);
 
-    g->type->condition_input_size = nb_input;
-    g->type->condition_output_size = nb_output;
+    if(nb_input != g->type->condition_input_size || nb_output != g->type->condition_output_size)
+    {
+        return null;
+    }
 
     int line_size = nb_input * 2 + nb_output * 2 + 2 + 1;
     char* line = create_array(char, line_size);
@@ -106,5 +104,7 @@ entity* game_import_one_entity(game* g, file* f)
 
     free(line);
     fclose(f);   
-    return entity_create(ENTITY_TYPE_ORDI, b);
+    entity* e = entity_create(ENTITY_TYPE_ORDI, b);
+    behavior_free(b);
+    return e;
 }

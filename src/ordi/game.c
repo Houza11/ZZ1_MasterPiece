@@ -219,12 +219,12 @@ void export_best_entity(context* c, game* g)
 
     if(f == null) 
     { 
-        printf("export failed, no file");
+        printf("export failed, no file\n");
         return;
     }
     
     game_export_one_entity(g, f, g->internal_mutable_state->best_ordi);
-    printf("export succeed");
+    printf("export succeed\n");
     fclose(f);
 }
 
