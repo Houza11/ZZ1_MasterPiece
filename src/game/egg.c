@@ -107,9 +107,13 @@ void egg_load(game_arg arg)
         dstate->sprite_archere_idle=sprite_sheet_create(c,"asset/archere_base.png",32,32);
         dstate->sprite_archere_mort=sprite_sheet_create(c,"asset/mort.png",32,32);
         dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
+        dstate->sprite_robot_walk=sprite_sheet_create(c, "asset/robot_walk.png", 32,32);
+        dstate->sprite_robot_mort=sprite_sheet_create(c, "asset/mort_robot.png", 32,32);
         dstate->personnage_walk = animation_create(dstate->sprite_archere_walk,frequence_s(10));
         dstate->personnage_idle = animation_create(dstate->sprite_archere_idle,frequence_s(3));
         dstate->personnage_mort = animation_create(dstate->sprite_archere_mort,frequence_s(2));
+        dstate->robot_walk = animation_create(dstate->sprite_robot_walk, frequence_s(8));
+        dstate->robot_mort = animation_create(dstate->sprite_robot_mort, frequence_s(3));
         dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
 
         istate->nb_colonne = 100;
@@ -128,10 +132,14 @@ void egg_unload(game_arg arg)
     sprite_sheet_free(dstate->sprite_archere_idle);
     sprite_sheet_free(dstate->sprite_fleche);
     sprite_sheet_free(dstate->sprite_archere_mort);
+    sprite_sheet_free(dstate->sprite_robot_walk);
+    sprite_sheet_free(dstate->sprite_robot_mort);
     animation_free(dstate->personnage_walk);
     animation_free(dstate->personnage_idle);
     animation_free(dstate->personnage_mort);
     animation_free(dstate->fleche);
+    animation_free(dstate->robot_walk);
+    animation_free(dstate->robot_mort);
 
     free(dstate->arbalete_size);
 
@@ -284,13 +292,34 @@ void egg_draw(game_arg arg)
     
     if(current_game_state == GAME_STATE_GAME_OVER)
     {
-        pen_animation(c,dstate->personnage_mort,player_dest,c->timer,0);
+        if (current_entity->type == ENTITY_TYPE_PLAYER)
+        {
+            pen_animation(c,dstate->personnage_mort,player_dest,c->timer,0);
+        }
+        else
+        {
+            pen_animation(c,dstate->robot_mort,player_dest,c->timer,0);
+        }
     } 
     else if(perso_base)
     {
-        pen_animation(c,dstate->personnage_idle,player_dest,c->timer,2);
+        if (current_entity->type == ENTITY_TYPE_PLAYER)
+        {
+            pen_animation(c,dstate->personnage_idle,player_dest,c->timer,2);
+        }
+        else
+        {
+            pen_animation(c,dstate->robot_walk,player_dest,c->timer,1);
+        }
     }else {
-        pen_animation(c,dstate->personnage_walk,player_dest,c->timer,(vers_le_haut ? 4:0));
+        if (current_entity->type == ENTITY_TYPE_PLAYER)
+        {
+            pen_animation(c,dstate->personnage_walk,player_dest,c->timer,(vers_le_haut ? 4:0));
+        }
+        else
+        {
+            pen_animation(c,dstate->robot_walk,player_dest,c->timer,(vers_le_haut ? 2:0));
+        }
     }
 
    // pen_color(c, color_green);
