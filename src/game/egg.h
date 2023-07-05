@@ -59,6 +59,7 @@ typedef struct
     sprite_sheet* sprite_archere_idle;
     sprite_sheet* sprite_archere_mort;
     sprite_sheet* sprite_fleche;
+    sprite_sheet* sprite_portail_haut;
     animation* personnage_walk;
     animation* personnage_idle;
     animation* personnage_mort;
@@ -67,6 +68,7 @@ typedef struct
     animation* robot_walk;
     animation* robot_mort;
     animation* fleche;
+    animation* portail_haut;
     texture* arbalete;
     float player_y;
     float* arbalete_size;

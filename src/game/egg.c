@@ -109,12 +109,15 @@ void egg_load(game_arg arg)
         dstate->sprite_fleche=sprite_sheet_create(c,"asset/fleche.png",16,16);
         dstate->sprite_robot_walk=sprite_sheet_create(c, "asset/robot_walk.png", 32,32);
         dstate->sprite_robot_mort=sprite_sheet_create(c, "asset/mort_robot.png", 32,32);
+        dstate->sprite_portail_haut=sprite_sheet_create(c,"asset/portail.png",48,48);
         dstate->personnage_walk = animation_create(dstate->sprite_archere_walk,frequence_s(10));
         dstate->personnage_idle = animation_create(dstate->sprite_archere_idle,frequence_s(3));
         dstate->personnage_mort = animation_create(dstate->sprite_archere_mort,frequence_s(2));
         dstate->robot_walk = animation_create(dstate->sprite_robot_walk, frequence_s(8));
         dstate->robot_mort = animation_create(dstate->sprite_robot_mort, frequence_s(3));
         dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
+        dstate->portail_haut = animation_create(dstate->sprite_portail_haut,frequence_s(2));
+       
 
         istate->nb_colonne = 100;
         egg_init_grid(arg);
@@ -132,12 +135,16 @@ void egg_unload(game_arg arg)
     sprite_sheet_free(dstate->sprite_archere_idle);
     sprite_sheet_free(dstate->sprite_fleche);
     sprite_sheet_free(dstate->sprite_archere_mort);
+    sprite_sheet_free(dstate->sprite_portail_haut);
+    
     sprite_sheet_free(dstate->sprite_robot_walk);
     sprite_sheet_free(dstate->sprite_robot_mort);
     animation_free(dstate->personnage_walk);
     animation_free(dstate->personnage_idle);
     animation_free(dstate->personnage_mort);
     animation_free(dstate->fleche);
+    animation_free(dstate->portail_haut);
+    
     animation_free(dstate->robot_walk);
     animation_free(dstate->robot_mort);
 
@@ -266,7 +273,7 @@ void egg_draw(game_arg arg)
                 int arrow_new_x = x-offset_animation_bonus;
                 float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
 
-                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 0.9, 0.9),c->timer+from_ms(50*y),0);
+                pen_animation(c,dstate->fleche,rectanglef(lerp, y+0.1, 0.9, 0.9),c->timer+from_ms(50*y),0);
             }
         }
 
@@ -280,15 +287,29 @@ void egg_draw(game_arg arg)
             dstate->arbalete_size[y] = moyenne_ponderee(dstate->arbalete_size[y], taille, dstate->arbalete_size[y] > taille ? 0.5 : 0.9);
             //dstate->arbalete_size[y] = 1;
             int recul = egg_grid_get(arg, y, colonne_arbalete+offset_animation_bonus-1) == EGG_OBSTACLE_ARROW ? 1 : 0;        
-            pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(0.2*(1-maxif(4*coef,1))*recul),y+0.5,dstate->arbalete_size[y]/16,dstate->arbalete_size[y]/16, 0.5, 0.5);
+            pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(0.2*(1-maxif(4*coef,1))*recul),y+0.5,dstate->arbalete_size[y]/18,dstate->arbalete_size[y]/18, 0.5, 0.5);
         }
     }
 
+   
+    rectf portail_haut_fond_rectf = rectanglef(-1.5,-2.7,4,4);
+    rectf portail_bas_fond_rectf = rectanglef(-1.5,3.7,4,4);
+
     dstate->player_y = moyenne_ponderee(dstate->player_y, mstate->player_y, 0.85);
+     
+    pen_animation(c,dstate->portail_haut,portail_haut_fond_rectf,c->timer,0);
+    pen_animation(c,dstate->portail_haut,portail_bas_fond_rectf,c->timer,1);
 
     bool perso_base = abs(mstate->player_y-gstate->player_y) < 1/32.0f;
     bool vers_le_haut = mstate->player_y-gstate->player_y < 0;
     rectf player_dest = rectanglef(-0.5, dstate->player_y-1, 2, 2);
+
+    if(c->paused){
+
+        pen_text_at(c,"Jouen Martin",2,6,0.5);
+        pen_text_at(c,"Tamagnaud Thomas",7,6,0.5);
+        pen_text_at(c,"Moosa Houzayfa",12,6,0.5);
+    }
     
     if(current_game_state == GAME_STATE_GAME_OVER)
     {
