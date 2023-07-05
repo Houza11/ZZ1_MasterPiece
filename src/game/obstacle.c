@@ -2,7 +2,8 @@
 #define tab_size(t) (sizeof(t)/sizeof(t[0]))
 
 
-
+int arnaque = 0;
+#define rand() (arnaque++)
 void copy_pattern(game_arg arg, obstacle p[][egg_nb_ligne], int size)
 {
     for (int i = 0; i < size; i++)
@@ -104,7 +105,6 @@ void pattern_free(obstacle** p, int size)
     }
     free(p);
 }
-
 int pattern_add(game_arg arg, int id_pattern)
 {
     //Liste des patterns
@@ -179,7 +179,10 @@ int pattern_add(game_arg arg, int id_pattern)
         {-2,-2,-2,-2,-2}
     };
     
-    if (id_pattern < 0) { id_pattern = rand() % NB_PATTERN; }
+    if (id_pattern < 0) 
+    { 
+        id_pattern = rand() % NB_PATTERN;
+    }
     switch (id_pattern)
     {
         
