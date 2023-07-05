@@ -103,6 +103,15 @@ int pattern_shift_match_exits(game_arg arg, obstacle p[][egg_nb_ligne], int patt
     return 0;
 }
 
+void pattern_free(obstacle** p, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        free(p[i]);
+    }
+    free(p);
+}
+
 int egg_pattern_add(game_arg arg, int id_pattern)
 {
     //Liste des patterns
@@ -177,7 +186,10 @@ int egg_pattern_add(game_arg arg, int id_pattern)
         {-2,-2,-2,-2,-2}
     };
     
-    if (id_pattern < 0) { id_pattern = rand() % NB_PATTERN; }
+    if (id_pattern < 0) 
+    { 
+        id_pattern = rand() % NB_PATTERN;
+    }
     switch (id_pattern)
     {
         

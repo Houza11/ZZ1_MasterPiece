@@ -62,6 +62,10 @@ typedef struct
     animation* personnage_walk;
     animation* personnage_idle;
     animation* personnage_mort;
+    sprite_sheet* sprite_robot_walk;
+    sprite_sheet* sprite_robot_mort;
+    animation* robot_walk;
+    animation* robot_mort;
     animation* fleche;
     texture* arbalete;
     float player_y;

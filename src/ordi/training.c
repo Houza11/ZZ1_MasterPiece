@@ -277,6 +277,8 @@ void import_best_entity(context* c, game* g)
     {
         printf("import succeed\n");
         vec_add(gen, entity*, e);
+        if (!g->internal_mutable_state->best_ordi) {entity_free(g->internal_mutable_state->best_ordi);}
+        g->internal_mutable_state->best_ordi = entity_clone(e);
     }else
     {
         printf("import failed, entity null\n");
@@ -297,7 +299,7 @@ void game_init_training_if_needed(context* c, game* g)
 
     gen = vec_empty(entity*);
 
-    import_best_entity(c,g);
+    //import_best_entity(c,g);
     repeat(i, entity_per_gen)
     {
         vec_add(gen, entity*, entity_create_ordi_random(g, 1));
