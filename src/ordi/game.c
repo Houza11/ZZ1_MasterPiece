@@ -210,10 +210,28 @@ void game_type_unload(context* c, game* g)
 
 
 
+void export_best_entity(context* c, game* g)
+{
+    unused(c);
+    if(g->internal_mutable_state->best_ordi == null) return;
+
+    file* f = game_get_save_file(g, "w+");
+
+    if(f == null) 
+    { 
+        printf("export failed, no file\n");
+        return;
+    }
+    
+    game_export_one_entity(g, f, g->internal_mutable_state->best_ordi);
+    printf("export succeed\n");
+    fclose(f);
+}
 
 void game_unload(context* c, game* g)
 {
     check(gtype->is_loaded == true);
+    export_best_entity(c, g);
     gtype->is_loaded = false;
 
     gtype->unload_mutable(arg);

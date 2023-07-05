@@ -3,22 +3,22 @@
 
 #define offset_animation_bonus 3
 #define arbalete_range 15
-bool can_damage(int id)
+bool egg_can_damage(int id)
 {
     return id == EGG_OBSTACLE_ARROW;
 }
 
-bool inside_grid(game_arg arg, int ligne, int colonne)
+bool egg_inside_grid(game_arg arg, int ligne, int colonne)
 {
     get_game_state(egg);
     return ligne >= 0 && ligne < egg_nb_ligne && colonne >= 0 && colonne < egg_grid->length;
 }
 
 // regular ge, the the origin of the grid
-obstacle grid_get_fixed(game_arg arg, int ligne, int colonne)
+obstacle egg_grid_get_fixed(game_arg arg, int ligne, int colonne)
 {
     get_game_state(egg);
-    if(inside_grid(arg, ligne, colonne))
+    if(egg_inside_grid(arg, ligne, colonne))
     {
         return (obstacle)vec_get(vec_get(egg_grid, vec*, colonne), obstacle, ligne);
     }else
@@ -28,40 +28,40 @@ obstacle grid_get_fixed(game_arg arg, int ligne, int colonne)
 }
 
 //relative to the player
-obstacle grid_get(game_arg arg, int ligne, int colonne)
+obstacle egg_grid_get(game_arg arg, int ligne, int colonne)
 {
     get_game_state(egg);
-    return grid_get_fixed(arg, ligne, colonne+mstate->player_x);
+    return egg_grid_get_fixed(arg, ligne, colonne+mstate->player_x);
 }
 
 
-void grid_set(game_arg arg, int ligne, int colonne, obstacle val)
+void egg_grid_set(game_arg arg, int ligne, int colonne, obstacle val)
 {
     get_game_state(egg);
-    check(inside_grid(arg, ligne, colonne));
+    check(egg_inside_grid(arg, ligne, colonne));
     vec_set(vec_get(egg_grid, vec*, colonne), obstacle, ligne, val);
 }
 
-void grid_push_colonne(game_arg arg, vec* v)
+void egg_grid_push_colonne(game_arg arg, vec* v)
 {
     get_game_state(egg);
     vec_push(egg_grid, vec*, v);
 }
 
-void init_grid(game_arg arg)
+void egg_init_grid(game_arg arg)
 {
     get_game_state(egg);
     egg_grid = vec_empty(vec*);
 
     repeat(i, arbalete_range)
     {
-        pattern_add_empty_line(arg);
+        egg_pattern_add_empty_line(arg);
     }
 
     int j = 0;
     while(j < egg_nb_colonne)
     {
-        j += pattern_add(arg, -1);
+        j += egg_pattern_add(arg, -1);
     }
 }
 
@@ -108,7 +108,7 @@ void egg_load(game_arg arg)
        
 
         istate->nb_colonne = 100;
-        init_grid(arg);
+        egg_init_grid(arg);
     }
     //game_type->is_loaded
 }
@@ -173,10 +173,10 @@ void egg_set_default_input(game_arg arg)
     output_single_value(EGG_OUTPUT_DO_NOTHINGS);
 }
 
-bool check_receive_damage(game_arg arg, int offset_y, int offset_x)
+bool egg_check_receive_damage(game_arg arg, int offset_y, int offset_x)
 {
     get_game_state(egg);
-    if(can_damage(grid_get(arg, ((mstate->player_y+offset_y)+egg_nb_ligne)%egg_nb_ligne, offset_x)))
+    if(egg_can_damage(egg_grid_get(arg, ((mstate->player_y+offset_y)+egg_nb_ligne)%egg_nb_ligne, offset_x)))
     {
         current_game_state = GAME_STATE_GAME_OVER;
         // game over
@@ -205,11 +205,11 @@ void egg_update(game_arg arg)
         default: break;
     }
     mstate->player_y = (mstate->player_y+egg_nb_ligne)%egg_nb_ligne;
-    if(check_receive_damage(arg, 0, offset_animation_bonus)) return;
+    if(egg_check_receive_damage(arg, 0, offset_animation_bonus)) return;
 
     mstate->nb_tour++;
 
-    if(check_receive_damage(arg, 0, offset_animation_bonus)) return;
+    if(egg_check_receive_damage(arg, 0, offset_animation_bonus)) return;
 
     current_entity->score += 1;
 }
@@ -229,18 +229,19 @@ void egg_draw(game_arg arg)
     int colonne_arbalete = arbalete_range; //nb_colonne-1;
 
     rectf area = rectanglef(-1,-1, nb_colonne+2, nb_ligne+2);
-    camera_push_focus_fullscreen(c, area);
-
-   
-    for(int x = -1; x < nb_colonne+1; x++)
+    area = camera_push_focus_fullscreen(c, area);
+    
+    for(int x = floor(area.x); x < ceiling(area.w)+1; x++)
     {
-        repeat(y, nb_ligne)
+        for(int y = floor(area.y); y < ceiling(area.h)+1; y++)
         {
             // flèche
             rect fond_rect = texture_rect(dstate->fond);
             fond_rect.w /= 2;
-            int parite = (x+y+16) % 2;
+            fond_rect.h /= 2;
+            int parite = (x+y+10000) % 2;
             fond_rect.x = fond_rect.w *parite;
+            fond_rect.y = fond_rect.h * (y >= 0 && y < nb_ligne ? 0 : 1);
             pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
         }
     }
@@ -249,7 +250,7 @@ void egg_draw(game_arg arg)
     {
         for(int x = -1; x+coef*0.5 < colonne_arbalete+offset_animation_bonus; x++)
         {
-            if(grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
+            if(egg_grid_get(arg, y,x) == EGG_OBSTACLE_ARROW)
             {
                 int arrow_old_x = x-offset_animation_bonus+1;
                 int arrow_new_x = x-offset_animation_bonus;
@@ -262,14 +263,14 @@ void egg_draw(game_arg arg)
         {   // arbalète
             rect arbalete_fond_rect = rectangle(6*32,0,32,32);
             float taille = 1;// = 1+ abs(4*sin(pi*(second(c->timer)+from_s(y/(float)nb_ligne))))*0.25;
-            if(grid_get(arg, y, colonne_arbalete+offset_animation_bonus) == EGG_OBSTACLE_ARROW)
+            if(egg_grid_get(arg, y, colonne_arbalete+offset_animation_bonus) == EGG_OBSTACLE_ARROW)
             {
                 taille = 1.2;
             }
             dstate->arbalete_size[y] = moyenne_ponderee(dstate->arbalete_size[y], taille, dstate->arbalete_size[y] > taille ? 0.5 : 0.9);
             //dstate->arbalete_size[y] = 1;
-            int recul = grid_get(arg, y, colonne_arbalete+offset_animation_bonus-1) == EGG_OBSTACLE_ARROW ? 1 : 0;        
-            pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(0.2*(1-maxif(4*coef,1))*recul),y+0.5,dstate->arbalete_size[y]/20,dstate->arbalete_size[y]/20, 0.5, 0.5);
+            int recul = egg_grid_get(arg, y, colonne_arbalete+offset_animation_bonus-1) == EGG_OBSTACLE_ARROW ? 1 : 0;        
+            pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(0.2*(1-maxif(4*coef,1))*recul),y+0.5,dstate->arbalete_size[y]/16,dstate->arbalete_size[y]/16, 0.5, 0.5);
         }
     }
 
@@ -378,7 +379,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         int dx = EGG_INPUT_MAX_RANGE;
         repeat(x, EGG_INPUT_MAX_RANGE+1) // -1 because of the Osef symbol
         {
-            if(can_damage(grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus)))
+            if(egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus)))
             {
                 dx = x+1;
                 break;;

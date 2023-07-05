@@ -15,4 +15,10 @@ float length_squared(float x1, float y1, float x2, float y2);
 float maxif(float a, float b);
 float minif(float a, float b);
 
+float math_floor(float f);
+float math_ceiling(float f);
+
+#define floor(f) math_floor(f)
+#define ceiling(f) math_ceiling(f)
+
 #endif
