@@ -2,6 +2,8 @@
 #define GAME_H
 #include "base.h"
 
+#define game_name_string_size 32
+
 struct game_arg
 {
     context* c;
@@ -103,11 +105,14 @@ struct game_type
     // false: minimize, true: maximize
     bool maximize_score;
     bool is_loaded;
+
+    char name[game_name_string_size];
 };
 
 #define game_create(name)\
     game_create_arg(\
         c,\
+        #name,\
         sizeof( name ## _immutable_state),\
         sizeof( name ## _mutable_state),\
         sizeof( name ## _draw_state),\
@@ -127,6 +132,7 @@ struct game_type
 
 game* game_create_arg(
     context* c,
+    char name[game_name_string_size],
     size_t sizeof_immutable_state,
     size_t sizeof_mutable_state,
     size_t sizeof_draw_state,

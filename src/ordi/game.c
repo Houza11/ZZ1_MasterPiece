@@ -35,8 +35,10 @@ void game_ordi_configure(game* g,
     m->best_ordi = entity_create_ordi_random(g);
 }
 
+
 game* game_create_arg(
     context* c,
+    char name[game_name_string_size],
     size_t sizeof_immutable_state,
     size_t sizeof_mutable_state,
     size_t sizeof_draw_state,
@@ -51,7 +53,7 @@ game* game_create_arg(
     game_rule_match_fn rule_match,
     things_to_char_fn input_to_char,
     things_to_char_fn output_to_char,
-    game_fn printf
+    game_fn _printf
     )
 {
     game* g = create(game);
@@ -82,7 +84,7 @@ game* game_create_arg(
 
         t->input_to_char  = input_to_char;
         t->output_to_char = output_to_char;
-        t->printf = printf;
+        t->printf = _printf;
 
         t->maximize_score = true;
         t->is_loaded = false;
@@ -92,6 +94,17 @@ game* game_create_arg(
         t->condition_output_size = -1;
         t->condition_output_max_range = -1;
         t->nb_behavior = -1;
+
+        repeat(i, game_name_string_size)
+        {
+            t->name[i] = '\0';
+        }
+        repeat(i, game_name_string_size)
+        {
+            t->name[i] = name[i];
+            if(name[i] == '\0') break;
+        }
+        printf("game name %s\n", t->name);
     }
 
     {

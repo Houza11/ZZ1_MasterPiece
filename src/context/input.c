@@ -21,21 +21,15 @@ bool input_load(context* c)
     c->mouse_old_x = c->mouse_x;
     c->mouse_old_y = c->mouse_y;
 
-    c->action_right      = false;
-    c->action_old_right  = false;
-    c-> action_old_right = false;
-    c-> action_left      = false;
-    c-> action_old_left  = false;
-    c-> action_up        = false;
-    c-> action_old_up    = false;
-    c-> action_down      = false;
-    c-> action_old_down  = false;
+    c->action_bufferized_p1 = vec_empty(timed_action);
 
     return true;
 }
 
-void input_unload(context* c){ unused(c);}
-
+void input_unload(context* c)
+{ 
+    vec_free_lazy(c->action_bufferized_p1);
+}
 
 void input_update(context* c)
 {
@@ -47,12 +41,20 @@ void input_update(context* c)
     c->mouse_delta_x = c->mouse_x - c->mouse_old_x;
     c->mouse_delta_y = c->mouse_y - c->mouse_old_y;
 
-    c->action_old_right = c->action_right;
-    c->action_old_left  = c->action_left;
-    c->action_old_up    = c->action_up;
-    c->action_old_down  = c->action_down;
-
     c->kb_state = SDL_GetKeyboardState(NULL);
+
+    while(c->action_bufferized_p1->length > 0 && c->timer - vec_get(c->action_bufferized_p1, timed_action, 0).time_pressed > action_expiration)
+    {
+        vec_remove_at(c->action_bufferized_p1, 0);
+    }
+}
+
+void push_action(context* c, int val)
+{
+    timed_action a;
+    a.time_pressed = c->timer;
+    a.action = val;
+    vec_push(c->action_bufferized_p1, timed_action, a);
 }
 
 bool input_event(context* c, event* ev)
@@ -63,29 +65,29 @@ bool input_event(context* c, event* ev)
         case SDL_MOUSEBUTTONUP:   c->mouse_left_button_down = false; break;
 
         case SDL_KEYDOWN:
-        case SDL_KEYUP:
+        //case SDL_KEYUP:
         {
-            bool pressed = ev->type == SDL_KEYDOWN;
+            //bool pressed = ev->type == SDL_KEYDOWN;
             switch (ev->key.keysym.sym)
             {
                 case SDLK_RIGHT:
                 case SDLK_f:
-                    c->action_right = pressed;
+                    push_action(c, action_right);
                 break;
 
                 case SDLK_LEFT:
                 case SDLK_s:
-                    c->action_left = pressed;
+                    push_action(c, action_left);
                 break;
 
                 case SDLK_UP:
                 case SDLK_e:
-                    c->action_up = pressed;
+                    push_action(c, action_up);
                 break;
 
                 case SDLK_DOWN:
                 case SDLK_d:
-                    c->action_down = pressed;
+                    push_action(c, action_down);
                 break;
 
                 default: break;
@@ -96,12 +98,29 @@ bool input_event(context* c, event* ev)
     return false;
 }
 
-bool input_right(context* c) { return c->action_right; }
-bool input_left (context* c) { return c->action_left; }
-bool input_up   (context* c) { return c->action_up; }
-bool input_down (context* c) { return c->action_down; }
+void action_ignore(context* c, action action)
+{
+    for(int i = c->action_bufferized_p1->length-1; i >= 0; i--)
+    {
+        if(vec_get(c->action_bufferized_p1, timed_action, i).action == action)
+        {
+            vec_remove_at(c->action_bufferized_p1, 0);
+        }
+    }
+}
 
-bool input_old_right(context* c) { return c->action_old_right; }
-bool input_old_left (context* c) { return c->action_old_left; }
-bool input_old_up   (context* c) { return c->action_old_up; }
-bool input_old_down (context* c) { return c->action_old_down; }
+//p1
+bool action_consume(context* c, action action)
+{   
+    if(c->action_bufferized_p1->length > 0 && vec_get(c->action_bufferized_p1, timed_action, 0).action == action)
+    {
+        vec_remove_at(c->action_bufferized_p1, 0);
+        return true;
+    }
+    return false;
+}
+
+bool input_right(context* c) { return action_consume(c, action_right); }
+bool input_left (context* c) { return action_consume(c, action_left); }
+bool input_up   (context* c) { return action_consume(c, action_up); }
+bool input_down (context* c) { return action_consume(c, action_down); }

@@ -30,14 +30,7 @@ typedef struct
     int mouse_delta_x;
     int mouse_delta_y;
 
-    bool action_right;
-    bool action_old_right;
-    bool action_left;
-    bool action_old_left;
-    bool action_up;
-    bool action_old_up;
-    bool action_down;
-    bool action_old_down;
+    vec* action_bufferized_p1;
 
     bool mouse_left_button_down;
 

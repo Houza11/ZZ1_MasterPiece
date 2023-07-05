@@ -326,6 +326,9 @@ void egg_player_input(game_arg arg, entity* e)
 
     output_single_value(EGG_OUTPUT_DO_NOTHINGS);
 
+    action_ignore(c, action_right);
+    action_ignore(c, action_left);
+
     if(input_up(c))
     {
         output_single_value(EGG_OUTPUT_MOVE_UP);

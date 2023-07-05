@@ -41,8 +41,22 @@ bool input_left (context* c);
 bool input_up   (context* c);
 bool input_down (context* c);
 
-bool input_old_right(context* c);
-bool input_old_left (context* c);
-bool input_old_up   (context* c);
-bool input_old_down (context* c);
+#define action_expiration from_ms(500)
+
+typedef int action;
+
+#define action_right 0
+#define action_left  1
+#define action_up    2
+#define action_down  3
+#define action_sp0   4
+#define action_sp1   5
+typedef struct {
+    action action;
+    time time_pressed;
+}timed_action;
+
+void action_ignore(context* c, action action);
+bool action_consume(context* c, action action);
+
 #endif
