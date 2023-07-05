@@ -46,9 +46,9 @@ void* memory_realloc(void* ptr, size_t nb_byte)
 void memory_printf()
 {
     #ifdef TRACK_MEMORY
-    printf("memory : %i malloc actif\n\n", memory_nb_malloc_actif);
+    printf("memory : %i malloc actif\n", memory_nb_malloc_actif);
     #else
-    printf("memory not tracked\n\n");
+    printf("memory not tracked\n");
     #endif
 }
 

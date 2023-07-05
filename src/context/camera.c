@@ -185,17 +185,17 @@ void camera_pop(context* c)
     vec_remove_end(c->cams);
 }
 
-void camera_push_focus_fullscreen(context* c, rectf source)
+rectf camera_push_focus_fullscreen(context* c, rectf source)
 {
-    camera_push_focus(c, source, window_rectf(c));
+    return camera_push_focus(c, source, window_rectf(c));
 }
 
-void camera_push_focus(context* c, rectf source, rectf dest)
+rectf camera_push_focus(context* c, rectf source, rectf dest)
 {
-    camera_push_focus_centered(c, source, dest, 0.5, 0.5);
+    return camera_push_focus_centered(c, source, dest, 0.5, 0.5);
 }
 
-void camera_push_focus_centered(context* c, rectf source, rectf dest, float center_x_coef, float center_y_coef)
+rectf camera_push_focus_centered(context* c, rectf source, rectf dest, float center_x_coef, float center_y_coef)
 {
     float d_ratio_xy = window_ratio_width_div_height(c);
     float s_ratio_xy = source.w/source.h;
@@ -209,18 +209,27 @@ void camera_push_focus_centered(context* c, rectf source, rectf dest, float cent
     float scale_y = (dest.h / source.h)*camera_scale_y(c);
 
 
-    float x = source.x + camera_x(c)*(camera_scale_x(c)/scale_x);
-    float y = source.y + camera_y(c)*(camera_scale_y(c)/scale_y);
-
-    /*
     if(d_ratio_xy > s_ratio_xy)
     {
         //limited by Y
+        scale_x = scale_y;
+        float old_w = source.w;
+        source.w =  source.h*d_ratio_xy;
+        source.x -= (source.w-old_w)*center_x_coef;
     }else
     {
         //limited by X
-    }*/
+        scale_y = scale_x;
+        float old_h = source.h;
+        source.h =  source.w*(1/d_ratio_xy);
+        source.y -= (source.h-old_h)*center_y_coef;
+    }
+
+    float x = source.x + camera_x(c)*(camera_scale_x(c)/scale_x);
+    float y = source.y + camera_y(c)*(camera_scale_y(c)/scale_y);
 
     camera_state cs = camera_state_create(x, y,scale_x,scale_y, camera_can_scroll(c), camera_can_zoom(c));
     camera_push_set(c,cs);
+
+    return source;
 }

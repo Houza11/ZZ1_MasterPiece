@@ -12,9 +12,6 @@ typedef struct
     int screen_width;
     int screen_height;
 
-    float window_ratio_width_div_height;
-    float window_ratio_height_div_width;
-
     SDL_Window* window;
     int window_width;
     int window_height;
@@ -33,14 +30,7 @@ typedef struct
     int mouse_delta_x;
     int mouse_delta_y;
 
-    bool action_right;
-    bool action_old_right;
-    bool action_left;
-    bool action_old_left;
-    bool action_up;
-    bool action_old_up;
-    bool action_down;
-    bool action_old_down;
+    vec* action_bufferized_p1;
 
     bool mouse_left_button_down;
 

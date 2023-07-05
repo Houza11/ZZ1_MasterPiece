@@ -13,7 +13,7 @@ typedef int egg_input;
 // 1-3 : Range
 // 
 #define EGG_INPUT_OSEF      0
-#define EGG_INPUT_MAX_RANGE 4
+#define EGG_INPUT_MAX_RANGE 7
 
 typedef struct
 {
@@ -49,12 +49,15 @@ typedef struct
     texture* fond;
     sprite_sheet* sprite_archere_walk;
     sprite_sheet* sprite_archere_idle;
+    sprite_sheet* sprite_archere_mort;
     sprite_sheet* sprite_fleche;
     animation* personnage_walk;
     animation* personnage_idle;
+    animation* personnage_mort;
     animation* fleche;
     texture* arbalete;
     float player_y;
+    float* arbalete_size;
 } egg_draw_state;
 
 void egg_load(game_arg arg);
