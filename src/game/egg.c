@@ -222,17 +222,19 @@ void egg_draw(game_arg arg)
     int colonne_arbalete = arbalete_range; //nb_colonne-1;
 
     rectf area = rectanglef(-1,-1, nb_colonne+2, nb_ligne+2);
-    camera_push_focus_fullscreen(c, area);
+    area = camera_push_focus_fullscreen(c, area);
     
-    for(int x = -1; x < nb_colonne+1; x++)
+    for(int x = floor(area.x); x < ceiling(area.w)+1; x++)
     {
-        repeat(y, nb_ligne)
+        for(int y = floor(area.y); y < ceiling(area.h)+1; y++)
         {
             // flèche
             rect fond_rect = texture_rect(dstate->fond);
             fond_rect.w /= 2;
-            int parite = (x+y+16) % 2;
+            fond_rect.h /= 2;
+            int parite = (x+y+10000) % 2;
             fond_rect.x = fond_rect.w *parite;
+            fond_rect.y = fond_rect.h * (y >= 0 && y < nb_ligne ? 0 : 1);
             pen_texture(c,dstate->fond,fond_rect,rectanglef(x,y,1,1));
         }
     }

@@ -34,6 +34,7 @@
 #include "ordi/entity.h"
 #include "ordi/game.h"
 #include "ordi/training.h"
+#include "ordi/save.h"
 
 #include "game/all_game.h"
 
