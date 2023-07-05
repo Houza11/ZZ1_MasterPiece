@@ -157,7 +157,7 @@ void game_init_training_if_needed(context* c, game* g)
 
     gen = vec_empty(entity*);
 
-    import_best_entity(c,g);
+    //import_best_entity(c,g);
     repeat(i, entity_per_gen)
     {
         vec_add(gen, entity*, entity_create_ordi_random(g));
