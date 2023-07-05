@@ -31,8 +31,8 @@ void game_ordi_configure(game* g,
     t->nb_behavior = nb_behavior;
 
     m->input = tab_create(condition_output_size, 0);
-    m->current_entity = entity_create_ordi_random(g);
-    m->best_ordi = entity_create_ordi_random(g);
+    m->current_entity = entity_create_ordi_random(g, 1);
+    m->best_ordi = entity_create_ordi_random(g, 1);
 }
 
 
