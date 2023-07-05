@@ -256,7 +256,7 @@ void egg_draw(game_arg arg)
                 int arrow_new_x = x-offset_animation_bonus;
                 float lerp = egg_lerp(arrow_old_x, arrow_new_x, coef);
 
-                pen_animation(c,dstate->fleche,rectanglef(lerp, y, 0.9, 0.9),c->timer+from_ms(50*y),0);
+                pen_animation(c,dstate->fleche,rectanglef(lerp, y+0.1, 0.9, 0.9),c->timer+from_ms(50*y),0);
             }
         }
 
@@ -270,13 +270,13 @@ void egg_draw(game_arg arg)
             dstate->arbalete_size[y] = moyenne_ponderee(dstate->arbalete_size[y], taille, dstate->arbalete_size[y] > taille ? 0.5 : 0.9);
             //dstate->arbalete_size[y] = 1;
             int recul = egg_grid_get(arg, y, colonne_arbalete+offset_animation_bonus-1) == EGG_OBSTACLE_ARROW ? 1 : 0;        
-            pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(0.2*(1-maxif(4*coef,1))*recul),y+0.5,dstate->arbalete_size[y]/16,dstate->arbalete_size[y]/16, 0.5, 0.5);
+            pen_texture_at_center(c,dstate->arbalete,arbalete_fond_rect,colonne_arbalete+0.5 +1/8.0f*(0.2*(1-maxif(4*coef,1))*recul),y+0.5,dstate->arbalete_size[y]/18,dstate->arbalete_size[y]/18, 0.5, 0.5);
         }
     }
 
    
-    rectf portail_haut_fond_rectf = rectanglef(-1.5,-2.75,4,4);
-    rectf portail_bas_fond_rectf = rectanglef(-1.5,3.75,4,4);
+    rectf portail_haut_fond_rectf = rectanglef(-1.5,-2.7,4,4);
+    rectf portail_bas_fond_rectf = rectanglef(-1.5,3.7,4,4);
 
     dstate->player_y = moyenne_ponderee(dstate->player_y, mstate->player_y, 0.85);
      
