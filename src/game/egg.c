@@ -304,12 +304,6 @@ void egg_draw(game_arg arg)
     bool vers_le_haut = mstate->player_y-gstate->player_y < 0;
     rectf player_dest = rectanglef(-0.5, dstate->player_y-1, 2, 2);
 
-    if(c->paused){
-
-        pen_text_at(c,"Jouen Martin",2,6,0.5);
-        pen_text_at(c,"Tamagnaud Thomas",7,6,0.5);
-        pen_text_at(c,"Moosa Houzayfa",12,6,0.5);
-    }
     
     if(current_game_state == GAME_STATE_GAME_OVER)
     {
@@ -350,15 +344,39 @@ void egg_draw(game_arg arg)
 
     camera_pop(c);
 
+    float w = window_width(c);
+    float h = window_height(c);
+    float txt_size = FONT_SIZE_NORMAL;
+    
+    
+    if(c->paused){
+
+        pen_color(c,rgba(255,20,0,127));
+        //pen_pixel_rect(c,rectanglef(window_width(c)/4,window_height(c)/5,700,500));
+
+        pen_text_at_center(c,"Pause",w/2,h/5,FONT_SIZE_BIG,0.5,0.5);
+        pen_text_at_center(c,"Jouen Martin",w/2,h-50-2*txt_size,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Tamagnaud Thomas",w/2,h-50-txt_size,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Moosa Houzayfa",w/2,h-50,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Pause/Unpause : P",w/2,h/2-txt_size,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Restart : R",w/2,h/2,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Quit : Escape",w/2,h/2+txt_size,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Mode Joueur : A",w/2,h/2-2*txt_size,txt_size, 0.5,0.5);
+        pen_text_at_center(c,"Mode Ordi : Z",w/2,h/2+2*txt_size,txt_size, 0.5,0.5);
+        
+    }
+
     pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "%.0f", current_entity->score);
-    pen_formatted_text_at_center(c, window_width(c)/2, 0, FONT_SIZE_NORMAL, 0.5, 0, "A ~ %.0f", best_score_player);
-    pen_formatted_text_at_center(c, window_width(c), 0, FONT_SIZE_NORMAL, 1, 0, "Z ~ ordi %.0f", best_score_ordi);
+    pen_formatted_text_at_center(c, window_width(c)/2, 0, FONT_SIZE_NORMAL, 0.5, 0, "Record Joueur ~ %.0f", best_score_player);
+    pen_formatted_text_at_center(c, window_width(c)/2,0+txt_size , FONT_SIZE_NORMAL, 0.5, 0, "Record Ordi ~ %.0f", best_score_ordi);
+    pen_text_at_center(c,"P : ^",w-3*txt_size,0,txt_size, 0.5,0);
     //pen_formatted_text_at_center(c, 0, FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%.2f", coef);
     //pen_formatted_text_at_center(c, 0, 2*FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%i", mstate->nb_tour);
 
 
     if(current_game_state == GAME_STATE_GAME_OVER){
-         pen_formatted_text_at_center(c,window_width(c)/2, window_height(c)/2, FONT_SIZE_NORMAL, 0.5, 0.5, "%.1f", current_entity->score);
+         pen_formatted_text_at_center(c,w/2, h/2, FONT_SIZE_BIG, 0.5, 0.5, "|  Game Over  %.0f |", current_entity->score);
+         pen_formatted_text_at_center(c,w/2, h/2+FONT_SIZE_BIG, FONT_SIZE_BIG, 0.5, 0.5, "Score : %.0f", current_entity->score);
     }
 
 }
