@@ -2,7 +2,9 @@
 #define THE_CONTEXT_H
 #include "base.h"
 
-#define FONT_PATH "asset/Milky Mania.ttf"
+//#define FONT_PATH "asset/Milky Mania.ttf"
+
+#define input_max_player 4
 
 // Utiliser de préférence les fonction associé au contexte pour y acceder
 typedef struct
@@ -30,7 +32,7 @@ typedef struct
     int mouse_delta_x;
     int mouse_delta_y;
 
-    vec* action_bufferized_p1;
+    vec* action_bufferized[input_max_player];
 
     bool mouse_left_button_down;
 

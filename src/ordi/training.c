@@ -402,6 +402,7 @@ void update_current_entity(context* c, game* g)
 // train the generation, and choose the best
 void game_train_best_ordi(context* c, game* g)
 {
+    //return;
     game_init_training_if_needed(c, g);
 
     while(current_tick() <= (c->update_tick_end- (time)from_ms(update_ms_budget*0.65)))

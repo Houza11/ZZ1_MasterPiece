@@ -540,27 +540,27 @@ void vs_player_input(game_arg arg, entity* e)
 
     output_single_value(VS_OUTPUT_DO_NOTHINGS);
 
-    if(input_up(c))
+    if(input_up(c, 0))
     {
         output_single_value(VS_OUTPUT_MOVE_UP); return;
     }
-    if(input_down(c))
+    if(input_down(c, 0))
     {
         output_single_value(VS_OUTPUT_MOVE_DOWN); return;
     }
-    if(input_right(c))
+    if(input_right(c, 0))
     {
         output_single_value(VS_OUTPUT_MOVE_RIGHT); return;
     }
-    if(input_left(c))
+    if(input_left(c, 0))
     {
         output_single_value(VS_OUTPUT_MOVE_LEFT); return;
     }
-    if(input_special0(c))
+    if(input_special0(c, 0))
     {
         output_single_value(VS_OUTPUT_MOVE_BOW); return;
     }
-    if(input_special1(c))
+    if(input_special1(c, 0))
     {
         output_single_value(VS_OUTPUT_MOVE_SWORD); return;
     }

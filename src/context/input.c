@@ -21,14 +21,20 @@ bool input_load(context* c)
     c->mouse_old_x = c->mouse_x;
     c->mouse_old_y = c->mouse_y;
 
-    c->action_bufferized_p1 = vec_empty(timed_action);
+    repeat(i, input_max_player)
+    {
+        c->action_bufferized[i] = vec_empty(timed_action);
+    }
 
     return true;
 }
 
 void input_unload(context* c)
 { 
-    vec_free_lazy(c->action_bufferized_p1);
+    repeat(i, input_max_player)
+    {
+        vec_free_lazy(c->action_bufferized[i]);
+    }
 }
 
 void input_update(context* c)
@@ -43,18 +49,28 @@ void input_update(context* c)
 
     c->kb_state = SDL_GetKeyboardState(NULL);
 
-    while(c->action_bufferized_p1->length > 0 && c->timer - vec_get(c->action_bufferized_p1, timed_action, 0).time_pressed > action_expiration)
+    repeat(i, input_max_player)
     {
-        vec_remove_at(c->action_bufferized_p1, 0);
+        vec* action_buffer = c->action_bufferized[i];
+        while(action_buffer->length > 0 && c->timer - vec_get(action_buffer, timed_action, 0).time_pressed > action_expiration)
+        {
+            vec_remove_at(action_buffer, 0);
+        }
     }
 }
 
-void push_action(context* c, int val)
+bool check_player_idx(int playerIdx)
 {
+    return playerIdx >= 0 && playerIdx < input_max_player;
+}
+
+void push_action(context* c, int val, int playerIdx)
+{
+    if(!check_player_idx(playerIdx)){ return; }
     timed_action a;
     a.time_pressed = c->timer;
     a.action = val;
-    vec_push(c->action_bufferized_p1, timed_action, a);
+    vec_push(c->action_bufferized[playerIdx], timed_action, a);
 }
 
 bool input_event(context* c, event* ev)
@@ -72,30 +88,30 @@ bool input_event(context* c, event* ev)
             {
                 case SDLK_RIGHT:
                 case SDLK_f:
-                    push_action(c, action_right);
+                    push_action(c, action_right, 0);
                 break;
 
                 case SDLK_LEFT:
                 case SDLK_s:
-                    push_action(c, action_left);
+                    push_action(c, action_left, 0);
                 break;
 
                 case SDLK_UP:
                 case SDLK_e:
-                    push_action(c, action_up);
+                    push_action(c, action_up, 0);
                 break;
 
                 case SDLK_DOWN:
                 case SDLK_d:
-                    push_action(c, action_down);
+                    push_action(c, action_down, 0);
                 break;
 
                 case SDLK_SPACE:
-                    push_action(c, action_sp0);
+                    push_action(c, action_sp0, 0);
                 break;
 
                 case SDLK_n:
-                    push_action(c, action_sp1);
+                    push_action(c, action_sp1, 0);
                 break;
 
                 default: break;
@@ -106,31 +122,34 @@ bool input_event(context* c, event* ev)
     return false;
 }
 
-void action_ignore(context* c, action action)
+void action_ignore(context* c, action action, int playerIdx)
 {
-    for(int i = c->action_bufferized_p1->length-1; i >= 0; i--)
+    if(!check_player_idx(playerIdx)) return;
+    for(int i = c->action_bufferized[playerIdx]->length-1; i >= 0; i--)
     {
-        if(vec_get(c->action_bufferized_p1, timed_action, i).action == action)
+        if(vec_get(c->action_bufferized[playerIdx], timed_action, i).action == action)
         {
-            vec_remove_at(c->action_bufferized_p1, 0);
+            vec_remove_at(c->action_bufferized[playerIdx], 0);
         }
     }
 }
 
 //p1
-bool action_consume(context* c, action action)
+bool action_consume(context* c, action action, int playerIdx)
 {   
-    if(c->action_bufferized_p1->length > 0 && vec_get(c->action_bufferized_p1, timed_action, 0).action == action)
+    if(!check_player_idx(playerIdx)) return false;
+
+    if(c->action_bufferized[playerIdx]->length > 0 && vec_get(c->action_bufferized[playerIdx], timed_action, 0).action == action)
     {
-        vec_remove_at(c->action_bufferized_p1, 0);
+        vec_remove_at(c->action_bufferized[playerIdx], 0);
         return true;
     }
     return false;
 }
 
-bool input_right(context* c) { return action_consume(c, action_right);}
-bool input_left (context* c) { return action_consume(c, action_left); }
-bool input_up   (context* c) { return action_consume(c, action_up);   }
-bool input_down (context* c) { return action_consume(c, action_down); }
-bool input_special0(context* c) { return action_consume(c, action_sp0);  }
-bool input_special1(context* c) { return action_consume(c, action_sp1);  }
+bool input_right(context* c, int playerIdx) { return action_consume(c, action_right, playerIdx);}
+bool input_left (context* c, int playerIdx) { return action_consume(c, action_left, playerIdx); }
+bool input_up   (context* c, int playerIdx) { return action_consume(c, action_up, playerIdx);   }
+bool input_down (context* c, int playerIdx) { return action_consume(c, action_down, playerIdx); }
+bool input_special0(context* c, int playerIdx) { return action_consume(c, action_sp0, playerIdx);  }
+bool input_special1(context* c, int playerIdx) { return action_consume(c, action_sp1, playerIdx);  }

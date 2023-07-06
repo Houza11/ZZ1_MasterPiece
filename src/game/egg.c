@@ -118,7 +118,7 @@ void egg_load(game_arg arg)
         dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
         dstate->portail_haut = animation_create(dstate->sprite_portail_haut,frequence_s(2));
        
-    
+
         istate->nb_colonne = 1000;
         egg_init_grid(arg);
     }
@@ -409,15 +409,15 @@ void egg_player_input(game_arg arg, entity* e)
 
     output_single_value(EGG_OUTPUT_DO_NOTHINGS);
 
-    action_ignore(c, action_right);
-    action_ignore(c, action_left);
+    action_ignore(c, action_right, 0);
+    action_ignore(c, action_left, 0);
 
-    if(input_up(c))
+    if(input_up(c, 0))
     {
         output_single_value(EGG_OUTPUT_MOVE_UP);
         return;
     }
-    if(input_down(c))
+    if(input_down(c, 0))
     {
         output_single_value(EGG_OUTPUT_MOVE_DOWN);
         return;
