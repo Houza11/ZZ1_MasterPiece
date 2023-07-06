@@ -67,11 +67,13 @@ int scan_metadata(file* f)
     {
         int i = 2;
         char c = line[i];
+        int size = strlen(line);
         while(c != '~')
         {
             buffer[i-2] = c;
             i++;
             c = line[i];
+            if (i >= size) {printf("Format de données incorrect\n"); return 0;}
         }
         buffer[i-2] = '\0';
         printf("buffer = |%s|\n", buffer);
