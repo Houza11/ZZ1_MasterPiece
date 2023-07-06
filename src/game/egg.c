@@ -429,9 +429,12 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
     get_game_state(egg);
 
     tab_as_array(r->input, rule_in);
+    //tab_as_array(r->input_symbol_nb_match, symbol_match);
     unused(rule_in_size);
+    //unused(symbol_match_size);
 
     int time_deformation[] = {0, 0, 1, 1, 0};
+    bool rule_match = true;
 
     #ifdef EGG_RULE_BASED_ON_RANGE
     repeat(y, egg_nb_ligne)
@@ -472,7 +475,10 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
 
         if(dx > rule_in[yr])
         {
-            return false;
+            rule_match = false;
+        }else
+        {
+            input_symbol_useful_at(yr);
         }
 
         #ifdef EGG_RULE_USE_DENSITY
@@ -480,10 +486,12 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
 
         if((density+1) < rule_in[yr+1])
         {
-            return false;
+            rule_match =  false;
+        }else
+        {
+            input_symbol_useful_at(yr);
         }
         #endif
-
     }
     #else
     //egg_nb_ligne*EGG_INPUT_MAX_RANGE
@@ -493,28 +501,37 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
     {
         repeat(x, EGG_INPUT_MAX_RANGE)
         {
-            int rval = rule_in[index(x,y)];
+            int ridx = index(x,y);
+            int rval = rule_in[ridx];
             if(rval == EGG_INPUT_OSEF) continue;
 
             if(rval != (egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus+time_deformation[y]))))
             {
-                return false;
+                rule_match =  false;
+            }else
+            {
+                input_symbol_useful_at(yr);
             }
         }
     }
     #endif
 
-    //dstate->player_y
-    // match
-    output_single_value(tab_first_value(r->output));
+    if(rule_match)
+    {
+        output_single_value(tab_first_value(r->output));
+    }
 
     unused(e);
     unused(r);
-    return true;
+    return rule_match;
 }
 
 void egg_printf(game_arg arg)
 {
     unused(arg);
     printf("eggzagon game\n");
+}
+void egg_ordi_input_init(game_arg arg)
+{
+    unused(arg);
 }

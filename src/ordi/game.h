@@ -25,6 +25,13 @@ typedef bool  (*game_rule_match_fn)(game_arg arg, entity* e, rule* r);
 #define GAME_STATE_GAME_OVER           1
 #define GAME_STATE_REACH_MAX_RECURSION 2
 
+#define input_rule_symbol_was_useful_at(symbol, rule_idx)\
+e->behavior->input_and_symbol_match[rule_idx][symbol]++;
+
+#define input_symbol_useful_at(symbol_idx)\
+input_rule_symbol_was_useful_at(rule_in[symbol_idx], symbol_idx);
+
+
 // internal mutable state
 struct game_mutable
 {
@@ -83,6 +90,7 @@ struct game_type
     game_fn                 unload;
 
     game_get_input_fn       player_input;
+    game_fn                 ordi_input_init;
     game_rule_match_fn      rule_match;
 
     things_to_char_fn       input_to_char;
@@ -125,6 +133,7 @@ struct game_type
         name ## _load,\
         name ## _unload,\
         name ## _player_input,\
+        name ## _ordi_input_init,\
         name ## _rule_match,\
         name ## _rule_input_to_char,\
         name ## _rule_output_to_char,\
@@ -145,6 +154,7 @@ game* game_create_arg(
     game_fn load,
     game_fn unload,
     game_get_input_fn player_input,
+    game_fn ordi_input_init,
     game_rule_match_fn rule_match,
     things_to_char_fn input_to_char,
     things_to_char_fn output_to_char,
@@ -175,5 +185,5 @@ void game_ordi_configure(game* g,
     int condition_output_max_range,
     int nb_behavior);
 
-void game_internal_mutable_free(game_mutable* mut);
+void game_internal_mutable_free(game* g, game_mutable* mut);
 #endif

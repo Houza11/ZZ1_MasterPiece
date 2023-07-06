@@ -133,7 +133,7 @@ entity* game_import_one_entity(game* g, file* f)
     debug;
     free(line); 
     entity* e = entity_create(ENTITY_TYPE_ORDI, b);
-    behavior_free(b);
+    behavior_free(g, b);
     printf("Fin de l'import\n");
     debug;
     return e;

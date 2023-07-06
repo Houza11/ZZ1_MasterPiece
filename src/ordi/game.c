@@ -50,6 +50,7 @@ game* game_create_arg(
     game_fn load,
     game_fn unload,
     game_get_input_fn player_input,
+    game_fn ordi_input_init,
     game_rule_match_fn rule_match,
     things_to_char_fn input_to_char,
     things_to_char_fn output_to_char,
@@ -80,6 +81,7 @@ game* game_create_arg(
         t->unload_mutable = unload_mutable;
 
         t->player_input = player_input;
+        t->ordi_input_init = ordi_input_init;
         t->rule_match = rule_match;
 
         t->input_to_char  = input_to_char;
@@ -185,22 +187,22 @@ void game_load(context* c, game* g)
     
 }
 
-void game_internal_mutable_free(game_mutable* mut)
+void game_internal_mutable_free(game* g, game_mutable* mut)
 {
     tab_free(mut->input);
     if(mut->best_ordi != null)
     {
-        entity_free(mut->best_ordi);
+        entity_free(g, mut->best_ordi);
     }
     if(mut->current_entity != null)
     {
-        entity_free(mut->current_entity);
+        entity_free(g, mut->current_entity);
     }
     if(mut->generation != null)
     {
         repeat(i, mut->generation->length)
         {
-            entity_free(vec_get(mut->generation, entity*, i));
+            entity_free(g, vec_get(mut->generation, entity*, i));
         }
         vec_free_lazy(mut->generation);
     }
@@ -247,8 +249,8 @@ void game_unload(context* c, game* g)
     free(g->draw_state);
     free(g->immutable_state);
 
+    game_internal_mutable_free(g, g->internal_mutable_state);
     game_type_unload(c, g);
-    game_internal_mutable_free(g->internal_mutable_state);
     
     free(g);
     //todo;

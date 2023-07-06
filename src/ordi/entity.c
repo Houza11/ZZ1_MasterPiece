@@ -46,6 +46,8 @@ void rule_randomize(game* g, rule* r)
 void rule_printf(game* g, rule* r)
 {
     rule_printf_custom(r, g->type->input_to_char, g->type->output_to_char);
+    printf(" match %.1f %%", r->nb_match*100.0f/g->internal_mutable_state->generation_update_per_entity);
+    printf("\n");
 }
 
 void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn output)
@@ -53,7 +55,7 @@ void rule_printf_custom(rule* r, things_to_char_fn input, things_to_char_fn outp
     tab_printf_custom(r->input,  input);
     printf(" => ");
     tab_printf_custom(r->output, output);
-    printf("\n");
+
 }
 
 
@@ -63,6 +65,7 @@ behavior* behavior_empty()
 {
     behavior* b = create(behavior);
     b->rules = vec_empty(rule*);
+    b->input_and_symbol_match = null;
     return b;
 }
 
@@ -78,6 +81,7 @@ behavior* behavior_clone(behavior* b)
     {
         behavior_add_rule(copy, behavior_get_rule(b, i));
     }
+    copy->input_and_symbol_match = null;
     return copy;
 }
 
@@ -95,12 +99,21 @@ void behavior_set_rule(behavior* b, int idx, rule* r_will_be_copied)
     vec_set(b->rules, rule*, idx, r);
 }
 
-void behavior_free(behavior* b)
+void behavior_free(game* g, behavior* b)
 {
     repeat(i, behavior_nb_rule(b))
     {
         rule_free(behavior_get_rule(b, i));
     }
+    if(b->input_and_symbol_match != null)
+    {
+        repeat(i, g->type->condition_input_size)
+        {
+            free(b->input_and_symbol_match[i]);
+        }
+        free(b->input_and_symbol_match);
+    }
+
     vec_free_lazy(b->rules);
     b->rules = null;
     free(b);
@@ -130,10 +143,12 @@ void behavior_printf(game* g, behavior* b)
     printf("behavior: {\n");
     repeat(i, behavior_nb_rule(b))
     {
-        printf("   r%i  ", i);
+        printf("   r%2i  ", i);
         rule_printf(g, behavior_get_rule(b, i));
     }
     printf("}\n");
+    printf("stat : \n");
+
 }
 
 
@@ -165,7 +180,7 @@ entity* entity_create_ordi_random(game* g, int default_nb_rule)
     }
 
     entity* result = entity_create(ENTITY_TYPE_ORDI, b);
-    behavior_free(b);
+    behavior_free(g, b);
     rule_free(r_default);
     entity_init_random(g, result);
     return result;
@@ -186,16 +201,16 @@ behavior* entity_behavior(entity* e)
     return e->behavior;
 }
 
-void entity_behavior_set(entity* e, behavior* b_will_be_cloned)
+void entity_behavior_set(game* g, entity* e, behavior* b_will_be_cloned)
 {
-    behavior_free(e->behavior);
+    behavior_free(g, e->behavior);
     e->behavior = behavior_clone(b_will_be_cloned);
 }
 
-void entity_free(entity* e)
+void entity_free(game* g, entity* e)
 {
     if(e == null) return;
-    behavior_free(e->behavior);
+    behavior_free(g, e->behavior);
     free(e);
 }
 

@@ -21,12 +21,17 @@ void rule_randomize(game* g, rule* r);
 struct behavior
 {
     vec* /* rule* */ rules;
+
+    // count the nb time a given symbol is useful at a given positon in a rule
+    // input_and_symbol_match[input_size][input_range]
+    int** input_and_symbol_match;
+    //int nb_turn_survive;
 };
 
 behavior* behavior_empty();
 int   behavior_nb_rule(behavior* b);
 rule* behavior_get_rule(behavior* b, int idx);
-void  behavior_free(behavior* b);
+void behavior_free(game* g, behavior* b);
 behavior* behavior_clone(behavior* b);
 
 
@@ -51,8 +56,8 @@ entity* entity_create(entity_type type, behavior* b_will_be_cloned);
 entity* entity_create_ordi_random(game* g, int default_nb_rule);
 entity* entity_clone(entity* e);
 void entity_init_random(game* g, entity* e);
-void entity_behavior_set(entity* e, behavior* b_will_be_cloned);
-void entity_free(entity* e);
+void entity_behavior_set(game* g, entity* e, behavior* b_will_be_cloned);
+void entity_free(game* g, entity* e);
 behavior* entity_behavior(entity* e);
 void entity_printf(game* g, entity* e);
 #endif

@@ -19,9 +19,10 @@ typedef int vs_input;
 #define VS_INPUT_OSEF          0
 #define VS_INPUT_SOL           (VS_INPUT_OSEF+1)
 #define VS_INPUT_OUT_OF_ARENA  (VS_INPUT_OSEF+2)
-#define VS_INPUT_DAMAGE        (VS_INPUT_OSEF+3)
-#define VS_INPUT_FUTUR_DAMAGE  (VS_INPUT_OSEF+4)
+#define VS_INPUT_FUTUR_DAMAGE  (VS_INPUT_OSEF+3)
 #define VS_INPUT_ENEMY_NORMAL  (VS_INPUT_OSEF+5)
+
+//#define VS_INPUT_DAMAGE        (VS_INPUT_OSEF+99)
 
 //#define VS_INPUT_MUR           6
 
@@ -33,6 +34,7 @@ typedef int vs_input;
 #define VS_INPUT_ENEMY_DOWN  8
 */
 #define VS_INPUT_MAX_RANGE   (VS_INPUT_ENEMY_NORMAL+1)
+#define VS_INPUT_SIZE (vision_size*vision_size)
 
 #define vs_nb_colonne_x 7
 #define vs_nb_ligne_y   7
@@ -83,9 +85,13 @@ typedef struct
 #define VS_DAMAGE VS_INPUT_DAMAGE
 #define VS_FUTUR_DAMAGE VS_INPUT_FUTUR_DAMAGE
 
+// impair
+#define vision_size 7
+#define half_vision_size 3
+
 typedef struct
 {
-    int grid_input[vs_nb_colonne_x][vs_nb_ligne_y];
+    int grid_input[VS_INPUT_SIZE];
 }vs_vision;
 
 
@@ -103,6 +109,7 @@ typedef struct
     vs_entity players[vs_max_player];
     // crazy bool stuff. d u l r
     int16 grid_damage[vs_nb_colonne_x][vs_nb_ligne_y];
+    vs_vision ordi_vision;
 } vs_mutable_state;
 
 //#define vs_entities (mstate->entities)
@@ -132,6 +139,7 @@ void vs_draw(game_arg arg);
 void vs_draw_rule(game_arg arg, entity* e, rule* r, int idx);
 
 void vs_player_input(game_arg arg, entity* e);
+void vs_ordi_input_init(game_arg arg);
 bool vs_rule_match(game_arg arg, entity* e, rule* r);
 
 char vs_rule_output_to_char(int output);

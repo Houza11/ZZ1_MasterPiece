@@ -34,7 +34,7 @@ void gen_set(game* g, int idx, entity* e_will_be_copied)
     entity* old = gen_get_at(g, idx);
     entity* copy = entity_clone(e_will_be_copied);
     vec_set(gen, entity*, idx, copy);
-    entity_free(old);
+    entity_free(g, old);
 }
 
 #define rng_pourcent(pourcentage) ((rand() % RAND_MAX) <= ((pourcentage/100.0f)*RAND_MAX))
@@ -59,12 +59,12 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
         if(best_entity != null)
         {
             float old_score = best_entity->score;
-            entity_free(best_entity);
+            entity_free(g, best_entity);
             gen_delta_score += e->score - old_score;
         }
         best_entity = entity_clone(e);
         
-        entity_behavior_set(cur_entity, entity_behavior(e));
+        entity_behavior_set(g, cur_entity, entity_behavior(e));
         
         //float score = cur_entity->score;
         //entity_free(cur_entity);
@@ -257,7 +257,7 @@ void game_choose_next_generation(context* c, game* g)
     // full random
     repeat(i, gen_length)
     {
-        entity_free(gen_get(i));
+        entity_free(g, gen_get(i));
         //entity_init_random(g, gen_get(i));
     }
     vec_free_lazy(gen);
@@ -309,7 +309,7 @@ void import_best_entity(context* c, game* g)
     {
         printf("import succeed\n");
         vec_add(gen, entity*, e);
-        if (!g->internal_mutable_state->best_ordi) {entity_free(g->internal_mutable_state->best_ordi);}
+        if (!g->internal_mutable_state->best_ordi) {entity_free(g, g->internal_mutable_state->best_ordi);}
         g->internal_mutable_state->best_ordi = entity_clone(e);
     }else
     {
@@ -365,10 +365,9 @@ void game_unload_copy(context* c, game* g)
     gtype->unload_mutable(arg);
     free(g->mutable_state);
     //current_entity = null;
-    game_internal_mutable_free(g->internal_mutable_state);
+    game_internal_mutable_free(g, g->internal_mutable_state);
     free(g);
 }
-
 
 void update_current_entity(context* c, game* g)
 {
@@ -378,17 +377,44 @@ void update_current_entity(context* c, game* g)
     //current_entity->score = 0;
     game* copy = game_clone(c, g);
 
+
     copy->internal_mutable_state->current_entity = gen_current_entity;
-    repeat(i, behavior_nb_rule(gen_current_entity->behavior))
+    behavior* b = (gen_current_entity)->behavior;
+
+    if(b->input_and_symbol_match == null)
     {
-        behavior_get_rule(gen_current_entity->behavior, i)->nb_match = 0;
+        b->input_and_symbol_match = create_array(int*, gtype->condition_input_size);
+        repeat(i, gtype->condition_input_size)
+        {
+            b->input_and_symbol_match[i] = create_array(int, gtype->condition_input_max_range);
+        }
     }
+
+    repeat(i, gtype->condition_input_size)
+    {
+        repeat(j, gtype->condition_input_max_range)
+        {
+            b->input_and_symbol_match[i][j] = 0;
+        }
+    }
+
+    /*
+    repeat(i, nb_rules)
+    {
+        rule* r = behavior_get_rule(b, i);
+        r->nb_match = 0;
+        repeat(j, tab_length(r->input_symbol_nb_match))
+        {
+            tab_set(r->input_symbol_nb_match, j, 0);
+        }
+    }*/
     game_reset(c, copy);
 
     gen_current_idx_nb_update = 0;
     while(gen_current_idx_nb_update < gen_max_update_per_entity && copy->internal_mutable_state->state == GAME_STATE_RUNNING)
     {
         tab_clear(copy->internal_mutable_state->input, 0);
+        gtype->ordi_input_init(game_arg_create(c, g));
         game_update_fixed(c, copy);
         gen_current_idx_nb_update++;
     }

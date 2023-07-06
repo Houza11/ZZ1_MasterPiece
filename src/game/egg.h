@@ -83,6 +83,7 @@ void egg_draw(game_arg arg);
 void egg_draw_rule(game_arg arg, entity* e, rule* r, int idx);
 
 void egg_player_input(game_arg arg, entity* e);
+void egg_ordi_input_init(game_arg arg);
 bool egg_rule_match(game_arg arg, entity* e, rule* r);
 
 

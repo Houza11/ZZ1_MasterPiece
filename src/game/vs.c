@@ -130,7 +130,7 @@ void vs_load(game_arg arg)
 
     }else
     {
-        game_ordi_configure(the_game, 8, VS_INPUT_MAX_RANGE, 1, VS_OUTPUT_MOVE_RANGE, 10);
+        game_ordi_configure(the_game, VS_INPUT_SIZE, VS_INPUT_MAX_RANGE, 1, VS_OUTPUT_MOVE_RANGE, 10);
         dstate->grass   = texture_create(c,"asset/fond.png");
         dstate->archere = texture_create(c,"asset/archere.png");
         dstate->damage  = texture_create(c,"asset/damage.png");
@@ -452,11 +452,11 @@ void vs_draw_cadence(game_arg arg)
 
     repeat(i, max_pulse_display+1)
     {
-        float j = i+1-(draw_coef+0.2);
+        float j = i+1-(draw_coef);
         if(j < 0) { continue; }
         float x = ((j/(float)max_pulse_display))*window_width(c)/2;
-        pen_rect(c, rectanglef(window_width(c)/2+x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
-        pen_rect(c, rectanglef(window_width(c)/2-x+pulse_tickness_x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
+        pen_rect(c, rectanglef(window_width(c)/2+x+pulse_tickness_x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
+        pen_rect(c, rectanglef(window_width(c)/2-x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
     }
 }
 
@@ -601,33 +601,29 @@ void get_coord_relative_to_player(game_arg arg, int idx, int forward, int side, 
     *ry = Y;
 }
 
-bool vs_rule_match(game_arg arg, entity* e, rule* r)
+int vision_idx(int x, int y)
+{
+    return x+half_vision_size+(y+half_vision_size)*vision_size;
+}
+
+void get_vision(game_arg arg, entity* e, vs_vision* v)
 {
     get_game_state(vs);
 
     int idx = e->id;
-    check(idx == 0);
 
-/*
-...
-.X.
-...
-*/
-    int input[8];
-    int input_idx = 0;
-
-    repeat(i, 8)
+    repeat(i, VS_INPUT_SIZE)
     {
-        input[i] = VS_INPUT_SOL;
+        v->grid_input[i] = VS_INPUT_SOL;
     }
 
     int dx = 0;
     int dy = 0;
     coordinate_move(&dx, &dy, player.direction);
 
-    for(int x = -1; x <= 1; x++)
+    for(int x = -half_vision_size; x <= half_vision_size; x++)
     {
-        for(int y = -1; y <= 1; y++)
+        for(int y = -half_vision_size; y <= half_vision_size; y++)
         {
             if(x == 0 && y == 0) continue;
             int rx = 0;
@@ -636,14 +632,16 @@ bool vs_rule_match(game_arg arg, entity* e, rule* r)
 
             if(vs_inside_grid(rx, ry) == false)
             {
-                input[input_idx++] = VS_INPUT_OUT_OF_ARENA;
+                v->grid_input[vision_idx(x,y)] = VS_INPUT_OUT_OF_ARENA;
             }else
             {
                 int current_input = VS_INPUT_SOL;
-                if(vs_can_damage(arg, rx, ry))
+                /*
+                if(vs_can_damage(arg, rx, ry) && rx == )
                 {
                     current_input = VS_INPUT_DAMAGE;
-                }else if(vs_will_damage(arg, rx, ry))
+                }else */
+                if(vs_will_damage(arg, rx, ry))
                 {
                     current_input = VS_INPUT_FUTUR_DAMAGE;
                 }else 
@@ -658,19 +656,28 @@ bool vs_rule_match(game_arg arg, entity* e, rule* r)
                         }
                     }
                 }
-                input[input_idx++] = current_input;
+                v->grid_input[vision_idx(x,y)] = current_input;
             }
         }
     }
-    
+}
+
+bool vs_rule_match(game_arg arg, entity* e, rule* r)
+{
+    /**/
+    get_game_state(vs);
+
+    int idx = e->id;
+    check(idx == 0);
+
     tab_as_array(r->input, rule_in);
     unused(rule_in_size);
 
-    repeat(i, r->input->length)
+    repeat(i, rule_in_size)
     {
         if(rule_in[i] <= VS_INPUT_OSEF) continue;
 
-        if(rule_in[i] != input[i])
+        if(rule_in[i] != mstate->ordi_vision.grid_input[i])
         {
             return false;
         }
@@ -688,4 +695,10 @@ void vs_printf(game_arg arg)
 {
     unused(arg);
     printf("VerSUS game\n");
+}
+
+void vs_ordi_input_init(game_arg arg)
+{
+    get_game_state(vs);
+    get_vision(arg, current_entity, &mstate->ordi_vision);
 }
