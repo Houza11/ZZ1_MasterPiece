@@ -1,6 +1,7 @@
 #include "base.h"
 
 #define player vs_players[idx]
+#define gplayer (gstate->players_graphic[idx])
 
 bool vs_inside_grid(int x, int y)
 {
@@ -108,9 +109,15 @@ void vs_load(game_arg arg)
         }
     }
 
-    repeat(i, vs_max_player)
+    repeat(idx, vs_max_player)
     {
-        vs_players[i].state = vs_entity_state_normal; 
+        player.state = vs_entity_state_normal;
+
+        if(gstate != null)
+        {
+            gplayer.x = player.x;
+            gplayer.y = player.y;
+        } 
     }
 
     if(dstate != null)
@@ -193,6 +200,7 @@ void player_move_dir(game_arg arg, int idx, vs_output dir)
         player.x = x;
         player.y = y;
         player.direction = dir;
+    
     }
 }
 
@@ -353,13 +361,29 @@ void vs_draw_player(game_arg arg, int idx)
             fps = -1;
             nb_frame = 5;
             line = 4;
+            /*
+            if(player.var_0 == vs_bow_loading_time)
+            {
+                fps = 3;
+                nb_frame = 2;
+                line = 1;
+            }else */
             if(player.var_0 < vs_bow_loading_time)
             {
                 frame = 0;
             }
         }break;
         case vs_entity_state_attack_sword: fps = 1; nb_frame = 1; line = 0; break;
-        case vs_entity_state_normal: fps = 7; nb_frame = 2; line = 0; break;
+        case vs_entity_state_normal: 
+        {
+            if(length(gplayer.x,gplayer.y,player.x,player.y) <= 0.1)
+            {
+                fps = 7; nb_frame = 2; line = 0;     
+            }else
+            {
+                fps = 7; nb_frame = 6; line = 2;     
+            }
+        }break;
         default: break;
     }
 
@@ -368,8 +392,12 @@ void vs_draw_player(game_arg arg, int idx)
         frame = (fps > 0) ? ((int)((c->timer / frequence_s(fps)) % nb_frame)) : ((int)(draw_coef*nb_frame));
     }
 
+    float coef = 0.7;
+    gplayer.x = vs_lerp(gplayer.x, player.x, coef);
+    gplayer.y = vs_lerp(gplayer.y, player.y, coef);
+
     rect src = rectangle(32*frame+32*7*idx,32*(line*8+direction_y_offset),32,32);
-    rectf dest = rectanglef(p->x-0.5, p->y-1,2,2);
+    rectf dest = rectanglef(gplayer.x-0.5, gplayer.y-1,2,2);
 
     pen_texture(c, dstate->archere, src, dest);
 }
@@ -409,6 +437,29 @@ void vs_draw_damage(game_arg arg, int x, int y)
     }
 }
 
+void vs_draw_cadence(game_arg arg)
+{
+    get_game_state(vs);
+    float y = window_height(c)*0.9f;
+    float tickness = window_height(c)*0.025f;
+    float pulse_tickness_y = window_height(c)*0.1f;
+    float pulse_tickness_x = window_width(c)*0.01f;
+    pen_color(c, rgba(128, 128, 128, 127));
+    pen_rect(c, rectanglef(0, y-tickness/2, window_width(c), tickness));
+    int max_pulse_display = 4;
+
+    pen_color(c, rgb(255, 255, 255));
+
+    repeat(i, max_pulse_display+1)
+    {
+        float j = i+1-(draw_coef+0.2);
+        if(j < 0) { continue; }
+        float x = ((j/(float)max_pulse_display))*window_width(c)/2;
+        pen_rect(c, rectanglef(window_width(c)/2+x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
+        pen_rect(c, rectanglef(window_width(c)/2-x+pulse_tickness_x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
+    }
+}
+
 void vs_draw(game_arg arg)
 {
     get_game_state(vs);
@@ -417,7 +468,7 @@ void vs_draw(game_arg arg)
     unused(coef);
 
     float offset = 1;
-    rectf area = rectanglef(-offset,-offset, vs_nb_colonne_x+2*offset, vs_nb_ligne_y+2*offset);
+    rectf area = rectanglef(-offset,-offset, vs_nb_colonne_x+2*offset, vs_nb_ligne_y+2*offset+1);
     area = camera_push_focus_fullscreen(c, area);
     
     for(int x = floor(area.x); (float)x <= area.x+area.w; x++)
@@ -454,6 +505,8 @@ void vs_draw(game_arg arg)
     }
 
     camera_pop(c);
+
+    vs_draw_cadence(arg);
 
     pen_formatted_text_at_center(c, window_width(c)/2, 0, FONT_SIZE_NORMAL, 0.5, 0, "p1 %.0f p2 %.0f", get_player_score(arg, 0), get_player_score(arg, 1));
 

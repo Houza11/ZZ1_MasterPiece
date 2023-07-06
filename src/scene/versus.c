@@ -33,7 +33,7 @@ void scene_versus_unload(argument arg)
 void scene_versus_update(argument arg) 
 { 
     obtenir_scene_state;
-    game_update(c, current_game, 20);
+    game_update(c, current_game, 2);
 }
 
 void scene_versus_draw(argument arg)

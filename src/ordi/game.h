@@ -153,7 +153,7 @@ game* game_create_arg(
 
 game_arg game_arg_create(context* c, game* g);
 
-void  game_update(context* c, game* g, int ups);
+void  game_update(context* c, game* g, float ups);
 void  game_update_fixed(context* c, game* g);
 void  game_load(context* c, game* g);
 void  game_reset(context* c, game* g);
