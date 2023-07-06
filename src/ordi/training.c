@@ -335,7 +335,7 @@ void game_init_training_if_needed(context* c, game* g)
     gen_idx_training = 0;
     gen_current_idx_nb_update = 0;
     // hardcoder
-    gen_max_update_per_entity = 800;
+    gen_max_update_per_entity = 256;
     gen_delta_score = 4;
     gtype->total_entities_generated = 0;
 }

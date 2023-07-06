@@ -64,7 +64,11 @@ void context_update(context* c)
     //printf("window %i %i, mouse %i %i\n", c->window_width, c->window_height, c->mouse_x, c->mouse_y);
     // todo faire/dépalcer le fichier input dans context ?
 
-    c->timer = current_tick();
+    do
+    {
+        c->timer = current_tick();
+    }while(c->timer < c->update_tick_end);
+
     c->update_tick_end =  from_ms(from_ms(c->timer) + frequence_s(update_per_second));
 
     timer_update(c);
