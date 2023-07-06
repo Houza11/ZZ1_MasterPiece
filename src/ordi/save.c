@@ -25,35 +25,34 @@ void game_export_one_entity(game* g, file* f, entity* e)
     if (e->type == ENTITY_TYPE_ORDI)
     {
         behavior* b = entity_behavior(e);
-        fprintf(f, "~i%d\n~o%d\n~r%d\n",
+        fprintf(f, "~i%d~\n~o%d~\n~r%d~\n",
                 g->type->condition_input_size,
                 g->type->condition_output_size,
                 b->rules->length);
-        printf("~i%d\n~o%d\n~r%d\n",
-                g->type->condition_input_size,
-                g->type->condition_output_size,
-                b->rules->length);
+        // printf("~i%d\n~o%d\n~r%d\n",
+        //         g->type->condition_input_size,
+        //         g->type->condition_output_size,
+        //         b->rules->length);
 
         for (int i = 0; i < b->rules->length; i++)
         {
             rule* r = behavior_get_rule(b, i);
-            rule_printf(g, r);
             for (int j = 0; j < g->type->condition_input_size; j++)
             {
                 fprintf(f, "%d ",  tab_get(r->input, j));
-                printf("%d ", tab_get(r->input, j));
+                // printf("%d ", tab_get(r->input, j));
             }
             fprintf(f, "| ");
-            printf( "| ");
+            // printf( "| ");
             
             for (int j = 0; j < g->type->condition_output_size; j++)
             {
                 fprintf(f, "%d ", tab_get(r->output, j));
-                printf("%d ", tab_get(r->output, j));
+                // printf("%d ", tab_get(r->output, j));
             }
 
             fputc('\n', f);
-            printf("\n");
+            // printf("\n");
         }
         printf("export was successful\n");
     }
@@ -66,14 +65,18 @@ int scan_metadata(file* f)
     fgets(line, 19, f);
     if (line[0] == '~')
     {
-        int size = strlen(line);
-        int i;
-        for (i = 2; i < size; i++)
+        int i = 2;
+        char c = line[i];
+        while(c != '~')
         {
-            buffer[i-2] = line[i];
+            buffer[i-2] = c;
+            i++;
+            c = line[i];
         }
-        buffer[i+1] = '\0';
+        buffer[i-2] = '\0';
+        printf("buffer = |%s|\n", buffer);
         return atoi(buffer);
+        
     }
     printf("Cette ligne ne contient pas de metadata !!!\n");
     return -1;
@@ -84,38 +87,43 @@ entity* game_import_one_entity(game* g, file* f)
     if (!f) {printf("Le fichier de l'entite a charger est nul\n"); return NULL;}
     printf("Debut de l'import\n");
 
+    debug;
     int nb_input, nb_output, nb_rule;
     nb_input = scan_metadata(f);
+    debug;
     nb_output = scan_metadata(f);
+    debug;
     nb_rule = scan_metadata(f);
+    debug;
 
     if(nb_input != g->type->condition_input_size || nb_output != g->type->condition_output_size)
     {
         printf("Le nombre d'i/o du fichier a cherher ne correspond pas\n");
         return null;
     }
-    debug;
     int line_size = nb_input * 2 + nb_output * 2 + 2 + 100;
     char* line = create_array(char, line_size);
     behavior* b = behavior_empty();
+    debug;
     for (int i = 0; i < nb_rule; i++)
     {
-        debug;
         rule* r = rule_create_with_size(nb_input, nb_output);
-        debug;
     
         fgets(line, line_size, f);
         int j;
         for (j = 0; j < nb_input; j++)
         {
             char c = line[j*2];
-            vec_add( r->input, int, c - '0');
+            // printf("regle %d input %d val %c\n", i, j, c);
+            tab_set(r->input, j, c- '0');
         }
-        debug;
-        for (j=j+2; j < nb_output + nb_input + 2; j++)
+        int k = 0;
+        for (j=j+1; j < nb_output + nb_input + 1; j++)
         {
             char c = line[j*2];
-            vec_add( r->output, int, c - '0');
+            // printf("regle %d output %d val %c\n", i, k, c);
+            tab_set(r->output, k, c- '0');
+            k++;
         }
         vec_add(b->rules, rule*, r);
         debug;
@@ -125,5 +133,6 @@ entity* game_import_one_entity(game* g, file* f)
     entity* e = entity_create(ENTITY_TYPE_ORDI, b);
     behavior_free(b);
     printf("Fin de l'import\n");
+    debug;
     return e;
 }
