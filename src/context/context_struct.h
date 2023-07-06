@@ -58,5 +58,7 @@ typedef struct
     int fps;
     int fps_counter;
     time last_fps_tick;
+
+    time update_tick_end;
 } context;
 #endif
