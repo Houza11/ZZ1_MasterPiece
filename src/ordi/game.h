@@ -26,7 +26,7 @@ typedef bool  (*game_rule_match_fn)(game_arg arg, entity* e, rule* r);
 #define GAME_STATE_REACH_MAX_RECURSION 2
 
 #define input_rule_symbol_was_useful_at(symbol, rule_idx)\
-e->behavior->input_and_symbol_match[rule_idx][symbol]++;
+if(e->behavior->input_and_symbol_match) { e->behavior->input_and_symbol_match[rule_idx][symbol]++; }
 
 #define input_symbol_useful_at(symbol_idx)\
 input_rule_symbol_was_useful_at(rule_in[symbol_idx], symbol_idx);

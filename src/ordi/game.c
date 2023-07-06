@@ -283,13 +283,6 @@ void game_printf(context* c, game* g)
     printf("\n\n");
     gtype->printf(arg);
     printf("current entity %i : score %.1f, is ordi %i\n", current_entity->id, current_entity->score, current_entity->type == ENTITY_TYPE_ORDI);
-    behavior* b = entity_behavior(current_entity);
-    repeat(i, behavior_nb_rule(b))
-    {
-        rule* r = behavior_get_rule(b, i);
-        rule_printf_custom(r, gtype->input_to_char, gtype->output_to_char);
-    }
-
     game_trainning_printf(c, g);
 }
 

@@ -380,6 +380,7 @@ void update_current_entity(context* c, game* g)
 
     copy->internal_mutable_state->current_entity = gen_current_entity;
     behavior* b = (gen_current_entity)->behavior;
+    int nb_rule = b->rules->length;
 
     if(b->input_and_symbol_match == null)
     {
@@ -397,17 +398,11 @@ void update_current_entity(context* c, game* g)
             b->input_and_symbol_match[i][j] = 0;
         }
     }
-
-    /*
-    repeat(i, nb_rules)
+    repeat(i, nb_rule)
     {
         rule* r = behavior_get_rule(b, i);
         r->nb_match = 0;
-        repeat(j, tab_length(r->input_symbol_nb_match))
-        {
-            tab_set(r->input_symbol_nb_match, j, 0);
-        }
-    }*/
+    }
     game_reset(c, copy);
 
     gen_current_idx_nb_update = 0;
