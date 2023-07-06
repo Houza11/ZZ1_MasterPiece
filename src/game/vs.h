@@ -74,6 +74,12 @@ typedef struct
     int var_0;
 }vs_entity;
 
+typedef struct
+{
+    float x;
+    float y;
+}vs_entity_draw;
+
 #define VS_DAMAGE VS_INPUT_DAMAGE
 #define VS_FUTUR_DAMAGE VS_INPUT_FUTUR_DAMAGE
 
@@ -112,6 +118,7 @@ typedef struct
     texture* grass;
     texture* archere;
     texture* damage;
+    vs_entity_draw players_graphic[vs_max_player];
 } vs_draw_state;
 
 void vs_load(game_arg arg);

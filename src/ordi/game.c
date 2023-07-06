@@ -136,13 +136,14 @@ game_arg game_arg_create(context* c, game* g)
 #define gtype (g->type)
 #define arg game_arg_create(c, g)
 
-void game_update(context* c, game* g, int ups)
+void game_update(context* c, game* g, float ups)
 {
     game_train_best_ordi(c, g);
 
     if(g->internal_mutable_state->state != GAME_STATE_RUNNING) return;
 
-    g->internal_mutable_state->draw_coef += 1.0f/ups;
+    g->internal_mutable_state->draw_coef += ups/update_per_second; //1.0f/ups;
+    
     
     if(g->internal_mutable_state->draw_coef >= 1)
     {
