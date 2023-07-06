@@ -25,7 +25,7 @@ void game_export_one_entity(game* g, file* f, entity* e)
     if (e->type == ENTITY_TYPE_ORDI)
     {
         behavior* b = entity_behavior(e);
-        fprintf(f, "~i%d\n~o%d\n~r%d\n",
+        fprintf(f, "~i%d~\n~o%d~\n~r%d~\n",
                 g->type->condition_input_size,
                 g->type->condition_output_size,
                 b->rules->length);
@@ -66,14 +66,18 @@ int scan_metadata(file* f)
     fgets(line, 19, f);
     if (line[0] == '~')
     {
-        int size = strlen(line);
-        int i;
-        for (i = 2; i < size; i++)
+        int i = 2;
+        char c = line[i];
+        while(c != '~')
         {
-            buffer[i-2] = line[i];
+            buffer[i-2] = c;
+            i++;
+            c = line[i];
         }
-        buffer[i+1] = '\0';
+        buffer[i-2] = '\0';
+        printf("buffer = |%s|\n", buffer);
         return atoi(buffer);
+        
     }
     printf("Cette ligne ne contient pas de metadata !!!\n");
     return -1;
@@ -94,33 +98,33 @@ entity* game_import_one_entity(game* g, file* f)
         printf("Le nombre d'i/o du fichier a cherher ne correspond pas\n");
         return null;
     }
-    debug;
     int line_size = nb_input * 2 + nb_output * 2 + 2 + 100;
     char* line = create_array(char, line_size);
     behavior* b = behavior_empty();
     for (int i = 0; i < nb_rule; i++)
     {
-        debug;
         rule* r = rule_create_with_size(nb_input, nb_output);
-        debug;
     
         fgets(line, line_size, f);
         int j;
         for (j = 0; j < nb_input; j++)
         {
             char c = line[j*2];
-            vec_add( r->input, int, c - '0');
+            printf("regle %d input %d val %c\n", i, j, c);
+            // vec_add( r->input, int, c - '0');
+            tab_set(r->input, j, c- '0');
         }
-        debug;
-        for (j=j+2; j < nb_output + nb_input + 2; j++)
+        int k = 0;
+        for (j=j+1; j < nb_output + nb_input + 1; j++)
         {
             char c = line[j*2];
-            vec_add( r->output, int, c - '0');
+            // vec_add( r->output, int, c - '0');
+            printf("regle %d output %d val %c\n", i, k, c);
+            tab_set(r->output, k, c- '0');
+            k++;
         }
         vec_add(b->rules, rule*, r);
-        debug;
     }
-    debug;
     free(line); 
     entity* e = entity_create(ENTITY_TYPE_ORDI, b);
     behavior_free(b);

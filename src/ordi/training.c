@@ -304,6 +304,16 @@ void import_best_entity(context* c, game* g)
         printf("import failed, entity null\n");
     }
     fclose(f);
+    debug;
+}
+
+void load_best_entity(context* c, game* g)
+{
+    if(gen != null) return;
+
+    gen = vec_empty(entity*);
+
+    import_best_entity(c,g);
 }
 
 void game_init_training_if_needed(context* c, game* g)
@@ -317,9 +327,8 @@ void game_init_training_if_needed(context* c, game* g)
 
     if(gen != null) return;
 
-    gen = vec_empty(entity*);
+    load_best_entity(c,g);
 
-    //import_best_entity(c,g);
     repeat(i, entity_per_gen)
     {
         vec_add(gen, entity*, entity_create_ordi_random(g, 1));
@@ -381,7 +390,6 @@ void update_current_entity(context* c, game* g)
 // train the generation, and choose the best
 void game_train_best_ordi(context* c, game* g)
 {
-    //return;
     game_init_training_if_needed(c, g);
 
     repeat(i, 10)
