@@ -34,6 +34,9 @@ entity* current_entity = (imstate->current_entity);\
 float draw_coef = (imstate->draw_coef);\
 float best_score_player  = (the_game->internal_mutable_state->best_score_player);\
 float best_score_ordi  = (the_game->internal_mutable_state->best_score_ordi);\
+/* only when the game is running */\
+int nb_update = (imstate->nb_update);\
+unused(nb_update);\
 unused(best_score_player);\
 unused(best_score_ordi);\
 unused(arg);\

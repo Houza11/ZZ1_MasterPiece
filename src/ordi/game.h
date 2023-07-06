@@ -46,7 +46,7 @@ struct game_mutable
 
     // currrent player or cpu input
     tab*    input;
-    int     _nb_update;
+    int     nb_update;
     float   draw_coef;
 
     float gen_delta_score;
@@ -96,6 +96,7 @@ struct game_type
     int condition_output_size;
     int condition_output_max_range;
 
+    int total_entities_generated;
     // >= 1
     int nb_behavior;
 
