@@ -22,4 +22,8 @@ bool timer_load(context* c);
 void timer_unload(context* c);
 void timer_update(context* c);
 
+time current_tick();
+
+
+
 #endif
