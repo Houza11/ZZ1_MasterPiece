@@ -118,8 +118,8 @@ void egg_load(game_arg arg)
         dstate->fleche = animation_create(dstate->sprite_fleche,frequence_s(10));
         dstate->portail_haut = animation_create(dstate->sprite_portail_haut,frequence_s(2));
        
-
-        istate->nb_colonne = 100;
+    
+        istate->nb_colonne = 1000;
         egg_init_grid(arg);
     }
     //game_type->is_loaded
@@ -248,9 +248,9 @@ void egg_draw(game_arg arg)
     rectf area = rectanglef(-1,-1, nb_colonne+2, nb_ligne+2);
     area = camera_push_focus_fullscreen(c, area);
     
-    for(int x = floor(area.x); x <= area.w; x++)
+    for(int x = floor(area.x); (float)x <= area.x+area.w; x++)
     {
-        for(int y = floor(area.y); y <= area.h; y++)
+        for(int y = floor(area.y);  (float)y <= area.y+area.h; y++)
         {
             // flèche
             rect fond_rect = texture_rect(dstate->fond);
