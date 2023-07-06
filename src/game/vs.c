@@ -392,7 +392,7 @@ void vs_draw_player(game_arg arg, int idx)
         frame = (fps > 0) ? ((int)((c->timer / frequence_s(fps)) % nb_frame)) : ((int)(draw_coef*nb_frame));
     }
 
-    float coef = 0.7;
+    float coef = 0.01;
     gplayer.x = vs_lerp(gplayer.x, player.x, coef);
     gplayer.y = vs_lerp(gplayer.y, player.y, coef);
 
@@ -673,22 +673,30 @@ bool vs_rule_match(game_arg arg, entity* e, rule* r)
     tab_as_array(r->input, rule_in);
     unused(rule_in_size);
 
+    bool rule_match = true;
+            
     repeat(i, rule_in_size)
     {
-        if(rule_in[i] <= VS_INPUT_OSEF) continue;
-
-        if(rule_in[i] != mstate->ordi_vision.grid_input[i])
+        //if(rule_in[i] <= VS_INPUT_OSEF) continue;
+        if(rule_in[i] != mstate->ordi_vision.grid_input[i] && rule_in[i] != VS_INPUT_OSEF)
         {
-            return false;
+            rule_match = false;
+        }else
+        {
+            // Osef an other go here
+            input_symbol_useful_at(i);
         }
     }
 
     // match
-    output_single_value(tab_first_value(r->output));
+    if(rule_match)
+    {
+        output_single_value(tab_first_value(r->output));
+    }
     
     unused(e);
     unused(r);
-    return true;
+    return rule_match;
 }
 
 void vs_printf(game_arg arg)

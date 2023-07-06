@@ -125,7 +125,7 @@ entity* game_import_one_entity(game* g, file* f)
         vec_add(b->rules, rule*, r);
     }
     free(line); 
-    entity* e = entity_create(ENTITY_TYPE_ORDI, b);
+    entity* e = entity_create(g, ENTITY_TYPE_ORDI, b);
     behavior_free(g, b);
     printf("Fin de l'import\n");
     return e;

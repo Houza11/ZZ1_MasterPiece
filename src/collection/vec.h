@@ -75,12 +75,13 @@ typedef struct
     *int_ptr_result = _idx;\
 }
 
+// vec_index_valid_or_die(_v, _idx);\
+// range not checked
 #define vec_insert(v, type, idx, value)\
 {\
     vec* _v = (v);\
     int _idx = (idx);\
     type _value = (value);\
-    vec_index_valid_or_die(_v, _idx);\
     vec_resize_twice_if_needed(_v);\
     vec_copy(_v, _v, _idx*_v->sizeof_value, (_v->length - _idx)*_v->sizeof_value, (_idx + 1)*_v->sizeof_value);\
     ((type*)_v->values)[_idx] = _value;\

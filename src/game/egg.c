@@ -365,10 +365,10 @@ void egg_draw(game_arg arg)
         pen_text_at_center(c,"Mode Ordi : Z",w/2,h/2+2*txt_size,txt_size, 0.5,0.5);
     }
 
-    pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, "%.0f", current_entity->score);
+    pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, " %.0f", current_entity->score);
     pen_formatted_text_at_center(c, window_width(c)/2, 0, FONT_SIZE_NORMAL, 0.5, 0, "Record Joueur ~ %.0f", best_score_player);
     pen_formatted_text_at_center(c, window_width(c)/2,0+txt_size , FONT_SIZE_NORMAL, 0.5, 0, "Record Ordi ~ %.0f", best_score_ordi);
-    pen_text_at_center(c,"P^ ",w-3*txt_size,0,txt_size, 0.5,0);
+    pen_text_at_center(c,"P^ ",w,0,txt_size, 1,0);
     //pen_formatted_text_at_center(c, 0, FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%.2f", coef);
     //pen_formatted_text_at_center(c, 0, 2*FONT_SIZE_NORMAL, FONT_SIZE_NORMAL, 0, 0, "%i", mstate->nb_tour);
 
@@ -432,7 +432,9 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
     unused(rule_in_size);
     //unused(symbol_match_size);
 
-    int time_deformation[] = {0, 0, 1, 1, 0};
+    int time_deformation[] = 
+    //{0, 0, 0, 0, 0};
+    {0, 0, 1, 1, 0};
     bool rule_match = true;
 
     #ifdef EGG_RULE_BASED_ON_RANGE
@@ -445,7 +447,11 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         yr = y;
         #endif
 
-        if(rule_in[yr] == EGG_INPUT_OSEF) continue;
+        if(rule_in[yr] == EGG_INPUT_OSEF)
+        {
+            input_symbol_useful_at(yr);
+            continue; 
+        }
 
         // distance pour le prochain osbtacle
         int dx = EGG_INPUT_MAX_RANGE;
@@ -463,7 +469,7 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
 
                 #ifdef EGG_RULE_USE_DENSITY
                 density++;
-                dx = x;
+                dx = x+1;
                 #else
                 dx = x+1;
                 break;
@@ -481,14 +487,18 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         }
 
         #ifdef EGG_RULE_USE_DENSITY
-        if(rule_in[yr+1] == 0) continue; // Osef
+        if(rule_in[yr+1] == 0) // Osef
+        {
+            input_symbol_useful_at(yr+1);
+            continue; 
+        }
 
         if((density+1) < rule_in[yr+1])
         {
             rule_match =  false;
         }else
         {
-            input_symbol_useful_at(yr);
+            input_symbol_useful_at(yr+1);
         }
         #endif
     }
@@ -502,14 +512,18 @@ bool egg_rule_match(game_arg arg, entity* e, rule* r)
         {
             int ridx = index(x,y);
             int rval = rule_in[ridx];
-            if(rval == EGG_INPUT_OSEF) continue;
+            if(rval == EGG_INPUT_OSEF) // osef
+            {
+                input_symbol_useful_at(ridx);
+                continue; 
+            }
 
             if(rval != (egg_can_damage(egg_grid_get(arg, (y+mstate->player_y) % egg_nb_ligne, x+offset_animation_bonus+time_deformation[y]))))
             {
                 rule_match =  false;
             }else
             {
-                input_symbol_useful_at(yr);
+                input_symbol_useful_at(ridx);
             }
         }
     }

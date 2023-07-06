@@ -338,7 +338,7 @@ void game_get_input(context* c, game* g, entity* e)
     
     tab_clear(g->internal_mutable_state->input, 0);
 
-
+    /*
     //repeat(i, behavior_nb_rule(b))
     for(int i = behavior_nb_rule(b)-1; i>=0;i--)
     {
@@ -348,6 +348,17 @@ void game_get_input(context* c, game* g, entity* e)
         {
             r->nb_match++;
             //return;
+        }
+    }
+    */
+    repeat(i, behavior_nb_rule(b))
+    {
+        rule* r = behavior_get_rule(b, i);
+
+        if(gtype->rule_match(arg, e, r)) 
+        {
+            r->nb_match++;
+            return;
         }
     }
 }

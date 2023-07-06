@@ -25,6 +25,8 @@ struct behavior
     // count the nb time a given symbol is useful at a given positon in a rule
     // input_and_symbol_match[input_size][input_range]
     int** input_and_symbol_match;
+    float extra_score; // using how many bit matched
+
     //int nb_turn_survive;
 };
 
@@ -32,8 +34,8 @@ behavior* behavior_empty();
 int   behavior_nb_rule(behavior* b);
 rule* behavior_get_rule(behavior* b, int idx);
 void behavior_free(game* g, behavior* b);
-behavior* behavior_clone(behavior* b);
-
+behavior* behavior_clone(game* g, behavior* b);
+int behavior_sum_colonne(game* g, behavior* b, int column_idx);
 
 void behavior_set_rule(behavior* b, int idx, rule* r_will_be_copied);
 void behavior_insert_rule(behavior* b, int idx, rule* r_will_be_copied);
@@ -52,9 +54,9 @@ struct entity
     float score;
 };
 
-entity* entity_create(entity_type type, behavior* b_will_be_cloned);
+entity* entity_create(game* g, entity_type type, behavior* b_will_be_cloned);
 entity* entity_create_ordi_random(game* g, int default_nb_rule);
-entity* entity_clone(entity* e);
+entity* entity_clone(game* g, entity* e);
 void entity_init_random(game* g, entity* e);
 void entity_behavior_set(game* g, entity* e, behavior* b_will_be_cloned);
 void entity_free(game* g, entity* e);
