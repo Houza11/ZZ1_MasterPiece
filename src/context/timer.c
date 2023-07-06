@@ -25,3 +25,8 @@ void timer_update(context* c)
         c->last_fps_tick = c->timer;
     }
 }
+time current_tick()
+{
+    time tick =  from_ms(SDL_GetTicks());
+    return tick;
+}

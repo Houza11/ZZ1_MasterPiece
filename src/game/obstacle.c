@@ -27,7 +27,7 @@ void egg_copy_pattern(game_arg arg, obstacle p[][egg_nb_ligne], int size)
 }
 
 
-#define NB_PATTERN 9
+#define NB_PATTERN 19
 #define pattern(number, pattern_name) case number: pattern_shift_match_exits(arg, pattern_name, number, tab_size(pattern_name)); return tab_size(pattern_name);
 #define pattern_create(name) obstacle name[][egg_nb_ligne]
 
@@ -45,8 +45,8 @@ int pattern_shift_match_exits(game_arg arg, obstacle p[][egg_nb_ligne], int patt
 {
     get_game_state(egg);
 
-    obstacle exits[EGG_NB_LIGNE];
-    for (int i = 0; i < EGG_NB_LIGNE; i++)
+    obstacle exits[egg_nb_ligne];
+    for (int i = 0; i < egg_nb_ligne; i++)
     {
         exits[i] = egg_grid_get(arg, i, egg_grid->length -1);
     }
@@ -56,7 +56,7 @@ int pattern_shift_match_exits(game_arg arg, obstacle p[][egg_nb_ligne], int patt
     obstacle** shifted_pattern = create_array(obstacle*, size);
     for (int i = 0; i < size; i++)
     {
-        shifted_pattern[i] = create_array(obstacle, EGG_NB_LIGNE);
+        shifted_pattern[i] = create_array(obstacle, egg_nb_ligne);
     }
     
 
@@ -66,14 +66,14 @@ int pattern_shift_match_exits(game_arg arg, obstacle p[][egg_nb_ligne], int patt
     
     for (int i = 0; i < 30; i++)
     {
-        mark_entry = rand()%EGG_NB_LIGNE;
+        mark_entry = rand()%egg_nb_ligne;
         if (p[0][mark_entry] == EGG_OBSTACLE_ENTRY) { break; }
     }
     if (p[0][mark_entry] != EGG_OBSTACLE_ENTRY) {SDL_Log("Impossible de trouver une entrée pour le pattern %d\n", pattern_ID); return 0;}
     
     for (int i = 0; i < 30; i++)
     {
-        mark_exit = rand()%EGG_NB_LIGNE;
+        mark_exit = rand()%egg_nb_ligne;
         if (exits[mark_exit] == EGG_OBSTACLE_EXIT) { break; }
     }
     if (exits[mark_exit] != EGG_OBSTACLE_EXIT) {SDL_Log("Impossible de trouver une sortie pour le pattern %d\n", pattern_ID); debug; return 0;}
@@ -84,9 +84,9 @@ int pattern_shift_match_exits(game_arg arg, obstacle p[][egg_nb_ligne], int patt
     int shift = mark_entry - mark_exit;
     for (int i = 0; i < size; i++)
     {
-        for (int j = 0; j < EGG_NB_LIGNE; j++)
+        for (int j = 0; j < egg_nb_ligne; j++)
         {
-            shifted_pattern[i][j] = p[i][ (j+shift + EGG_NB_LIGNE)%EGG_NB_LIGNE ];
+            shifted_pattern[i][j] = p[i][ (j+shift + egg_nb_ligne)%egg_nb_ligne ];
         }
     }
     for (int i = 0; i < size; i++)
@@ -128,7 +128,7 @@ int egg_pattern_add(game_arg arg, int id_pattern)
         { 1, 0, 1, 1, 1},
         { 1, 1, 0, 1, 1},
         { 1, 1, 1, 0, 1},
-        { -2, 1, 1, 1,-2}
+        { 1, 1, 1, 1,-2}
     };
     pattern_create(c) = {
         { 1, 1,-1, 1, 1},
@@ -152,7 +152,6 @@ int egg_pattern_add(game_arg arg, int id_pattern)
         {-2,-2,-2,-2,-2}
     };
 
-    
     pattern_create(f) = {
         {-1,-1,-1,-1,-1},
         { 0, 0, 0, 0, 0},
@@ -178,14 +177,92 @@ int egg_pattern_add(game_arg arg, int id_pattern)
         { 1, 0, 1, 0, 1},
         { 1, 0, 1, 1, 0},
         { 1, 1, 1, 0, 1},
+        { 1, 1,-2,-2,-2}
+    };
+    
+    pattern_create(i) = {
+        {-1, 1,-1, 1,-1},
+        { 1, 0, 1, 0, 1},
+        { 0, 1, 0, 1, 0},
         {-2,-2,-2,-2,-2}
+    };
+    pattern_create(j) = {
+        {-1,-1,-1,-1,-1},
+        { 0, 1, 1, 1, 1},
+        { 0, 0, 0, 0, 0},
+        { 0, 1, 0, 1, 0},
+        { 1, 1, 0, 1, 1},
+        { 1,-2,-2,-2, 0}
+    };
+    pattern_create(k) = {
+        {-1,-1,-1,-1,-1},
+        { 0, 0, 0, 0, 0},
+        { 1, 0, 1, 0, 0},
+        { 1, 0, 1, 0, 1},
+        { 1, 0, 1, 1, 0},
+        { 0, 1, 1, 1, 1},
+        {-2,-2, 0, 1, 1}
+    };
+    pattern_create(l) = {
+        { 1,-1,-1,-1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1,-2,-2,-2, 1}
+    };
+    pattern_create(m) = {
+        { 1,-1,-1,-1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 0, 1, 0, 1},
+        { 0, 1, 1, 0, 1},
+        { 1, 1, 0, 1, 0},
+        { 0, 1, 0, 1, 1},
+        { 1, 0, 0, 1, 1},
+        { 1, 1, 0, 1, 1},
+        { 1,-2,-2,-2, 1}
+    };
+    pattern_create(n) = {
+        {-1,-1,-1,-1,-1},
+        { 0, 1, 0, 0, 1},
+        { 1, 1, 0, 1, 0},
+        {-2,-2,-2,-2,-2}
+    };
+    
+    pattern_create(o) = {
+        { 1, 1, 1, 1,-1},
+        { 1, 1, 1, 0, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 0, 1, 1, 1},
+        {-2, 1, 1, 1, 1}
+    };
+    
+    pattern_create(p) = {
+        { 0, 0, 1, 1,-1},
+        { 0, 1, 1, 0, 1},
+        { 1, 1, 0, 1, 1},
+        { 1, 0, 1, 1, 0},
+        {-2, 1, 1, 0, 0}
+    };
+    pattern_create(q) = {
+        {-1, 1, 1, 0, 0},
+        { 1, 0, 1, 1, 0},
+        { 1, 1, 0, 1, 1},
+        { 0, 1, 1, 0, 1},
+        { 0, 0, 1, 1,-2}
+    };
+    pattern_create(r) = {
+        { 0,-1,-1,-1, 0},
+        { 0, 1, 0, 1, 1},
+        { 0, 1, 0, 0, 1},
+        { 0, 1, 0, 0, 1},
+        { 1, 1, 1,-2, 1}
     };
     pattern_create(z) = {
         {-1,-1,-1,-1,-1},
         { 0, 0, 0, 0, 0},
         {-2,-2,-2,-2,-2}
     };
-    
     if (id_pattern < 0) 
     { 
         id_pattern = rand() % NB_PATTERN;
@@ -201,7 +278,17 @@ int egg_pattern_add(game_arg arg, int id_pattern)
         pattern(5, f);
         pattern(6, g);
         pattern(7, h);
-        pattern(8, z);
+        pattern(8, i);
+        pattern(9, j);
+        pattern(10,k);
+        pattern(11,l);
+        pattern(12,m);
+        pattern(13,n);
+        pattern(14,o);
+        pattern(15,p);
+        pattern(16,q);
+        pattern(17,r);
+        pattern(18,z);
         default: return 0;
     }
 }

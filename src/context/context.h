@@ -5,6 +5,9 @@
 #define gs global_state
 #define global_state (c->_global_state)
 
+#define update_per_second 60
+#define update_ms_budget frequence_s(update_per_second)
+
 context* context_create(char* window_name, int width, int height, Uint32 flags);
 void context_update(context* c);
 void context_draw (context* c);

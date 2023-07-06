@@ -1,6 +1,5 @@
 #include "base.h"
-
-
+//#include "threads.h"
 
 #define gtype  (g->type)
 // internal mutable state
@@ -38,15 +37,24 @@ void gen_set(game* g, int idx, entity* e_will_be_copied)
     entity_free(old);
 }
 
+#define rng_pourcent(pourcentage) ((rand() % RAND_MAX) <= ((pourcentage/100.0f)*RAND_MAX))
+
+
 bool replace_best_entity_if_needed(context* c, game* g, entity* e)
 {
     //return false;
     unused(c);
     if(e->type != ENTITY_TYPE_ORDI) return false;
 
-    //if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && e->behavior->rules->length < best_entity->behavior->rules->length))))
-    if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && ((rand()%100)<=64)))))
-    //if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && ((rand()%100)<=64) && (e->behavior->rules->length < 4+best_entity->behavior->rules->length)))))
+    if(
+        (e != best_entity) && 
+        ((best_entity == null) ||
+        ((e->score > best_entity->score) || 
+          (e->score >= best_entity->score && e->behavior->rules->length <= (best_entity->behavior->rules->length+2) && rng_pourcent(30) && (mstate->nb_generation % 10 == 0)
+          )))
+        )
+    //if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && ((rand()%100)<=64)))))
+    //if((e != best_entity) && ((best_entity == null) || ((e->score > best_entity->score) || (e->score >= best_entity->score && ((rand()%100)<=64) && (e->behavior->rules->length < 2+best_entity->behavior->rules->length)))))
     {
         if(best_entity != null)
         {
@@ -120,6 +128,7 @@ void game_glouton(context* c, game* g, vec* next_gen, entity* best, int nb_modif
     //entity* e = game_glouton(c, g, next_gen, best,)
 }
 
+
 void game_choose_next_generation(context* c, game* g)
 {
     g->internal_mutable_state->nb_generation++;
@@ -139,21 +148,21 @@ void game_choose_next_generation(context* c, game* g)
     vec* next_gen = vec_empty(entity*);
     {
         // keep the best
-        repeat(i, 40)
+        repeat(i, 30)
         {
             entity* e = entity_clone(best_entity);
             vec_add(next_gen, entity*, e);
         }
-        // 100 random from the last gen
-        repeat(i, 40)
+        // random from the last gen
+        repeat(i, 30)
         {
             int j = rand()%gen->length;
             entity* e = entity_clone(gen_get(j));
             vec_add(next_gen, entity*, e);
         }
 
-        // 100 pure random
-        repeat(i, 40)
+        // pure random
+        repeat(i, 20)
         {
             entity* rng = entity_create_ordi_random(g, rand()%best_entity->behavior->rules->length+1+rand()%2);
             vec_add(next_gen, entity*, rng);
@@ -173,7 +182,7 @@ void game_choose_next_generation(context* c, game* g)
             
             if(r->nb_match == 0)
             {
-                if(rand()%100 <= 50 || b->rules->length <= 1)
+                if(rng_pourcent(50) || behavior_nb_rule(b) <= 1)
                 {
                     rule_randomize(g, r);
                 }else
@@ -208,24 +217,27 @@ void game_choose_next_generation(context* c, game* g)
             }
         }
 
+
         // add rule
-        if(rand() % 100 <= 50)
+        if(rng_pourcent(30))
         {
             int nb_add = 1+(rand()%100 <= 20 ? 1 : 0);
-            repeat(_, nb_add);
+            repeat(tmp, nb_add)
             {
                 rule* r = rule_create(g);
                 rule_randomize(g, r);
                 behavior_add_rule(b, r);
                 rule_free(r);
             }
-        }else if(rand() % 100 <= 5 && b->rules->length > 1)
+        }
+        // remove rule
+        if(b->rules->length > 1 && rng_pourcent(3))
         {
             int j = rand()%b->rules->length;
             behavior_remove_rule(b, j);
         }
         //swap rule
-        if(rand() % 100 <= 10 && b->rules->length >= 2)
+        if(b->rules->length >= 2 && rng_pourcent(10))
         {
             int j = rand()%b->rules->length;
             int k = rand()%b->rules->length;
@@ -237,9 +249,9 @@ void game_choose_next_generation(context* c, game* g)
         }
     }
 
-    if(mstate->nb_generation % 800 == 0)
+    if(mstate->nb_generation % 70 == 0)
     {
-        game_glouton(c, g, next_gen, best_entity, (mstate->nb_generation / 20));
+        //game_glouton(c, g, next_gen, best_entity, (mstate->nb_generation / 20));
     }
     
     // full random
@@ -331,7 +343,7 @@ void game_init_training_if_needed(context* c, game* g)
     gen_idx_training = 0;
     gen_current_idx_nb_update = 0;
     // hardcoder
-    gen_max_update_per_entity = 128;
+    gen_max_update_per_entity = 256;
     gen_delta_score = 4;
     gtype->total_entities_generated = 0;
 }
@@ -381,16 +393,19 @@ void update_current_entity(context* c, game* g)
 // train the generation, and choose the best
 void game_train_best_ordi(context* c, game* g)
 {
-    //return;
     game_init_training_if_needed(c, g);
 
-    repeat(i, 10)
-    //repeat(i, 100)
+    while(current_tick() <= (c->update_tick_end- (time)from_ms(update_ms_budget*0.65)))
     {
-        update_current_entity(c, g);
         if(gen_current_entity == null)
         {
-            game_choose_next_generation(c, g);
+            if(current_tick() <= (c->update_tick_end- (time)from_ms(update_ms_budget*0.2)))
+            {
+                game_choose_next_generation(c, g);
+            }
+        }else
+        {
+            update_current_entity(c, g);
         }
     }
 
