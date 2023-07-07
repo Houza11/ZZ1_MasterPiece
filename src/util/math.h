@@ -21,4 +21,7 @@ float math_ceiling(float f);
 #define floor(f) math_floor(f)
 #define ceiling(f) math_ceiling(f)
 
+int maxi(int a, int b);
+int mini(int a, int b);
+
 #endif

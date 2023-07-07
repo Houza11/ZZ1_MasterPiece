@@ -10,6 +10,7 @@ struct the_global_state
 {
     int dummy;
     game* g;
+    float difficulty;
 };
 
 

@@ -52,7 +52,7 @@ void input_update(context* c)
     repeat(i, input_max_player)
     {
         vec* action_buffer = c->action_bufferized[i];
-        while(action_buffer->length > 0 && c->timer - vec_get(action_buffer, timed_action, 0).time_pressed > action_expiration)
+        while(action_buffer->length > 0 && c->timer - vec_get(action_buffer, timed_action, 0).time_pressed > (action_expiration/gs->difficulty))
         {
             vec_remove_at(action_buffer, 0);
         }

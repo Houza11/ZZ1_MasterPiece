@@ -77,7 +77,7 @@ void scene_jeu_unload(argument arg)
 void scene_jeu_update(argument arg) 
 { 
     obtenir_scene_state;
-    game_update(c, current_game, 1);
+    game_update(c, current_game, 1*gs->difficulty);
 }
 
 void scene_jeu_draw(argument arg)
