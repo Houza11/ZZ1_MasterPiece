@@ -19,6 +19,7 @@ Linux
 ```bash
 gcc -O4 -fdiagnostics-color=always -g ./src/*.c ./src/betterC/*.c ./src/context/*.c ./src/util/*.c ./src/collection/*.c ./src/scene/*.c ./src/ordi/*.c ./src/game/*.c -Wall -Wextra -Iinclude -Llib -lSDL2main -lSDL2 -lSDL2_image -lm -o ./bin/main.exe
 ```
+(Maybe you need to change the include path for the SDL header file in `src/SDL.h` if you have sdl installed on your machien, just turn on/off the comment)
 
 Windows
 ```bash
