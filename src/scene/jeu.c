@@ -10,11 +10,8 @@ typedef struct
 void unload_game(argument arg)
 {
     obtenir_scene_state;
-    if(current_game != null)
-    {
-        game_unload(c, current_game);
-        current_game = null;
-    }
+    game_unload(c, current_game);
+    current_game = null;
 }
 
 void game_load_egg(argument arg)
@@ -80,7 +77,7 @@ void scene_jeu_unload(argument arg)
 void scene_jeu_update(argument arg) 
 { 
     obtenir_scene_state;
-    game_update(c, current_game, 3.5);
+    game_update(c, current_game, 1);
 }
 
 void scene_jeu_draw(argument arg)
@@ -105,6 +102,9 @@ bool scene_jeu_event (argument arg)
                 case SDLK_a: game_set_entity_type(current_game, ENTITY_TYPE_PLAYER); break;;
                 case SDLK_z: game_set_entity_type(current_game, ENTITY_TYPE_ORDI); break;
                 case SDLK_r: game_reset(c, current_game); break;
+                case SDLK_t: game_load_egg(arg); break;
+                case SDLK_f: game_load_vs(arg); break;
+                
                 //case SDLK_g: game_train_best_ordi(c, current_game); break;
                 default: break;
             }

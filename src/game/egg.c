@@ -73,6 +73,8 @@ void egg_load(game_arg arg)
     mstate->player_y = egg_nb_ligne/2;
     mstate->player_x = 0;
 
+    imstate->target_ups = 3.5f;
+
     if(dstate != null)
     {
         dstate->player_y = mstate->player_y;
@@ -231,7 +233,7 @@ void egg_update(game_arg arg)
     current_entity->score += 1;
 }
 
-//#define egg_lerp lerpf
+//#define egg_lerp tweening_sqrt
 #define egg_lerp lerpf
 
 void egg_draw(game_arg arg)

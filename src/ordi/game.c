@@ -118,6 +118,7 @@ game* game_create_arg(
         m->best_score_ordi   = 0; 
 
         m->nb_generation = 0;
+        m->target_ups = 3;
         m->current_entity   = null; 
         m->best_ordi        = null;
         m->generation       = null;
@@ -138,13 +139,13 @@ game_arg game_arg_create(context* c, game* g)
 #define gtype (g->type)
 #define arg game_arg_create(c, g)
 
-void game_update(context* c, game* g, float ups)
+void game_update(context* c, game* g, float coef_ups)
 {
     game_train_best_ordi(c, g);
 
     if(g->internal_mutable_state->state != GAME_STATE_RUNNING) return;
 
-    g->internal_mutable_state->draw_coef += ups/update_per_second; //1.0f/ups;
+    g->internal_mutable_state->draw_coef += g->internal_mutable_state->target_ups*coef_ups /update_per_second; //1.0f/ups;
     
     
     if(g->internal_mutable_state->draw_coef >= 1)
@@ -238,6 +239,7 @@ void export_best_entity(context* c, game* g)
 
 void game_unload(context* c, game* g)
 {
+    if(g == null) return;
     check(gtype->is_loaded == true);
     export_best_entity(c, g);
     gtype->is_loaded = false;
@@ -365,6 +367,7 @@ void game_get_input(context* c, game* g, entity* e)
 
 void game_set_entity_type(game* g, entity_type type)
 {
+    if(g == null) return;
     current_entity->type = type;
 }
 

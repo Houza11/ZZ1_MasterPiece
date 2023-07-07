@@ -65,7 +65,7 @@ bool replace_best_entity_if_needed(context* c, game* g, entity* e)
         (e != best_entity) && 
         ((best_entity == null) ||
         ((e->score > best_entity->score) || 
-         (e->score >= best_entity->score && e->behavior->rules->length <= (best_entity->behavior->rules->length+2) && rng_pourcent(30) && (mstate->nb_generation % 10 == 0)) ||
+         (e->score >= best_entity->score && e->behavior->rules->length <= (best_entity->behavior->rules->length+2) && rng_pourcent(30)) || // && (mstate->nb_generation % 10 == 0)) ||
          (e->score >= best_entity->score && e->behavior->extra_score > best_entity->behavior->extra_score)
         ))
        )
@@ -308,20 +308,23 @@ void one_changement_on_rule(context* c, game* g, entity* e, behavior* b)
 #define proba_rule_swap   20
 #define proba_rule_remove 10
 
-    float proba_sum = proba_rule_add + proba_rule_clone + proba_rule_swap + proba_rule_remove;
+    float proba_sum = proba_rule_add  + proba_rule_clone
+                    + proba_rule_swap + proba_rule_remove;
+
     if(behavior_nb_rule(b) == 1)
     {
         proba_sum -= (proba_rule_swap+proba_rule_remove);
     }
+
     float rng = rng_one * proba_sum;
 
-    apply_rng(proba_rule_add,   add_rule);
-    apply_rng(proba_rule_clone, clone_rule);
+    apply_rng(proba_rule_add,    add_rule);
+    apply_rng(proba_rule_clone,  clone_rule);
     apply_rng(proba_rule_remove, rule_remove);
-    apply_rng(proba_rule_swap, rule_swap);
+    apply_rng(proba_rule_swap,   rule_swap);
 }
 
-
+/*
 void one_changement(context* c, game* g, entity* e, behavior* b)
 {
     float rng = rng_one;
@@ -333,7 +336,7 @@ void one_changement(context* c, game* g, entity* e, behavior* b)
     return;
     // already quitted if apply_rng is true
     one_changement_on_rule(c,g,e,b);
-}
+}*/
 
 void change_rule_if_useless(context* c, game* g, entity* e, behavior* b, int* r_idx_ptr)
 {

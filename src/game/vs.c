@@ -91,7 +91,7 @@ void vs_load(game_arg arg)
 {
     get_game_state(vs);
 
-
+    imstate->target_ups = 1.0f;
 
     vs_players[0].direction = vs_entity_dir_up;
     vs_players[0].x = vs_nb_colonne_x /2;

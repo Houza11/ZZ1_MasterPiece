@@ -47,6 +47,9 @@ struct game_mutable
     vec* generation;
     int nb_generation;
 
+    // for the player
+    float target_ups;
+
     int generation_idx_training;
     int generation_current_idx_nb_update;
     int generation_update_per_entity;
@@ -64,8 +67,8 @@ struct game_mutable
 
 struct game
 {
-    // immutable data
-    game_type*    type;
+    
+    game_type*    type; // internal immutable data
     game_mutable* internal_mutable_state;
 
     void* immutable_state;

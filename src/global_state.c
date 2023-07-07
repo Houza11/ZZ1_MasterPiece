@@ -1,29 +1,33 @@
 #include "base.h"
 
-#define FPS_IDLE 500
-#define FPS_WALK 200
-
 /*
 no opti, fast compile : -O0
 lot of opti, slow compile : -O4
 
 // ajouter -lm pour linux
 
+gcc -O5 -fdiagnostics-color=always -g ./src/*.c ./src/betterC/*.c ./src/context/*.c ./src/util/*.c ./src/collection/*.c ./src/scene/*.c ./src/ordi/*.c ./src/game/*.c -Wall -Wextra -Iinclude -Llib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -o ./bin/main.exe
+
 gcc -O0 -fdiagnostics-color=always -g ./src/*.c ./src/betterC/*.c ./src/context/*.c ./src/util/*.c ./src/collection/*.c ./src/scene/*.c ./src/ordi/*.c ./src/game/*.c -Wall -Wextra -Iinclude -Llib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -o ./bin/main.exe
 ./bin/main.exe
 gource
 */
 
+#define current_game (((c)->_global_state)->g)
+
 void global_state_load(context* c)
 {
     unused(c);
     gs = create(the_global_state);
-    gs->g = null;
+    current_game = null;
 }
 void global_state_unload(context* c)
 {
     unused(c);
+    game_unload(c, current_game);
+
     free(gs);
+    gs = null;
 }
 
 void global_state_update(context* c)

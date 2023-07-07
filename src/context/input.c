@@ -87,22 +87,18 @@ bool input_event(context* c, event* ev)
             switch (ev->key.keysym.sym)
             {
                 case SDLK_RIGHT:
-                case SDLK_f:
                     push_action(c, action_right, 0);
                 break;
 
                 case SDLK_LEFT:
-                case SDLK_s:
                     push_action(c, action_left, 0);
                 break;
 
                 case SDLK_UP:
-                case SDLK_e:
                     push_action(c, action_up, 0);
                 break;
 
                 case SDLK_DOWN:
-                case SDLK_d:
                     push_action(c, action_down, 0);
                 break;
 
