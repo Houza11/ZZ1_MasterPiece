@@ -17,10 +17,13 @@ gource
 void global_state_load(context* c)
 {
     unused(c);
+    gs = create(the_global_state);
+    gs->g = null;
 }
 void global_state_unload(context* c)
 {
     unused(c);
+    free(gs);
 }
 
 void global_state_update(context* c)

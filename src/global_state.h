@@ -9,6 +9,7 @@ typedef int jeu_state;
 struct the_global_state
 {
     int dummy;
+    game* g;
 };
 
 

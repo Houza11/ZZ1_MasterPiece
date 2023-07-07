@@ -3,14 +3,24 @@
 typedef struct 
 {
    int dummy;
-   game* g;
 }state;
 
-#define current_game (s->g)
+#define current_game (((c)->_global_state)->g)
 
-void scene_jeu_load(argument arg)
+void unload_game(argument arg)
 {
     obtenir_scene_state;
+    if(current_game != null)
+    {
+        game_unload(c, current_game);
+        current_game = null;
+    }
+}
+
+void game_load_egg(argument arg)
+{
+    obtenir_scene_state;
+    unload_game(arg);
 
     // pour avoir 2 variables arg
     {
@@ -21,7 +31,7 @@ void scene_jeu_load(argument arg)
         game_load(c, the_game);
         game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
         //game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
-        #define current_entity current_game->internal_mutable_state->current_entity
+        //#define current_entity current_game->internal_mutable_state->current_entity
         /*
         behavior* b = entity_behavior(current_entity);
         rule* r = behavior_get_rule(b, 0);
@@ -36,10 +46,35 @@ void scene_jeu_load(argument arg)
     }
 }
 
+void game_load_vs(argument arg)
+{
+    obtenir_scene_state;
+    unload_game(arg);
+    // pour avoir 2 variables arg
+    {   
+        current_game = game_create(vs);
+
+        game_arg arg = game_arg_create(c, current_game);
+        get_game_state(vs);
+        game_load(c, the_game);
+        game_set_entity_type(current_game, ENTITY_TYPE_PLAYER);
+        //game_set_entity_type(current_game, ENTITY_TYPE_ORDI);
+    }
+}
+
+void scene_jeu_load(argument arg)
+{
+    obtenir_scene_state;
+    game_load_egg(arg);
+    //game_load_vs(arg);
+}
+
+
+
 void scene_jeu_unload(argument arg) 
 {
     obtenir_scene_state;
-    game_unload(c, current_game);
+    unload_game(arg);
 }
 
 void scene_jeu_update(argument arg) 

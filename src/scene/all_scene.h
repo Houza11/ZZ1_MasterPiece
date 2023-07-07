@@ -22,6 +22,5 @@ unused(ev);  \
 
 #include "titre.h"
 #include "jeu.h"
-#include "versus.h"
 
 //#pragma GCC diagnostic warning "-Wunused-parameter"
