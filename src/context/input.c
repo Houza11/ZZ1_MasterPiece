@@ -99,6 +99,21 @@ bool input_event(context* c, event* ev)
                 case SDLK_j:     push_action(c, action_down, 1); break;
                 case SDLK_i:     push_action(c, action_sp0,  1); break;
                 case SDLK_o:     push_action(c, action_sp1,  1); break;
+
+                
+                case SDLK_m:     push_action(c, action_right,2); break;
+                case SDLK_c:     push_action(c, action_left, 2); break;
+                case SDLK_y:     push_action(c, action_up,   2); break;
+                case SDLK_v:     push_action(c, action_down, 2); break;
+                case SDLK_7: case SDLK_KP_7:    push_action(c, action_sp0,  2); break;
+                case SDLK_6: case SDLK_KP_6:    push_action(c, action_sp1,  2); break;
+
+                case SDLK_0: case SDLK_KP_0:    push_action(c, action_right,3); break;
+                case SDLK_1: case SDLK_KP_1:    push_action(c, action_left, 3); break;
+                case SDLK_2: case SDLK_KP_2:    push_action(c, action_up,   3); break;
+                case SDLK_3: case SDLK_KP_3:    push_action(c, action_down, 3); break;
+                case SDLK_4: case SDLK_KP_4:    push_action(c, action_sp0,  3); break;
+                case SDLK_5: case SDLK_KP_5:    push_action(c, action_sp1,  3); break;
                 default: break;
             }
         }

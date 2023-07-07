@@ -36,8 +36,8 @@ typedef int vs_input;
 #define VS_INPUT_MAX_RANGE   (VS_INPUT_ENEMY_NORMAL+1)
 #define VS_INPUT_SIZE (vision_size*vision_size)
 
-#define vs_nb_colonne_x 7
-#define vs_nb_ligne_y   7
+#define vs_nb_colonne_x 9
+#define vs_nb_ligne_y   9
 
 typedef struct
 {
@@ -102,7 +102,7 @@ typedef struct
 }vs_situation;
 
 #define vs_max_player 4
-#define vs_nb_player 2
+#define vs_nb_player 4
 
 typedef struct
 {

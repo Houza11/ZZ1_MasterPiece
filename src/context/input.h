@@ -44,7 +44,7 @@ bool input_special0(context* c, int playerIdx);
 bool input_special1(context* c, int playerIdx);
 
 
-#define action_expiration from_ms(500)
+#define action_expiration from_ms(750)
 
 typedef int action;
 

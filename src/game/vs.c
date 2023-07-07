@@ -105,6 +105,14 @@ void vs_load(game_arg arg)
     vs_players[1].x = vs_nb_colonne_x /2;
     vs_players[1].y = 0;
 
+    vs_players[2].direction = vs_entity_dir_right;
+    vs_players[2].x = 0;
+    vs_players[2].y = vs_nb_ligne_y /2;
+
+    vs_players[3].direction = vs_entity_dir_left;
+    vs_players[3].x = vs_nb_colonne_x-1;
+    vs_players[3].y = vs_nb_ligne_y /2;
+
     repeat(x, vs_nb_colonne_x)
     {
         repeat(y, vs_nb_ligne_y)
@@ -326,7 +334,7 @@ void vs_update_player(game_arg arg, int idx)
         {
             player.state = vs_entity_state_normal;
         }
-        return;
+        //return;
     }
 
     if(player.state == vs_entity_state_attack_sword) 
