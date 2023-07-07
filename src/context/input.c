@@ -86,30 +86,19 @@ bool input_event(context* c, event* ev)
             //bool pressed = ev->type == SDL_KEYDOWN;
             switch (ev->key.keysym.sym)
             {
-                case SDLK_RIGHT:
-                    push_action(c, action_right, 0);
-                break;
+                case SDLK_RIGHT: push_action(c, action_right,0); break;
+                case SDLK_LEFT:  push_action(c, action_left, 0); break;
+                case SDLK_UP:    push_action(c, action_up,   0); break;
+                case SDLK_DOWN:  push_action(c, action_down, 0); break;
+                case SDLK_SPACE: push_action(c, action_sp0,  0); break;
+                case SDLK_n:     push_action(c, action_sp1,  0); break;
 
-                case SDLK_LEFT:
-                    push_action(c, action_left, 0);
-                break;
-
-                case SDLK_UP:
-                    push_action(c, action_up, 0);
-                break;
-
-                case SDLK_DOWN:
-                    push_action(c, action_down, 0);
-                break;
-
-                case SDLK_SPACE:
-                    push_action(c, action_sp0, 0);
-                break;
-
-                case SDLK_n:
-                    push_action(c, action_sp1, 0);
-                break;
-
+                case SDLK_k:     push_action(c, action_right,1); break;
+                case SDLK_h:     push_action(c, action_left, 1); break;
+                case SDLK_u:     push_action(c, action_up,   1); break;
+                case SDLK_j:     push_action(c, action_down, 1); break;
+                case SDLK_i:     push_action(c, action_sp0,  1); break;
+                case SDLK_o:     push_action(c, action_sp1,  1); break;
                 default: break;
             }
         }

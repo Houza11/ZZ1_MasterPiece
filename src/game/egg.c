@@ -365,6 +365,7 @@ void egg_draw(game_arg arg)
         pen_text_at_center(c,"Quit : Escape",w/2,h/2+txt_size,txt_size, 0.5,0.5);
         pen_text_at_center(c,"Mode Joueur : A",w/2,h/2-2*txt_size,txt_size, 0.5,0.5);
         pen_text_at_center(c,"Mode Ordi : Z",w/2,h/2+2*txt_size,txt_size, 0.5,0.5);
+        // G pour reload map
     }
 
     pen_formatted_text_at_center(c, 0, 0, FONT_SIZE_NORMAL, 0, 0, " %.0f", current_entity->score);
