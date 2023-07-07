@@ -126,6 +126,9 @@ typedef struct
     texture* archere;
     texture* damage;
     vs_entity_draw players_graphic[vs_max_player];
+
+    // of vs_situation. For p2
+    vec* situations;
 } vs_draw_state;
 
 void vs_load(game_arg arg);

@@ -63,12 +63,13 @@ struct game_mutable
 
     float best_score_player;
     float best_score_ordi;
+
+    bool is_training_ia;
 };
 
 struct game
 {
-    
-    game_type*    type; // internal immutable data
+    game_type*    type; // aka internal immutable data
     game_mutable* internal_mutable_state;
 
     void* immutable_state;

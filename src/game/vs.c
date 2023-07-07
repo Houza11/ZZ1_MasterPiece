@@ -3,6 +3,8 @@
 #define player vs_players[idx]
 #define gplayer (gstate->players_graphic[idx])
 
+void get_vision(game_arg arg, int idx, vs_vision* v);
+
 bool vs_inside_grid(int x, int y)
 {
     return x >= 0 && x < vs_nb_colonne_x && y >= 0 &&  y < vs_nb_ligne_y;
@@ -47,6 +49,8 @@ void set_player_score(game_arg arg, int idx, float val)
 void grid_set_damage(game_arg arg, int x, int y, int damage)
 {
     get_game_state(vs);
+    if(vs_inside_grid(x, y) == false) return;
+
     vs_grid_damage[x][y] = vs_grid_damage[x][y] | damage;
 }
 
@@ -91,7 +95,7 @@ void vs_load(game_arg arg)
 {
     get_game_state(vs);
 
-    imstate->target_ups = 1.0f;
+    imstate->target_ups = 1.25f;
 
     vs_players[0].direction = vs_entity_dir_up;
     vs_players[0].x = vs_nb_colonne_x /2;
@@ -122,7 +126,7 @@ void vs_load(game_arg arg)
 
     if(dstate != null)
     {
-
+        gstate->situations = vec_empty(vs_situation);
     }
 
     if(need_reset)
@@ -145,6 +149,7 @@ void vs_unload(game_arg arg)
     texture_free(dstate->grass);
     texture_free(dstate->archere);
     texture_free(dstate->damage);
+    vec_free_lazy(gstate->situations);
 }
 
 void vs_unload_mutable(game_arg arg)
@@ -166,6 +171,38 @@ void vs_set_default_input(game_arg arg)
     output_single_value(VS_OUTPUT_DO_NOTHINGS);
 }
 
+void vs_get_player_input(game_arg arg, int idx)
+{
+    get_game_state(vs);
+
+    output_single_value(VS_OUTPUT_DO_NOTHINGS);
+
+    if(input_up(c, idx))
+    {
+        output_single_value(VS_OUTPUT_MOVE_UP); return;
+    }
+    if(input_down(c, idx))
+    {
+        output_single_value(VS_OUTPUT_MOVE_DOWN); return;
+    }
+    if(input_right(c, idx))
+    {
+        output_single_value(VS_OUTPUT_MOVE_RIGHT); return;
+    }
+    if(input_left(c, idx))
+    {
+        output_single_value(VS_OUTPUT_MOVE_LEFT); return;
+    }
+    if(input_special0(c, idx))
+    {
+        output_single_value(VS_OUTPUT_MOVE_BOW); return;
+    }
+    if(input_special1(c, idx))
+    {
+        output_single_value(VS_OUTPUT_MOVE_SWORD); return;
+    }
+}
+
 void coordinate_move(int* x, int* y, vs_entity_dir dir)
 {
     switch (dir)
@@ -178,6 +215,7 @@ void coordinate_move(int* x, int* y, vs_entity_dir dir)
     }
 }   
 
+
 void vs_player_get_input(game_arg arg, int idx)
 {
     get_game_state(vs);
@@ -186,8 +224,45 @@ void vs_player_get_input(game_arg arg, int idx)
     if(idx == 0) // player
     {
         game_get_input(c,the_game, current_entity);
+    }else if(current_entity->type == ENTITY_TYPE_PLAYER)
+    {
+        vs_get_player_input(arg, idx);
+        //vs_player_get_input(arg, idx, 1);
     }
 }
+
+#if 0
+void vs_player_get_input(game_arg arg, int idx)
+{
+    get_game_state(vs);
+    vs_set_default_input(arg);
+
+    if(idx == 0) // player
+    {
+        game_get_input(c,the_game, current_entity);
+    }else if(current_entity->type == ENTITY_TYPE_PLAYER)
+    {
+
+        if(the_game->internal_mutable_state->is_training_ia)
+        {
+
+        }else
+        {
+            
+            vs_get_player_input(arg, idx);
+            //vs_output player_input = tab_first_value(entity_input);
+            /*
+            vs_situation s;
+            s.output = player_input;
+            get_vision(arg, idx, &s.vision);
+            vec_add(gstate->situations, vs_situation, s);*/
+        }
+        // p2
+
+        //vs_player_get_input(arg, idx, 1);
+    }
+}
+#endif
 
 void player_move_dir(game_arg arg, int idx, vs_output dir)
 {
@@ -199,9 +274,8 @@ void player_move_dir(game_arg arg, int idx, vs_output dir)
     {
         player.x = x;
         player.y = y;
-        player.direction = dir;
-    
     }
+    player.direction = dir;
 }
 
 
@@ -262,7 +336,7 @@ void vs_update_player(game_arg arg, int idx)
         coordinate_move(&dx, &dy, player.direction);
         grid_set_damage(arg, player.x+dx, player.y+dy, damage_create(0,0,0,0,1));
         player.state = vs_entity_state_normal;
-        return;
+        //return;
     }
 
     vs_player_get_input(arg, idx);
@@ -410,29 +484,33 @@ void vs_draw_damage(game_arg arg, int x, int y)
     rect src = rectangle(0, 0, 16, 16);
     rectf dest = rectanglef(x, y,1,1);
 
+    int nb_frame = 12;
+    
+#define damage_frame (int)(nb_frame*draw_coef)
+
     if(damage_right(damage))
     {
-        src = rectangle(0, 16*0, 16, 16);
+        src = rectangle(damage_frame*16, 16*0, 16, 16);
         pen_texture(c, dstate->damage, src, dest);
     }
     if(damage_left(damage))
     {
-        src = rectangle(0, 16*1, 16, 16);
+        src = rectangle(damage_frame*16, 16*1, 16, 16);
         pen_texture(c, dstate->damage, src, dest);
     }
     if(damage_up(damage))
     {
-        src = rectangle(0, 16*2, 16, 16);
+        src = rectangle(damage_frame*16, 16*2, 16, 16);
         pen_texture(c, dstate->damage, src, dest);
     }
     if(damage_down(damage))
     {
-        src = rectangle(0, 16*3, 16, 16);
+        src = rectangle(damage_frame*16, 16*3, 16, 16);
         pen_texture(c, dstate->damage, src, dest);
     }
     if(damage_top(damage))
     {
-        src = rectangle(0, 16*4, 16, 16);
+        src = rectangle(damage_frame*16, 16*4, 16, 16);
         pen_texture(c, dstate->damage, src, dest);
     }
 }
@@ -452,11 +530,11 @@ void vs_draw_cadence(game_arg arg)
 
     repeat(i, max_pulse_display+1)
     {
-        float j = i+1-(draw_coef);
+        float j = i+1-(draw_coef+0.2);
         if(j < 0) { continue; }
         float x = ((j/(float)max_pulse_display))*window_width(c)/2;
-        pen_rect(c, rectanglef(window_width(c)/2+x+pulse_tickness_x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
-        pen_rect(c, rectanglef(window_width(c)/2-x, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
+        pen_rect(c, rectanglef(window_width(c)/2+x-pulse_tickness_x/2, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
+        pen_rect(c, rectanglef(window_width(c)/2-x-pulse_tickness_x/2, y-pulse_tickness_y/2, pulse_tickness_x, pulse_tickness_y));
     }
 }
 
@@ -511,9 +589,8 @@ void vs_draw(game_arg arg)
     pen_formatted_text_at_center(c, window_width(c)/2, 0, FONT_SIZE_NORMAL, 0.5, 0, "p1 %.0f p2 %.0f", get_player_score(arg, 0), get_player_score(arg, 1));
 
     if(current_game_state == GAME_STATE_GAME_OVER){
-         pen_text_at_center(c, "game over", window_width(c)/2, window_height(c), FONT_SIZE_NORMAL, 0.5, 1);
+         pen_text_at_center(c, "Fin de Partie", window_width(c)/2, window_height(c), FONT_SIZE_NORMAL, 0.5, 1);
     }
-
 }
 
 char vs_rule_output_to_char(int output)
@@ -533,37 +610,12 @@ void vs_draw_rule(game_arg arg, entity* e, rule* r, int idx)
     unused(r);
 }
 
+
+
 void vs_player_input(game_arg arg, entity* e)
 {
-    get_game_state(vs);
     unused(e);
-
-    output_single_value(VS_OUTPUT_DO_NOTHINGS);
-
-    if(input_up(c, 0))
-    {
-        output_single_value(VS_OUTPUT_MOVE_UP); return;
-    }
-    if(input_down(c, 0))
-    {
-        output_single_value(VS_OUTPUT_MOVE_DOWN); return;
-    }
-    if(input_right(c, 0))
-    {
-        output_single_value(VS_OUTPUT_MOVE_RIGHT); return;
-    }
-    if(input_left(c, 0))
-    {
-        output_single_value(VS_OUTPUT_MOVE_LEFT); return;
-    }
-    if(input_special0(c, 0))
-    {
-        output_single_value(VS_OUTPUT_MOVE_BOW); return;
-    }
-    if(input_special1(c, 0))
-    {
-        output_single_value(VS_OUTPUT_MOVE_SWORD); return;
-    }
+    vs_get_player_input(arg,0);
 }
 
 
@@ -606,11 +658,11 @@ int vision_idx(int x, int y)
     return x+half_vision_size+(y+half_vision_size)*vision_size;
 }
 
-void get_vision(game_arg arg, entity* e, vs_vision* v)
+void get_vision(game_arg arg, int idx, vs_vision* v)
 {
     get_game_state(vs);
 
-    int idx = e->id;
+    //int idx = e->id;
 
     repeat(i, VS_INPUT_SIZE)
     {
@@ -708,5 +760,5 @@ void vs_printf(game_arg arg)
 void vs_ordi_input_init(game_arg arg)
 {
     get_game_state(vs);
-    get_vision(arg, current_entity, &mstate->ordi_vision);
+    get_vision(arg, current_entity->id, &mstate->ordi_vision);
 }

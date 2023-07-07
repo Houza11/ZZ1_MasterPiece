@@ -599,6 +599,7 @@ void update_current_entity(context* c, game* g)
         r->nb_match = 0;
     }
     game_reset(c, copy);
+    copy->internal_mutable_state->is_training_ia = true;
 
     gen_current_idx_nb_update = 0;
     while(gen_current_idx_nb_update < gen_max_update_per_entity && copy->internal_mutable_state->state == GAME_STATE_RUNNING)

@@ -123,6 +123,7 @@ game* game_create_arg(
         m->best_ordi        = null;
         m->generation       = null;
         m->input            = null;
+        m->is_training_ia   = false;
     }
     return g;
 }
@@ -151,6 +152,7 @@ void game_update(context* c, game* g, float coef_ups)
     if(g->internal_mutable_state->draw_coef >= 1)
     {
         g->internal_mutable_state->draw_coef = 0;
+        g->internal_mutable_state->is_training_ia = false;
         game_update_fixed(c, g);
     }
 }
