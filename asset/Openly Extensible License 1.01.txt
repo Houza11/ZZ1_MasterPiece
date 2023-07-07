@@ -1,0 +1,22 @@
+This asset is licensed under the Openly Extensible License 1.01 :
+
+(This license is compatible with the game dev market license)
+
+YOU CAN:
+
+Use and modify the asset for any commercial or non-commercial project
+Use the asset in any commercial or non-commercial project without restriction
+
+YOU MUST:
+
+Credit the original creator of the asset in your projects
+
+YOU CANNOT:
+
+Sell, resell, or distribute the asset to others
+Modify the asset and then sell or distribute it to others
+
+PLEASE NOTE:
+
+The license terms for this specific asset may be changed at any time to a more permissive license. This means that certain constraints of the original license may be removed or modified to provide the user with more rights.
+If the license for this asset is later changed, such as the CC BY-SA 4.0, or if the restriction on sharing or selling back the asset is removed, any derivative works created by users will automatically be subject to the updated license, unless otherwise specified by the user by the mention "Closed to extension" in the credit. It is important to note that the default assumption is that any derivative works will also be subject to the updated license.

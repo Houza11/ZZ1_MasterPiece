@@ -12,7 +12,7 @@ https://github.com/Silver-Ink
 Tamagnaud Thomas (aka Mewily) 
 https://github.com/Thomas-Mewily
 
-Moosa Houzayfa     
+Moosa Houzayfa   (aka Houza)
 https://github.com/Houza11
 
 ## Pixel Art:
@@ -25,9 +25,9 @@ https://github.com/Houza11
 
 - Josefin Sans by Santiago Orozco under the Open Font License https://fonts.google.com/specimen/Josefin+Sans (not used)
 
-- Redhead Archer by Mewily under the Openly Extensible License 1.0 https://mewily.itch.io/redhead-archer 
+- Redhead Archer by Mewily under the Openly Extensible License 1.01 https://mewily.itch.io/redhead-archer 
 
-- Crossbow, Arrow, Diamond, and Grass Tilset are also made by Mewily under the Openly Extensible License 1.0
+- Crossbow, Arrow, Diamond, and Grass Tilset are also made by Mewily under the Openly Extensible License 1.01
 
 - Robot sprite by Silver-Ink
 
@@ -46,7 +46,8 @@ T/G to reset the scene and reset the level
 R to reset (with the same level)
 
 ## Versus Mode 
-F to fight : 4 vs 4 players
+
+F to fight : 4 players versus mode !
 
 W/X to change the difficulty (time speed)
 
