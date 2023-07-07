@@ -123,6 +123,7 @@ typedef struct
 typedef struct
 {
     texture* grass;
+    texture* dance;
     texture* archere;
     texture* damage;
     vs_entity_draw players_graphic[vs_max_player];

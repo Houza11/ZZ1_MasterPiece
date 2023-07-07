@@ -10,6 +10,29 @@ bool vs_inside_grid(int x, int y)
     return x >= 0 && x < vs_nb_colonne_x && y >= 0 &&  y < vs_nb_ligne_y;
 }
 
+vs_entity_dir dir_right(vs_entity_dir dir)
+{
+    switch (dir)
+    {
+        case vs_entity_dir_right: return vs_entity_dir_down;
+        case vs_entity_dir_left:  return vs_entity_dir_up;
+        case vs_entity_dir_up:    return vs_entity_dir_right;
+        case vs_entity_dir_down:  return vs_entity_dir_left;    
+        default: break;
+    }
+    return vs_entity_dir_right;
+}  
+
+
+vs_entity_dir dir_left(vs_entity_dir dir)
+{
+    repeat(i, 3)
+    {
+        dir = dir_right(dir);
+    }
+    return dir;
+}
+
 
 int damage_create(int right, int left, int up, int down, int top)
 {
@@ -97,19 +120,19 @@ void vs_load(game_arg arg)
 
     imstate->target_ups = 1.25f;
 
-    vs_players[0].direction = vs_entity_dir_up;
+    vs_players[0].direction = vs_entity_dir_down;
     vs_players[0].x = vs_nb_colonne_x /2;
     vs_players[0].y = vs_nb_ligne_y-1;
 
-    vs_players[1].direction = vs_entity_dir_down;
+    vs_players[1].direction = vs_entity_dir_up;
     vs_players[1].x = vs_nb_colonne_x /2;
     vs_players[1].y = 0;
 
-    vs_players[2].direction = vs_entity_dir_right;
+    vs_players[2].direction = vs_entity_dir_left;
     vs_players[2].x = 0;
     vs_players[2].y = vs_nb_ligne_y /2;
 
-    vs_players[3].direction = vs_entity_dir_left;
+    vs_players[3].direction = vs_entity_dir_right;
     vs_players[3].x = vs_nb_colonne_x-1;
     vs_players[3].y = vs_nb_ligne_y /2;
 
@@ -144,6 +167,7 @@ void vs_load(game_arg arg)
     {
         game_ordi_configure(the_game, VS_INPUT_SIZE, VS_INPUT_MAX_RANGE, 1, VS_OUTPUT_MOVE_RANGE, 10);
         dstate->grass   = texture_create(c,"asset/fond.png");
+        dstate->dance   = texture_create(c,"asset/tapis_dance.png");
         dstate->archere = texture_create(c,"asset/archere.png");
         dstate->damage  = texture_create(c,"asset/damage.png");
         vs_init_grid(arg);
@@ -155,6 +179,7 @@ void vs_unload(game_arg arg)
 {
     get_game_state(vs);
     texture_free(dstate->grass);
+    texture_free(dstate->dance);
     texture_free(dstate->archere);
     texture_free(dstate->damage);
     vec_free_lazy(gstate->situations);
@@ -221,7 +246,9 @@ void coordinate_move(int* x, int* y, vs_entity_dir dir)
         case vs_entity_dir_down: *y = y[0]+1; break; // :'(        
         default: break;
     }
-}   
+}
+
+
 
 
 void vs_player_get_input(game_arg arg, int idx)
@@ -317,7 +344,11 @@ void vs_update_player(game_arg arg, int idx)
 {
     get_game_state(vs);
 
+
     if(player.state == vs_entity_state_dead) return;
+
+    vs_player_get_input(arg, idx);
+    vs_output player_input = tab_first_value(entity_input);
 
     set_player_score(arg, idx, get_player_score(arg, idx) + 1);
 
@@ -326,10 +357,23 @@ void vs_update_player(game_arg arg, int idx)
         player.var_0--;
         if(player.var_0 == vs_bow_loading_time-1)
         {
+            switch (player_input)
+            {
+                case VS_OUTPUT_MOVE_RIGHT:
+                case VS_OUTPUT_MOVE_LEFT:
+                case VS_OUTPUT_MOVE_UP:
+                case VS_OUTPUT_MOVE_DOWN:
+                    player.direction = player_input;
+                break;
+                default:break;
+            }
+
             int dx = 0;
             int dy = 0;
             coordinate_move(&dx, &dy, player.direction);
             bow_attack(arg, player.x+dx, player.y+dy, dx, dy);
+
+            return;
         }else if(player.var_0 <= 0)
         {
             player.state = vs_entity_state_normal;
@@ -339,17 +383,29 @@ void vs_update_player(game_arg arg, int idx)
 
     if(player.state == vs_entity_state_attack_sword) 
     {
-        int dx = 0;
-        int dy = 0;
+        int dx;
+        int dy;
+
+        dx = 0;
+        dy = 0;
         coordinate_move(&dx, &dy, player.direction);
         grid_set_damage(arg, player.x+dx, player.y+dy, damage_create(0,0,0,0,1));
+        
+        dx = 0;
+        dy = 0;
+        coordinate_move(&dx, &dy, dir_right(player.direction));
+        grid_set_damage(arg, player.x+dx, player.y+dy, damage_create(0,0,0,0,1));
+        
+        dx = 0;
+        dy = 0;
+        coordinate_move(&dx, &dy, dir_left(player.direction));
+        grid_set_damage(arg, player.x+dx, player.y+dy, damage_create(0,0,0,0,1));
+        
+
+        
         player.state = vs_entity_state_normal;
-        //return;
+        return;
     }
-
-    vs_player_get_input(arg, idx);
-
-    vs_output player_input = tab_first_value(entity_input);
 
     switch (player_input)
     {
@@ -566,8 +622,13 @@ void vs_draw(game_arg arg)
             fond_rect.h /= 2;
             int parite = (x+y+10000) % 2;
             fond_rect.x = fond_rect.w *parite;
-            fond_rect.y = fond_rect.h * (vs_inside_grid(x,y) ? 0 : 1);
+            bool inside = vs_inside_grid(x,y);
+            fond_rect.y = fond_rect.h * (inside ? 0 : 1);
             pen_texture(c,dstate->grass,fond_rect,rectanglef(x,y,1,1));
+            if(inside)
+            {
+                pen_texture(c,dstate->dance,rectangle(16*((int)(imstate->nb_update+(coef+0.2) +x+y)%2) ,0,16,16),rectanglef(x,y,1,1));
+            }
         }
     }
 
